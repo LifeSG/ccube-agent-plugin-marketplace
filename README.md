@@ -43,7 +43,7 @@ You can install this agent plugin in two ways:
 
 1. Open the Command Palette (**⇧⌘P**)
 2. Search for and select **Chat: Install Plugin From Source**
-3. Enter your GitLab repository URL: `https://sgts.gitlab-dedicated.com/wog/gvt/lifesg/gvt-lifesg/ccubesg/libraries/ccube-vsc-chat-plugin.git`
+3. Enter your GitLab repository URL: `https://sgts.gitlab-dedicated.com/wog/gvt/lifesg/gvt-lifesg/ccubesg/libraries/ccube-vsc-agent-plugin-fds.git`
 4. If your GitLab repository is private, VS Code will prompt for authentication
 5. VS Code clones and installs the plugin automatically
 6. The plugin is now active and ready to use
