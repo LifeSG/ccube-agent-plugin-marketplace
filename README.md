@@ -16,8 +16,8 @@
 </p>
 
 <p align="center">
-  <a href="agents/"><img src="https://img.shields.io/badge/Agents-1-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
-  <a href="instructions/"><img src="https://img.shields.io/badge/Instructions-1-555?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2E8F81" alt="Instructions"></a>
+  <a href="agents/"><img src="https://img.shields.io/badge/Agents-0-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
+  <a href="instructions/"><img src="https://img.shields.io/badge/Instructions-0-555?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2E8F81" alt="Instructions"></a>
   <a href="skills/"><img src="https://img.shields.io/badge/Skills-1-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills"></a>
   <a href="prompts/"><img src="https://img.shields.io/badge/Prompts-0-555?style=for-the-badge&logo=openai&logoColor=white&labelColor=FD7C53" alt="Prompts"></a>
 </p>

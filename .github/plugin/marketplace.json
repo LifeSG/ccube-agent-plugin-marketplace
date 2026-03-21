@@ -1,0 +1,21 @@
+{
+  "name": "ccube-vsc-chat-plugin",
+  "metadata": {
+    "description": "ccube GitHub Copilot plugins",
+    "version": "1.0.0"
+  },
+  "owner": {
+    "name": "ccubesg"
+  },
+  "plugins": [
+    {
+      "name": "ccube-fds-web-app-builder",
+      "source": "./plugins/ccube-fds-web-app-builder",
+      "description": "VS Code agent plugin that builds web applications strictly following the Flagship Design System — enforces FDS components, tokens, and accessibility patterns across every Copilot suggestion.",
+      "version": "1.0.0",
+      "skills": ["./skills/cc-vite-react-ds"],
+      "instructions": "./instructions",
+      "agents": "./agents"
+    }
+  ]
+}

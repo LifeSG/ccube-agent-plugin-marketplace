@@ -19,17 +19,147 @@ primitives or third-party UI libraries.
 <!-- <repo-context> -->
 ## Repository Structure
 
-The plugin is responsible for authoring and maintaining the following file
-types, located at the plugin root:
+This repository follows a marketplace layout that supports multiple plugins in a
+single repo. The top-level structure is:
 
-| File type          | Location         | Purpose                                                                           |
-| ------------------ | ---------------- | --------------------------------------------------------------------------------- |
-| `.instructions.md` | `instructions/`  | Always-on coding standards that enforce FDS component usage and React conventions |
-| `.prompt.md`       | `prompts/`       | Slash-command workflows (e.g. scaffold a page, set up a project, build a form)    |
-| `.agent.md`        | `agents/`        | Specialized agents that develop web applications within FDS constraints           |
-| `SKILL.md`         | `skills/<name>/` | Domain-knowledge packages — FDS component catalog, theming, project scaffolding   |
+```
+.github/plugin/
+  marketplace.json              ← registry listing every plugin in this repo
+
+plugins/
+  <plugin-name>/
+    README.md                   ← human-readable description of the plugin
+    instructions/
+      *.instructions.md         ← always-on coding standards for this plugin
+    agents/
+      *.agent.md                ← specialized agents for this plugin
+    skills/
+      <skill-name>/
+        SKILL.md                ← domain-knowledge package loaded on match
+        ...                     ← supporting files (examples, scripts, etc.)
+
+prompts/                        ← repo-wide slash-command prompt files
+```
+
+Each plugin is a self-contained subdirectory under `plugins/`. Skills are
+co-located inside their owning plugin under `plugins/<plugin-name>/skills/`.
+
+The file types this repo authors and maintains:
+
+| File type          | Location                               | Purpose                                                                           |
+| ------------------ | -------------------------------------- | --------------------------------------------------------------------------------- |
+| `marketplace.json` | `.github/plugin/`                      | Registry of all plugins; each entry points to a `plugins/<name>` directory        |
+| `README.md`        | `plugins/<plugin-name>/`               | Human-readable description and skill inventory for the plugin                     |
+| `.instructions.md` | `plugins/<plugin-name>/instructions/`  | Always-on coding standards that enforce FDS component usage and React conventions |
+| `.agent.md`        | `plugins/<plugin-name>/agents/`        | Specialized agents that develop web applications within FDS constraints           |
+| `SKILL.md`         | `plugins/<plugin-name>/skills/<name>/` | Domain-knowledge packages — FDS component catalog, theming, project scaffolding   |
+| `.prompt.md`       | `prompts/`                             | Slash-command workflows (e.g. scaffold a page, set up a project, build a form)    |
 
 <!-- </repo-context> -->
+
+<!-- <adding-plugins> -->
+## Adding a New Plugin
+
+Follow these steps exactly when adding a new plugin to this marketplace.
+
+### Step 1 — Create the plugin directory
+
+Create the directory `plugins/<plugin-name>/` at the repo root. Use a
+lowercase, hyphen-separated name that clearly describes the plugin's purpose
+(e.g. `ccube-fds-web-app-builder`).
+
+### Step 2 — Add instructions (optional)
+
+For each always-on instruction the plugin enforces, create:
+
+```
+plugins/<plugin-name>/instructions/<name>.instructions.md
+```
+
+All files in the folder are automatically included. Register the folder in `marketplace.json`:
+
+```json
+"instructions": "./instructions"
+```
+
+### Step 3 — Add agents (optional)
+
+For each specialized agent the plugin provides, create:
+
+```
+plugins/<plugin-name>/agents/<name>.agent.md
+```
+
+All files in the folder are automatically included. Register the folder in `marketplace.json`:
+
+```json
+"agents": "./agents"
+```
+
+### Step 4 — Add skills
+
+For each skill the plugin provides, create:
+
+```
+plugins/<plugin-name>/skills/<skill-name>/SKILL.md
+```
+
+Include any supporting files (examples, scripts, references) as subdirectories
+alongside `SKILL.md`. The `SKILL.md` body MUST be self-contained — it is only
+loaded when matched and must not rely on external files being read first.
+
+### Step 5 — Add a README
+
+Create `plugins/<plugin-name>/README.md` that describes:
+
+- What the plugin does in one or two sentences.
+- A `## Skills` section listing each skill name with a brief description of
+  when it activates and what it provides.
+- Optionally a `## Instructions` and `## Agents` section if the plugin
+  includes those file types.
+
+### Step 6 — Register in marketplace.json
+
+Open `.github/plugin/marketplace.json` and append a new entry to the
+`"plugins"` array:
+
+```json
+{
+  "name": "<plugin-name>",
+  "source": "./plugins/<plugin-name>",
+  "description": "<one-sentence description>",
+  "version": "1.0.0",
+  "skills": [
+    "./skills/<skill-name>"
+  ],
+  "instructions": "./instructions",
+  "agents": "./agents"
+}
+```
+
+- `"source"` MUST be a path relative to the repo root pointing to the plugin
+  directory.
+- All paths are relative to the plugin's `source` directory.
+- `"instructions"` and `"agents"` point to their respective folders; all files
+  within are automatically included.
+- Omit `"instructions"` or `"agents"` if the plugin has none.
+- Increment `"version"` using semantic versioning when updating an existing
+  plugin.
+
+### Acceptance checks for a new plugin
+
+Before committing, verify:
+
+1. `plugins/<plugin-name>/` exists with at least one `skills/<name>/SKILL.md`.
+2. `plugins/<plugin-name>/README.md` exists and lists all skills (and any
+   instructions or agents).
+3. The plugin entry is present in `.github/plugin/marketplace.json` with
+   correct `"source"`, `"skills"`, `"instructions"`, and `"agents"` paths.
+4. All `SKILL.md` files pass the standard front matter and content checks
+   listed in the [Acceptance Checks](#acceptance-checks-for-new-customization-files)
+   section below.
+
+<!-- </adding-plugins> -->
 
 <!-- <authoring-rules> -->
 ## Rules for Authoring Customization Files
