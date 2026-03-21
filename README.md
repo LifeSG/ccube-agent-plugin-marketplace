@@ -1,93 +1,137 @@
-# ccube-vsc-chat-plugin
+<div align="center">
 
+# CCube VScode copilot plugin for Flagship Design System
 
+*What if you can vibecode, but using Flagship Design System*
 
-## Getting started
+<img src="docs/assets/hero.jpg" alt="CCube mascots with a piggy bank" width="280">
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+---
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+<p align="center">
+  <a href="https://designsystem.life.gov.sg/react/index.html?path=/docs/getting-started-installation--docs"><img src="https://img.shields.io/badge/Flagship_Design_System-FD8A65?style=for-the-badge&logo=storybook&logoColor=white" alt="Flagship Design System"></a>
+  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"></a>
+  <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"></a>
+</p>
 
-## Add your files
+<p align="center">
+  <a href=".github/agents/"><img src="https://img.shields.io/badge/Agents-0-555?style=flat-square&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
+  <a href=".github/instructions/"><img src="https://img.shields.io/badge/Instructions-0-555?style=flat-square&logo=readthedocs&logoColor=white&labelColor=2E8F81" alt="Instructions"></a>
+  <a href=".github/skills/"><img src="https://img.shields.io/badge/Skills-0-555?style=flat-square&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills"></a>
+  <a href=".github/prompts/"><img src="https://img.shields.io/badge/Prompts-0-555?style=flat-square&logo=openai&logoColor=white&labelColor=FD7C53" alt="Prompts"></a>
+</p>
 
-* [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+</div>
 
+---
+
+## What This Plugin Does
+
+This repository authors and ships a curated set of **GitHub Copilot customization files** that are installed into a
+user's VS Code workspace. Once installed, GitHub Copilot automatically picks them up — no configuration required
+from the end user.
+
+The result: non-developer users get an AI pair programmer that already knows the Flagship Design System inside-out,
+follows accessibility best practices, and can scaffold production-ready React components on demand.
+
+---
+
+## What Gets Installed
+
+When deployed to a target workspace, the plugin places the following files under `.github/`:
+
+| File               | Location                 | What it does                                                                           |
+| ------------------ | ------------------------ | -------------------------------------------------------------------------------------- |
+| `.instructions.md` | `.github/instructions/`  | Always-on coding standards scoped to FDS patterns and React conventions                |
+| `.prompt.md`       | `.github/prompts/`       | Reusable slash-command workflows — scaffold a page, create a component, and more       |
+| `.agent.md`        | `.github/agents/`        | Specialized AI agents with scoped personas and restricted tool sets                    |
+| `SKILL.md`         | `.github/skills/<name>/` | Self-contained domain-knowledge packages, optionally bundled with scripts and examples |
+
+---
+
+## Flagship Design System Integration
+
+All customization files are built around **`@lifesg/react-design-system`**
+
+```bash
+# Install FDS and its peer dependencies
+npm i @lifesg/react-design-system
 ```
-cd existing_repo
-git remote add origin https://sgts.gitlab-dedicated.com/wog/gvt/lifesg/gvt-lifesg/ccubesg/libraries/ccube-vsc-chat-plugin.git
-git branch -M main
-git push -uf origin main
-```
 
-## Integrate with your tools
+Available themes out of the box:
 
-* [Set up project integrations](https://sgts.gitlab-dedicated.com/wog/gvt/lifesg/gvt-lifesg/ccubesg/libraries/ccube-vsc-chat-plugin/-/settings/integrations)
+| Theme      | Token            |
+| ---------- | ---------------- |
+| Life SG    | `LifeSGTheme`    |
+| CCube      | `CCubeTheme`     |
+| Booking SG | `BookingSGTheme` |
+| PA         | `PATheme`        |
+| IMDA       | `IMDATheme`      |
+| SPF        | `SPFTheme`       |
 
-## Collaborate with your team
+> Full component docs and Storybook: [designsystem.life.gov.sg](https://designsystem.life.gov.sg/react/index.html?path=/docs/getting-started-installation--docs)
 
-* [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+---
 
-## Test and Deploy
+## Plugin Standards
 
-Use the built-in continuous integration in GitLab.
+Every customization file in this plugin must pass these checks before merging:
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+- [ ] YAML front matter is valid — quoted strings, spaces (not tabs), `---` delimiters
+- [ ] `description` contains concrete `Use when: ...` trigger phrases for reliable semantic matching
+- [ ] Language is plain enough for a non-developer to follow without external help
+- [ ] FDS references link to official documentation — no inline doc reproductions
+- [ ] Scope is focused — one file, one concern
+- [ ] No instructions duplicate what a linter, formatter, or TypeScript already enforces
 
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+---
 
 ## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+### Prerequisites
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+- VS Code with the [GitHub Copilot extension](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
+- Familiarity with [Copilot customization file formats](https://code.visualstudio.com/docs/copilot/copilot-customization)
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+### First-time setup
 
-## License
-For open source projects, say how it is licensed.
+After cloning, activate the committed git hooks so badge counts stay in sync automatically:
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+```bash
+git config core.hooksPath .githooks
+```
+
+To update the counts manually at any time without committing:
+
+```bash
+bash scripts/update-counts.sh
+```
+
+### Authoring rules
+
+- Write all instructions and prompts **for non-developers** — plain language, concrete examples, and the "why" behind every rule
+- Always target FDS components and tokens; do not suggest custom CSS primitives or third-party UI libraries
+- Use VS Code built-in file tools for all reads and writes — never use terminal commands to create or modify files
+
+### Submitting changes
+
+1. Fork the repository and create a feature branch
+2. Author or update the relevant customization files following the standards above
+3. Verify all acceptance checks pass
+4. Open a merge request with a clear description of what changed and why
+
+---
+
+## Repository Governance
+
+Detailed authoring rules, canonical front matter templates, and AI agent guidance live in [AGENT.md](AGENT.md).
+That file is the authoritative source of truth for anyone (human or AI) contributing to this plugin.
+
+---
+
+<div align="center">
+
+Built with care for the Singapore Government digital ecosystem.
+
+</div>
+
