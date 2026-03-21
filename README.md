@@ -18,7 +18,7 @@
 <p align="center">
   <a href="agents/"><img src="https://img.shields.io/badge/Agents-1-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
   <a href="instructions/"><img src="https://img.shields.io/badge/Instructions-1-555?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2E8F81" alt="Instructions"></a>
-  <a href="skills/"><img src="https://img.shields.io/badge/Skills-0-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills"></a>
+  <a href="skills/"><img src="https://img.shields.io/badge/Skills-1-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills"></a>
   <a href="prompts/"><img src="https://img.shields.io/badge/Prompts-0-555?style=for-the-badge&logo=openai&logoColor=white&labelColor=FD7C53" alt="Prompts"></a>
 </p>
 
@@ -139,6 +139,31 @@ themselves.
 >
 > Would you like to proceed with the refined prompt, the original, or would
 > you like to adjust it?
+
+### FDS Project Scaffolding
+
+This plugin provides a guided scaffolding workflow that initialises a
+production-ready React project pre-wired for the Flagship Design System.
+Simply describe what you want to build and Copilot automatically invokes the
+scaffolding skill — setting up Vite + React, installing and configuring FDS
+packages, routing, theming, and a base layout — so you start inside a
+correctly structured codebase rather than retrofitting FDS onto a blank
+project.
+
+The scaffolding skill checks whether an FDS-compatible project already exists
+before making any changes. If a valid setup is detected it adds only the
+missing pieces, so running it on an existing project is safe.
+
+**What gets created:**
+
+| Output                    | Description                                                     |
+| ------------------------- | --------------------------------------------------------------- |
+| Vite + React project      | TypeScript template with path aliases configured                |
+| FDS packages              | `@lifesg/react-design-system` and peer dependencies installed   |
+| Theme provider            | `ThemeProvider` wrapping the app root with the Life SG theme    |
+| Global CSS reset          | FDS-compatible baseline styles applied                          |
+| App router                | `react-router-dom` with a root layout and a sample home route   |
+| `src/` folder conventions | `pages/`, `components/`, `hooks/`, `utils/` directories created |
 
 ---
 
