@@ -1,7 +1,7 @@
 <div align="center">
 
 <h1>
-  <img src="docs/assets/Citizen-collective-logo.png" alt="Citizen Collective logo" style="height: 1.25em; width: auto; vertical-align: -0.08em; margin-right: 10px;">
+  <img src="docs/assets/Citizen-collective-logo.png" alt="Citizen Collective logo" height="48">
   VS Code copilot plugin for Flagship Design System
 </h1>
 
