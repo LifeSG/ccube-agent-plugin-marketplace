@@ -167,6 +167,8 @@ missing pieces, so running it on an existing project is safe.
 
 ---
 
+
+
 ## Contributing
 
 ### Prerequisites
@@ -198,12 +200,20 @@ bash scripts/update-counts.sh
 - Use VS Code built-in file tools for all reads and writes — never use
   terminal commands to create or modify files
 
+#### Plugin Manifest (`plugin.json`)
+
+All Copilot CLI plugins require a `plugin.json` at the repository root. This
+file is the plugin's manifest — it tells the CLI what the plugin is and where
+to find its components.
+
+Full spec: [GitHub Copilot CLI plugin reference — plugin.json](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference#pluginjson)
+
 ### Submitting changes
 
 1. Clone the repository and create a feature branch
 2. Author or update the relevant customization files following the standards
   above
-3. Open a merge request with a clear description of what changed and why
+1. Open a merge request with a clear description of what changed and why
 
 ---
 

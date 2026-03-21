@@ -1,6 +1,8 @@
 {
-  "name": "CCUBE FDS Web App Builder",
+  "name": "ccube-fds-web-app-builder",
   "version": "1.0.0",
   "description": "VS Code agent plugin that builds web applications strictly following the Flagship Design System — enforces FDS components, tokens, and accessibility patterns across every Copilot suggestion.",
-  "publisher": "ccubesg"
+  "author": {
+    "name": "ccubesg"
+  }
 }
