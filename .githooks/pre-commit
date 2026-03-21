@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# pre-commit — Runs before every commit to keep README badge counts in sync.
+# Activated by: git config core.hooksPath .githooks
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+bash "$REPO_ROOT/scripts/update-counts.sh"
+
+# Re-stage README.md so the updated counts are included in the commit.
+git add "$REPO_ROOT/README.md"
