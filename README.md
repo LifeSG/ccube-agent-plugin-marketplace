@@ -16,10 +16,10 @@
 </p>
 
 <p align="center">
-  <a href=".github/agents/"><img src="https://img.shields.io/badge/Agents-0-555?style=flat-square&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
-  <a href=".github/instructions/"><img src="https://img.shields.io/badge/Instructions-0-555?style=flat-square&logo=readthedocs&logoColor=white&labelColor=2E8F81" alt="Instructions"></a>
-  <a href=".github/skills/"><img src="https://img.shields.io/badge/Skills-0-555?style=flat-square&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills"></a>
-  <a href=".github/prompts/"><img src="https://img.shields.io/badge/Prompts-0-555?style=flat-square&logo=openai&logoColor=white&labelColor=FD7C53" alt="Prompts"></a>
+  <a href=".github/agents/"><img src="https://img.shields.io/badge/Agents-0-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
+  <a href=".github/instructions/"><img src="https://img.shields.io/badge/Instructions-0-555?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2E8F81" alt="Instructions"></a>
+  <a href=".github/skills/"><img src="https://img.shields.io/badge/Skills-0-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills"></a>
+  <a href=".github/prompts/"><img src="https://img.shields.io/badge/Prompts-0-555?style=for-the-badge&logo=openai&logoColor=white&labelColor=FD7C53" alt="Prompts"></a>
 </p>
 
 </div>
