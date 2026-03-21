@@ -16,8 +16,8 @@
 </p>
 
 <p align="center">
-  <a href=".github/agents/"><img src="https://img.shields.io/badge/Agents-0-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
-  <a href=".github/instructions/"><img src="https://img.shields.io/badge/Instructions-0-555?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2E8F81" alt="Instructions"></a>
+  <a href=".github/agents/"><img src="https://img.shields.io/badge/Agents-1-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
+  <a href=".github/instructions/"><img src="https://img.shields.io/badge/Instructions-1-555?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2E8F81" alt="Instructions"></a>
   <a href=".github/skills/"><img src="https://img.shields.io/badge/Skills-0-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills"></a>
   <a href=".github/prompts/"><img src="https://img.shields.io/badge/Prompts-0-555?style=for-the-badge&logo=openai&logoColor=white&labelColor=FD7C53" alt="Prompts"></a>
 </p>
@@ -50,6 +50,43 @@ When deployed to a target workspace, the plugin places the following files under
 
 ---
 
+## Features
+
+### Prompt Refinement
+
+Before Copilot acts on your request, this plugin automatically evaluates whether your prompt follows good
+prompting practices — specificity, clear scope, and actionable intent. If the prompt is vague or
+under-specified, Copilot presents a refined version alongside your original, explains what was improved and
+why, then asks for your approval before proceeding.
+
+This means even users unfamiliar with prompt engineering get consistently high-quality Copilot responses,
+without needing to learn prompting techniques themselves.
+
+**Example** — a user types `make me a button`:
+
+> **Heads up:** Your prompt was assessed as vague or underspecified, so it has been automatically refined to help produce a more accurate and useful response. Review both versions below and choose how to proceed.
+>
+> **Original prompt:**
+> make me a button
+>
+> **Refined prompt:**
+> In the current React project (Vite + FDS), create a new component file at `src/components/SubmitButton.tsx`. Use the `Button` component from `@lifesg/react-design-system/button` with the `primary` styleType. The button should display the label "Submit" and accept an `onClick` prop of type `() => void`.
+>
+> **Prompt engineering principles applied:**
+> - **Specificity**: Identifies the exact target file, component library, and variant instead of leaving it open to interpretation
+> - **Constraint anchoring**: Binds the output to FDS components and project conventions rather than allowing generic HTML or third-party alternatives
+> - **Scope definition**: Limits the task to a single component file with a clear, testable interface
+>
+> **What was improved:**
+> - Added a target file path so Copilot doesn't have to guess where to create the file
+> - Specified the FDS `Button` component and import path instead of a generic button
+> - Defined the component's props contract (`onClick: () => void`) for type safety
+> - Named the variant (`primary`) to avoid a random style choice
+>
+> Would you like to proceed with the refined prompt, the original, or would you like to adjust it?
+
+---
+
 ## Flagship Design System Integration
 
 All customization files are built around **`@lifesg/react-design-system`**
@@ -71,19 +108,6 @@ Available themes out of the box:
 | SPF        | `SPFTheme`       |
 
 > Full component docs and Storybook: [designsystem.life.gov.sg](https://designsystem.life.gov.sg/react/index.html?path=/docs/getting-started-installation--docs)
-
----
-
-## Plugin Standards
-
-Every customization file in this plugin must pass these checks before merging:
-
-- [ ] YAML front matter is valid — quoted strings, spaces (not tabs), `---` delimiters
-- [ ] `description` contains concrete `Use when: ...` trigger phrases for reliable semantic matching
-- [ ] Language is plain enough for a non-developer to follow without external help
-- [ ] FDS references link to official documentation — no inline doc reproductions
-- [ ] Scope is focused — one file, one concern
-- [ ] No instructions duplicate what a linter, formatter, or TypeScript already enforces
 
 ---
 
@@ -116,10 +140,9 @@ bash scripts/update-counts.sh
 
 ### Submitting changes
 
-1. Fork the repository and create a feature branch
+1. Clone the repository and create a feature branch
 2. Author or update the relevant customization files following the standards above
-3. Verify all acceptance checks pass
-4. Open a merge request with a clear description of what changed and why
+3. Open a merge request with a clear description of what changed and why
 
 ---
 
