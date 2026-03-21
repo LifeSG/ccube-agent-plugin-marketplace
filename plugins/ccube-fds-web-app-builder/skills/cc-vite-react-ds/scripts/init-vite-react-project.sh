@@ -47,7 +47,7 @@ npm install
 # Install Flagship Design System and dependencies
 echo "🎨 Installing Flagship Design System..."
 npm install @lifesg/react-design-system @lifesg/react-icons styled-components
-npm install -D @types/styled-components
+npm install --save-dev @types/styled-components
 
 # Create directory structure
 echo "📂 Creating project structure..."

@@ -56,6 +56,8 @@ The initialization script performs ALL steps automatically. This is the recommen
 
 **Before running**: Verify Node.js is available by running `node -v` in terminal. If the command fails, install Node.js 18+ from nodejs.org before proceeding.
 
+> **CRITICAL — run as background process**: This script runs multiple `npm install` steps that can take 2-5 minutes. You MUST launch it with `isBackground: true`. After starting it, poll with `get_terminal_output` every 30 seconds until the output contains `✅ Project created successfully!`. Do NOT run it as a foreground command — it will be killed before completion.
+
 **Finding the script**:
 1. Use `file_search` with pattern `init-vite-react-project.sh` — this is the primary and most reliable discovery method across environments.
 2. If `file_search` returns no results, the skill is not installed in this environment. Fall back to the Manual Setup steps below.
@@ -63,10 +65,11 @@ The initialization script performs ALL steps automatically. This is the recommen
    - Plugin install (macOS): `~/Library/Application Support/Code/agentPlugins/<marketplace-org-path>/plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh`
    - Workspace source: `<workspace-root>/plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh`
 
-**Usage**:
+**Usage** (background — required):
 ```bash
 bash "<absolute-path-to-script>" "<project-name>" "<target-directory>"
 ```
+Launch with `isBackground: true`. Then poll `get_terminal_output` until you see `✅ Project created successfully!`.
 
 **Example** (path shown is illustrative — use `file_search` to obtain your actual path):
 ```bash
@@ -82,7 +85,7 @@ bash "~/Library/Application Support/Code/agentPlugins/<marketplace-org-path>/plu
 6. Creates initial App.tsx with FDS components
 7. Generates project README.md
 
-**After script completes, verify**:
+**After script completes** (confirmed via `get_terminal_output` showing `✅ Project created successfully!`), verify:
 - ✅ `npm run dev` starts without errors
 - ✅ Browser shows FDS-styled content
 - ✅ No console errors related to styled-components or FDS
