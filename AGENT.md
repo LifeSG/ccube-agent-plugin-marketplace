@@ -19,14 +19,14 @@ React library without requiring deep technical knowledge.
 ## Repository Structure
 
 The plugin is responsible for authoring and maintaining the following file
-types, placed under `.github/` in the user's workspace when installed:
+types, located at the plugin root:
 
-| File type          | Location                 | Purpose                                                                     |
-| ------------------ | ------------------------ | --------------------------------------------------------------------------- |
-| `.instructions.md` | `.github/instructions/`  | Always-on or pattern-matched coding standards for FDS and React             |
-| `.prompt.md`       | `.github/prompts/`       | Reusable slash-command workflows (e.g. scaffold a page, create a component) |
-| `.agent.md`        | `.github/agents/`        | Specialized agents with scoped personas and tool restrictions               |
-| `SKILL.md`         | `.github/skills/<name>/` | Bundled domain-knowledge packages with optional scripts and examples        |
+| File type          | Location         | Purpose                                                                     |
+| ------------------ | ---------------- | --------------------------------------------------------------------------- |
+| `.instructions.md` | `instructions/`  | Always-on or pattern-matched coding standards for FDS and React             |
+| `.prompt.md`       | `prompts/`       | Reusable slash-command workflows (e.g. scaffold a page, create a component) |
+| `.agent.md`        | `agents/`        | Specialized agents with scoped personas and tool restrictions               |
+| `SKILL.md`         | `skills/<name>/` | Bundled domain-knowledge packages with optional scripts and examples        |
 
 <!-- </repo-context> -->
 

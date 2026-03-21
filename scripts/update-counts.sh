@@ -12,11 +12,11 @@ count_files() {
   find "$1" -name "$2" 2>/dev/null | wc -l | tr -d ' '
 }
 
-AGENTS=$(count_files "$REPO_ROOT/.github/agents"        "*.agent.md")
-INSTRUCTIONS=$(count_files "$REPO_ROOT/.github/instructions" "*.instructions.md")
-PROMPTS=$(count_files "$REPO_ROOT/.github/prompts"      "*.prompt.md")
+AGENTS=$(count_files "$REPO_ROOT/agents"        "*.agent.md")
+INSTRUCTIONS=$(count_files "$REPO_ROOT/instructions" "*.instructions.md")
+PROMPTS=$(count_files "$REPO_ROOT/prompts"      "*.prompt.md")
 # Skills: each skill lives in its own subdirectory; count SKILL.md sentinels
-SKILLS=$(find "$REPO_ROOT/.github/skills" -mindepth 2 -maxdepth 2 -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
+SKILLS=$(find "$REPO_ROOT/skills" -mindepth 2 -maxdepth 2 -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
 
 # Portable in-place sed (macOS requires an empty-string backup extension; Linux does not)
 sed_inplace() {

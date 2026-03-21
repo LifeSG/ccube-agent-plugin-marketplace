@@ -2,7 +2,7 @@
 
 <h1>
   <img src="docs/assets/Citizen-collective-logo.png" alt="Citizen Collective logo" height="48">
-  VS Code copilot plugin for Flagship Design System
+  VS Code Agent plugin for Flagship Design System
 </h1>
 
 <img src="docs/assets/hero.jpg" alt="CCube mascots with a piggy bank" width="280">
@@ -16,37 +16,60 @@
 </p>
 
 <p align="center">
-  <a href=".github/agents/"><img src="https://img.shields.io/badge/Agents-1-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
-  <a href=".github/instructions/"><img src="https://img.shields.io/badge/Instructions-1-555?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2E8F81" alt="Instructions"></a>
-  <a href=".github/skills/"><img src="https://img.shields.io/badge/Skills-0-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills"></a>
-  <a href=".github/prompts/"><img src="https://img.shields.io/badge/Prompts-0-555?style=for-the-badge&logo=openai&logoColor=white&labelColor=FD7C53" alt="Prompts"></a>
+  <a href="agents/"><img src="https://img.shields.io/badge/Agents-1-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
+  <a href="instructions/"><img src="https://img.shields.io/badge/Instructions-1-555?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2E8F81" alt="Instructions"></a>
+  <a href="skills/"><img src="https://img.shields.io/badge/Skills-0-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills"></a>
+  <a href="prompts/"><img src="https://img.shields.io/badge/Prompts-0-555?style=for-the-badge&logo=openai&logoColor=white&labelColor=FD7C53" alt="Prompts"></a>
 </p>
 
 </div>
 
 ---
 
-## What This Plugin Does
+## What This Agent Plugin Does
 
-This repository authors and ships a curated set of **GitHub Copilot customization files** that are installed into a
-user's VS Code workspace. Once installed, GitHub Copilot automatically picks them up — no configuration required
-from the end user.
+This repository authors and ships a curated set of **GitHub Copilot agent plugin customizations** that add specialized commands, skills, and agents to GitHub Copilot in VS Code. Once installed, the plugin automatically integrates with Copilot — no configuration required from the end user.
 
 The result: non-developer users get an AI pair programmer that already knows the Flagship Design System inside-out,
-follows accessibility best practices, and can scaffold production-ready React components on demand.
+follows accessibility best practices, prompt-refines vague requests, and can scaffold production-ready React components on demand.
+
+---
+
+## Installation
+
+You can install this agent plugin in two ways:
+
+### Option 1: Install from GitLab Repository (Recommended)
+
+1. Open the Command Palette (**⇧⌘P**)
+2. Search for and select **Chat: Install Plugin From Source**
+3. Enter your GitLab repository URL: `https://sgts.gitlab-dedicated.com/wog/gvt/lifesg/gvt-lifesg/ccubesg/libraries/ccube-vsc-chat-plugin.git`
+4. If your GitLab repository is private, VS Code will prompt for authentication
+5. VS Code clones and installs the plugin automatically
+6. The plugin is now active and ready to use
+
+### Verify Installation
+
+Once installed, you'll see:
+- New slash commands in the Chat view (if configured)
+- Updated agent skills and customizations
+- Instructions automatically applied to all Copilot suggestions
+- Prompt refinement for vague requests
+
+For more details on agent plugins, see the [VS Code Agent Plugins documentation](https://code.visualstudio.com/docs/copilot/customization/agent-plugins).
 
 ---
 
 ## What Gets Installed
 
-When deployed to a target workspace, the plugin places the following files under `.github/`:
+When installed, the plugin provides the following customizations:
 
-| File               | Location                 | What it does                                                                           |
-| ------------------ | ------------------------ | -------------------------------------------------------------------------------------- |
-| `.instructions.md` | `.github/instructions/`  | Always-on coding standards scoped to FDS patterns and React conventions                |
-| `.prompt.md`       | `.github/prompts/`       | Reusable slash-command workflows — scaffold a page, create a component, and more       |
-| `.agent.md`        | `.github/agents/`        | Specialized AI agents with scoped personas and restricted tool sets                    |
-| `SKILL.md`         | `.github/skills/<name>/` | Self-contained domain-knowledge packages, optionally bundled with scripts and examples |
+| File               | Location         | What it does                                                                           |
+| ------------------ | ---------------- | -------------------------------------------------------------------------------------- |
+| `.instructions.md` | `instructions/`  | Always-on coding standards scoped to FDS patterns and React conventions                |
+| `.prompt.md`       | `prompts/`       | Reusable slash-command workflows — scaffold a page, create a component, and more       |
+| `.agent.md`        | `agents/`        | Specialized AI agents with scoped personas and restricted tool sets                    |
+| `SKILL.md`         | `skills/<name>/` | Self-contained domain-knowledge packages, optionally bundled with scripts and examples |
 
 ---
 
