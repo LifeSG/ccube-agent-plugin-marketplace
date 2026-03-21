@@ -1,12 +1,13 @@
 <div align="center">
 
-# CCube VScode copilot plugin for Flagship Design System
-
-*What if you can vibecode, but using Flagship Design System*
+<h1>
+  <img src="docs/assets/Citizen-collective-logo.png" alt="Citizen Collective logo" style="height: 1.25em; width: auto; vertical-align: -0.08em; margin-right: 10px;">
+  VS Code copilot plugin for Flagship Design System
+</h1>
 
 <img src="docs/assets/hero.jpg" alt="CCube mascots with a piggy bank" width="280">
 
----
+*What if you can vibecode, but using Flagship Design System*
 
 <p align="center">
   <a href="https://designsystem.life.gov.sg/react/index.html?path=/docs/getting-started-installation--docs"><img src="https://img.shields.io/badge/Flagship_Design_System-FD8A65?style=for-the-badge&logo=storybook&logoColor=white" alt="Flagship Design System"></a>
