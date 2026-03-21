@@ -7,9 +7,9 @@ REPO_ROOT="$(git rev-parse --show-toplevel)"
 README="$REPO_ROOT/README.md"
 
 # Count files for each customization category.
-# `find` returns exit 0 even when the directory does not exist if we redirect stderr.
+# Guards against missing directories — find exits non-zero on macOS if the path doesn't exist.
 count_files() {
-  find "$1" -name "$2" 2>/dev/null | wc -l | tr -d ' '
+  [[ -d "$1" ]] && find "$1" -name "$2" 2>/dev/null | wc -l | tr -d ' ' || echo 0
 }
 
 AGENTS=$(find "$REPO_ROOT/plugins" -name "*.agent.md" 2>/dev/null | wc -l | tr -d ' ')
