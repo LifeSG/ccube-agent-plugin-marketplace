@@ -87,30 +87,6 @@ without needing to learn prompting techniques themselves.
 
 ---
 
-## Flagship Design System Integration
-
-All customization files are built around **`@lifesg/react-design-system`**
-
-```bash
-# Install FDS and its peer dependencies
-npm i @lifesg/react-design-system
-```
-
-Available themes out of the box:
-
-| Theme      | Token            |
-| ---------- | ---------------- |
-| Life SG    | `LifeSGTheme`    |
-| CCube      | `CCubeTheme`     |
-| Booking SG | `BookingSGTheme` |
-| PA         | `PATheme`        |
-| IMDA       | `IMDATheme`      |
-| SPF        | `SPFTheme`       |
-
-> Full component docs and Storybook: [designsystem.life.gov.sg](https://designsystem.life.gov.sg/react/index.html?path=/docs/getting-started-installation--docs)
-
----
-
 ## Contributing
 
 ### Prerequisites
