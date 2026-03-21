@@ -60,8 +60,8 @@ The initialization script performs ALL steps automatically. This is the recommen
 1. Use `file_search` with pattern `init-vite-react-project.sh` — this is the primary and most reliable discovery method across environments.
 2. If `file_search` returns no results, the skill is not installed in this environment. Fall back to the Manual Setup steps below.
 3. Known hint paths (verify with `file_search` first — paths may differ per environment):
-   - `~/.vscode/copilot/.github/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh`
-   - `<workspace-root>/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh`
+   - Plugin install (macOS): `~/Library/Application Support/Code/agentPlugins/<marketplace-org-path>/plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh`
+   - Workspace source: `<workspace-root>/plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh`
 
 **Usage**:
 ```bash
@@ -70,7 +70,7 @@ bash "<absolute-path-to-script>" "<project-name>" "<target-directory>"
 
 **Example** (path shown is illustrative — use `file_search` to obtain your actual path):
 ```bash
-bash ~/.vscode/copilot/.github/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh "my-chatbot-app" "/Users/username/projects"
+bash "~/Library/Application Support/Code/agentPlugins/<marketplace-org-path>/plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh" "my-chatbot-app" "/Users/username/projects"
 ```
 
 **What the script does automatically**:
