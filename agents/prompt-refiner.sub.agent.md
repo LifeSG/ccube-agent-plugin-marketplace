@@ -59,40 +59,46 @@ You MUST NOT include any other content, preamble, or trailing commentary.
 ---
 
 <!-- <example> -->
-**Input:** "fix the login bug"
+**Input:** "build me a login page"
 
 **Refined prompt:**
-> In `[path/to/login.ts]`, fix the bug where `[observed failure, e.g. authentication fails for valid credentials]` to ensure `[expected outcome, e.g. valid users are authenticated and redirected without error]`. Do not modify unrelated files.
+> In the current React project (Vite + FDS), create a login page at `src/pages/LoginPage.tsx` with the following:
+> 1. Use `Layout.Content` from `@lifesg/react-design-system/layout` as the page wrapper.
+> 2. Add a `Form` with `Form.Input` for email, `Form.Input` (masked) for password, and a `Button` (styleType `primary`) for submission.
+> 3. Include client-side validation: required fields and email format check.
+> 4. Export the page as a named export and add a route entry in the app router.
+> Do not modify unrelated files.
 
 **Prompt engineering principles applied:**
-> - **Target-Action-Outcome**: A good prompt names what to act on, what to do, and what success looks like
-> - **Constraint scoping**: Explicitly limiting scope ("do not modify unrelated files") prevents unintended changes
-> - **Placeholder for unknowns**: `[placeholder]` preserves the structure while flagging what the user needs to confirm
+> - **Application-level scope**: Frames the task as a full page with routing, not just an isolated component
+> - **FDS constraint anchoring**: Names specific FDS components (`Layout`, `Form`, `Button`) instead of allowing generic HTML form elements
+> - **Multi-step structure**: Breaks the task into ordered steps so Copilot handles layout, form, validation, and routing sequentially
 
 **What was improved:**
-> - Added explicit file target -- Copilot cannot search for the right file without a starting point
-> - Added failure description slot -- without it, Copilot guesses what "bug" means
-> - Added expected outcome -- anchors the fix to a testable result rather than an open-ended change
-> - Added scope constraint -- prevents Copilot from refactoring unrelated code it encounters along the way
+> - Specified the target file path and page-level FDS layout component
+> - Named exact FDS form components instead of leaving input choice open
+> - Added validation requirements to define expected behaviour
+> - Included routing integration so the page is immediately reachable
 <!-- </example> -->
 
 <!-- <example> -->
-**Input:** "refactor the auth module to use OAuth2, add refresh token support, and write tests"
+**Input:** "create a dashboard with charts and a sidebar"
 
 **Refined prompt:**
-> 1. Refactor `[src/auth/]` to replace `[current auth mechanism]` with an OAuth2 authorization code flow using `[OAuth2 library in package.json, or confirm before adding]`.
-> 2. Add refresh token support: implement token exchange, secure storage (not localStorage), and automatic renewal before expiry.
-> 3. Write unit tests for all new and modified functions using `[test framework in package.json]`. Existing tests must continue to pass.
-> Preserve all existing public API contracts. Do not modify files outside the auth module unless required.
+> 1. Create `src/pages/DashboardPage.tsx` using `Layout.Section` and `Layout.Content` from `@lifesg/react-design-system/layout` for the page structure.
+> 2. Add a `Sidenav` from `@lifesg/react-design-system/sidenav` for the sidebar navigation with links to `[list sections, e.g. Overview, Analytics, Settings]`.
+> 3. In the main content area, render `[number]` chart panels using `Card` from `@lifesg/react-design-system/card`. For chart rendering, use `[charting library in package.json, or confirm before adding]` wrapped inside FDS `Card` containers.
+> 4. Add a route entry in the app router and ensure the sidebar highlights the active section.
+> Preserve existing routes and layout components. Do not modify files outside `src/pages/` unless required.
 
 **Prompt engineering principles applied:**
 > - **Sequential ordering**: Multi-step tasks should be numbered so Copilot works through them in the correct dependency order
-> - **Specificity over intent**: Naming the OAuth2 flow type (authorization code) produces a specific implementation, not a generic one
-> - **Backward-compatibility constraint**: Stating "preserve public API contracts" and "existing tests must pass" defines the quality bar
+> - **FDS-first composition**: Layout, navigation, and container components are anchored to FDS; only domain-specific elements (charts) may use external libraries
+> - **Backward-compatibility constraint**: Stating "preserve existing routes" prevents Copilot from breaking other pages
 
 **What was improved:**
-> - Split into ordered steps -- the original was a comma-separated list that could be executed in any order
-> - Specified the OAuth2 flow type -- "use OAuth2" alone produces ambiguous results (implicit vs explicit, PKCE, client credentials, etc.)
-> - Added secure storage constraint -- prevents a common mistake of storing tokens in localStorage
-> - Added backward-compatibility requirement -- without it, Copilot may break callers of the refactored module
+> - Split into ordered steps -- the original was a single sentence combining layout, navigation, and data visualisation
+> - Specified FDS components for layout and navigation -- prevents fallback to raw HTML `<aside>` or third-party sidebar libraries
+> - Used `[placeholder]` for details the user must confirm (sections, chart count, charting library)
+> - Added scope constraint to protect existing routes and components
 <!-- </example> -->

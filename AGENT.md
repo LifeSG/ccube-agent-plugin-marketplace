@@ -7,11 +7,12 @@ This repository is a VS Code chat plugin. Its purpose is to ship a curated set
 of GitHub Copilot customization files — agents, instruction files, prompts, and
 skills — that are installed into a user's VS Code workspace.
 
-The customization files produced by this plugin are designed for non-developer
-end users. Their goal is to let those users build beautiful, accessible frontend
-applications using the
+The customization files produced by this plugin turn Copilot into an AI web
+application developer that builds React applications strictly following the
 [Flagship Design System (FDS)](https://designsystem.life.gov.sg/react/index.html?path=/docs/getting-started-installation--docs)
-React library without requiring deep technical knowledge.
+React library. Every suggestion, scaffold, and code generation must use FDS
+components, tokens, and theming patterns exclusively — no raw HTML/CSS
+primitives or third-party UI libraries.
 
 <!-- </project-overview> -->
 
@@ -21,12 +22,12 @@ React library without requiring deep technical knowledge.
 The plugin is responsible for authoring and maintaining the following file
 types, located at the plugin root:
 
-| File type          | Location         | Purpose                                                                     |
-| ------------------ | ---------------- | --------------------------------------------------------------------------- |
-| `.instructions.md` | `instructions/`  | Always-on or pattern-matched coding standards for FDS and React             |
-| `.prompt.md`       | `prompts/`       | Reusable slash-command workflows (e.g. scaffold a page, create a component) |
-| `.agent.md`        | `agents/`        | Specialized agents with scoped personas and tool restrictions               |
-| `SKILL.md`         | `skills/<name>/` | Bundled domain-knowledge packages with optional scripts and examples        |
+| File type          | Location         | Purpose                                                                           |
+| ------------------ | ---------------- | --------------------------------------------------------------------------------- |
+| `.instructions.md` | `instructions/`  | Always-on coding standards that enforce FDS component usage and React conventions |
+| `.prompt.md`       | `prompts/`       | Slash-command workflows (e.g. scaffold a page, set up a project, build a form)    |
+| `.agent.md`        | `agents/`        | Specialized agents that develop web applications within FDS constraints           |
+| `SKILL.md`         | `skills/<name>/` | Domain-knowledge packages — FDS component catalog, theming, project scaffolding   |
 
 <!-- </repo-context> -->
 
@@ -38,7 +39,9 @@ these rules:
 
 ### Target audience
 
-- You MUST write instructions, prompts, and skill guidance for non-developers.
+- You MUST write instructions, prompts, and skill guidance that are clear to
+  users with varying technical backgrounds — from non-developers to experienced
+  engineers.
 - You MUST use plain language: avoid unexplained jargon, prefer concrete
   examples over abstract descriptions.
 - You MUST include "why" reasoning behind any significant rule, so the end
@@ -48,9 +51,12 @@ these rules:
 
 - Every customization file you author MUST assume the consuming workspace uses
   the Flagship Design System React library (`@lifesg/react-design-system`).
-- Instructions and skills MUST guide the AI toward FDS components, tokens, and
-  theming patterns rather than custom CSS primitives or third-party UI
-  libraries.
+- Instructions and skills MUST enforce exclusive use of FDS components, tokens,
+  and theming patterns. The AI MUST NOT fall back to raw HTML/CSS primitives
+  or third-party UI libraries.
+- Web application concerns (routing, state management, API integration, form
+  handling) MUST be addressed through the lens of FDS-compliant implementation
+  — e.g. forms use FDS `Form` components, layouts use FDS `Layout` components.
 - When referencing FDS setup, use the canonical documentation at:
   <https://designsystem.life.gov.sg/react/index.html?path=/docs/getting-started-installation--docs>
 
@@ -89,7 +95,10 @@ on macOS vs Linux).
 ### Content boundaries
 
 - Customization files MUST NOT contain platform-agnostic general programming
-  tutorials.
+  tutorials unrelated to building FDS-compliant web applications.
+- Web application patterns (routing, state, API integration, testing) MUST be
+  covered when they are necessary for building complete FDS applications, but
+  always framed within FDS conventions.
 - Each file MUST have a single, focused purpose. Split concerns into separate
   files rather than combining them.
 - Instructions files MUST skip conventions already enforced by standard linters
@@ -173,8 +182,8 @@ Before committing a new or updated customization file, verify:
 1. Front matter is valid YAML and all required fields are present.
 2. `description` contains concrete trigger phrases for reliable semantic
    matching.
-3. Language is clear enough for a non-developer to follow without external
-   help.
+3. Language is clear enough for users with varying technical backgrounds to
+   follow without external help.
 4. FDS references point to official documentation links, not inline
    reproductions of docs.
 5. Scope is focused — one file, one concern.
