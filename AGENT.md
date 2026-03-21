@@ -108,6 +108,10 @@ Include any supporting files (examples, scripts, references) as subdirectories
 alongside `SKILL.md`. The `SKILL.md` body MUST be self-contained — it is only
 loaded when matched and must not rely on external files being read first.
 
+> **CRITICAL:** The `name` field in the `SKILL.md` front matter MUST exactly
+> match the folder name (e.g. a skill in `skills/cc-vite-react-ds/` MUST have
+> `name: "cc-vite-react-ds"`). A mismatch will cause the skill to fail to load.
+
 ### Step 5 — Add a README
 
 Create `plugins/<plugin-name>/README.md` that describes:
@@ -203,6 +207,10 @@ these rules:
 - Skill `SKILL.md` bodies MUST be self-contained and complete — they are only
   loaded when matched, so they must not rely on external files being read
   first.
+- The `name` field in a `SKILL.md` front matter MUST exactly match its
+  containing folder name. This is required for the skill to be correctly
+  identified and loaded (e.g. folder `cc-vite-react-ds/` → `name: "cc-vite-react-ds"`).
+  A mismatch will silently prevent the skill from being invoked.
 
 ### File operations
 
