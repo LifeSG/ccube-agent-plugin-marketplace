@@ -58,8 +58,19 @@ Once installed, you'll see:
 - Instructions automatically applied to all Copilot suggestions
 - Prompt refinement for vague requests
 
-For more details on agent plugins, see the [VS Code Agent Plugins
-documentation](https://code.visualstudio.com/docs/copilot/customization/agent-plugins).
+For more details on agent plugins, see the [VS Code Agent Plugins documentation](https://code.visualstudio.com/docs/copilot/customization/agent-plugins).
+
+---
+
+## Updating the Plugin
+
+To get the latest version of this plugin:
+
+1. Open the Command Palette (**⇧⌘P**)
+2. Run **Extensions: Check for Extension Updates**
+3. VS Code pulls the latest changes from the GitLab repository automatically
+
+Alternatively, updates are checked automatically every 24 hours if **Auto Update** is enabled in your VS Code settings.
 
 ---
 
