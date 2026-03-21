@@ -1,5 +1,5 @@
 {
-  "name": "ccube-vsc-agent-plugin",
+  "name": "CCUBE Flagship Design System",
   "version": "1.0.0",
   "description": "VS Code agent plugin for the Flagship Design System — adds prompt refinement, FDS-aware coding instructions, and specialized agents to GitHub Copilot.",
   "publisher": "ccubesg"

@@ -28,25 +28,27 @@
 
 ## What This Agent Plugin Does
 
-This repository authors and ships a curated set of **GitHub Copilot agent plugin customizations** that add specialized commands, skills, and agents to GitHub Copilot in VS Code. Once installed, the plugin automatically integrates with Copilot — no configuration required from the end user.
+This repository authors and ships a curated set of **GitHub Copilot agent
+plugin customizations** that add specialized commands, skills, and agents to
+GitHub Copilot in VS Code. Once installed, the plugin automatically integrates
+with Copilot — no configuration required from the end user.
 
-The result: non-developer users get an AI pair programmer that already knows the Flagship Design System inside-out,
-follows accessibility best practices, prompt-refines vague requests, and can scaffold production-ready React components on demand.
+The result: An AI pair programmer that already knows
+the Flagship Design System inside-out, follows accessibility best practices,
+prompt-refines vague requests, and can scaffold production-ready frontend based on
+Flagship Design System (FDS).
 
 ---
 
 ## Installation
 
-You can install this agent plugin in two ways:
-
-### Option 1: Install from GitLab Repository (Recommended)
+### Install from GitLab Repository
 
 1. Open the Command Palette (**⇧⌘P**)
 2. Search for and select **Chat: Install Plugin From Source**
 3. Enter your GitLab repository URL: `https://sgts.gitlab-dedicated.com/wog/gvt/lifesg/gvt-lifesg/ccubesg/libraries/ccube-vsc-agent-plugin-fds.git`
-4. If your GitLab repository is private, VS Code will prompt for authentication
-5. VS Code clones and installs the plugin automatically
-6. The plugin is now active and ready to use
+4. VS Code clones and installs the plugin automatically
+5. The plugin is now active and ready to use
 
 ### Verify Installation
 
@@ -56,7 +58,8 @@ Once installed, you'll see:
 - Instructions automatically applied to all Copilot suggestions
 - Prompt refinement for vague requests
 
-For more details on agent plugins, see the [VS Code Agent Plugins documentation](https://code.visualstudio.com/docs/copilot/customization/agent-plugins).
+For more details on agent plugins, see the [VS Code Agent Plugins
+documentation](https://code.visualstudio.com/docs/copilot/customization/agent-plugins).
 
 ---
 
@@ -77,36 +80,51 @@ When installed, the plugin provides the following customizations:
 
 ### Prompt Refinement
 
-Before Copilot acts on your request, this plugin automatically evaluates whether your prompt follows good
-prompting practices — specificity, clear scope, and actionable intent. If the prompt is vague or
-under-specified, Copilot presents a refined version alongside your original, explains what was improved and
-why, then asks for your approval before proceeding.
+Before Copilot acts on your request, this plugin automatically evaluates
+whether your prompt follows good prompting practices — specificity, clear
+scope, and actionable intent. If the prompt is vague or under-specified,
+Copilot presents a refined version alongside your original, explains what was
+improved and why, then asks for your approval before proceeding.
 
-This means even users unfamiliar with prompt engineering get consistently high-quality Copilot responses,
-without needing to learn prompting techniques themselves.
+This means even users unfamiliar with prompt engineering get consistently
+high-quality Copilot responses, without needing to learn prompting techniques
+themselves.
 
 **Example** — a user types `make me a button`:
 
-> **Heads up:** Your prompt was assessed as vague or underspecified, so it has been automatically refined to help produce a more accurate and useful response. Review both versions below and choose how to proceed.
+> **Heads up:** Your prompt was assessed as vague or underspecified, so it has
+> been automatically refined to help produce a more accurate and useful
+> response. Review both versions below and choose how to proceed.
 >
 > **Original prompt:**
 > make me a button
 >
 > **Refined prompt:**
-> In the current React project (Vite + FDS), create a new component file at `src/components/SubmitButton.tsx`. Use the `Button` component from `@lifesg/react-design-system/button` with the `primary` styleType. The button should display the label "Submit" and accept an `onClick` prop of type `() => void`.
+> In the current React project (Vite + FDS), create a new component file at
+> `src/components/SubmitButton.tsx`. Use the `Button` component from
+> `@lifesg/react-design-system/button` with the `primary` styleType. The
+> button should display the label "Submit" and accept an `onClick` prop of type
+> `() => void`.
 >
 > **Prompt engineering principles applied:**
-> - **Specificity**: Identifies the exact target file, component library, and variant instead of leaving it open to interpretation
-> - **Constraint anchoring**: Binds the output to FDS components and project conventions rather than allowing generic HTML or third-party alternatives
-> - **Scope definition**: Limits the task to a single component file with a clear, testable interface
+> - **Specificity**: Identifies the exact target file, component library, and
+>   variant instead of leaving it open to interpretation
+> - **Constraint anchoring**: Binds the output to FDS components and project
+>   conventions rather than allowing generic HTML or third-party alternatives
+> - **Scope definition**: Limits the task to a single component file with a
+>   clear, testable interface
 >
 > **What was improved:**
-> - Added a target file path so Copilot doesn't have to guess where to create the file
-> - Specified the FDS `Button` component and import path instead of a generic button
-> - Defined the component's props contract (`onClick: () => void`) for type safety
+> - Added a target file path so Copilot doesn't have to guess where to create
+>   the file
+> - Specified the FDS `Button` component and import path instead of a generic
+>   button
+> - Defined the component's props contract (`onClick: () => void`) for type
+>   safety
 > - Named the variant (`primary`) to avoid a random style choice
 >
-> Would you like to proceed with the refined prompt, the original, or would you like to adjust it?
+> Would you like to proceed with the refined prompt, the original, or would
+> you like to adjust it?
 
 ---
 
@@ -119,7 +137,8 @@ without needing to learn prompting techniques themselves.
 
 ### First-time setup
 
-After cloning, activate the committed git hooks so badge counts stay in sync automatically:
+After cloning, activate the committed git hooks so badge counts stay in sync
+automatically:
 
 ```bash
 git config core.hooksPath .githooks
@@ -133,22 +152,27 @@ bash scripts/update-counts.sh
 
 ### Authoring rules
 
-- Write all instructions and prompts **for non-developers** — plain language, concrete examples, and the "why" behind every rule
-- Always target FDS components and tokens; do not suggest custom CSS primitives or third-party UI libraries
-- Use VS Code built-in file tools for all reads and writes — never use terminal commands to create or modify files
+- Write all instructions and prompts **for non-developers** — plain language,
+  concrete examples, and the "why" behind every rule
+- Always target FDS components and tokens; do not suggest custom CSS
+  primitives or third-party UI libraries
+- Use VS Code built-in file tools for all reads and writes — never use
+  terminal commands to create or modify files
 
 ### Submitting changes
 
 1. Clone the repository and create a feature branch
-2. Author or update the relevant customization files following the standards above
+2. Author or update the relevant customization files following the standards
+  above
 3. Open a merge request with a clear description of what changed and why
 
 ---
 
 ## Repository Governance
 
-Detailed authoring rules, canonical front matter templates, and AI agent guidance live in [AGENT.md](AGENT.md).
-That file is the authoritative source of truth for anyone (human or AI) contributing to this plugin.
+Detailed authoring rules, canonical front matter templates, and AI agent
+guidance live in [AGENT.md](AGENT.md). That file is the authoritative source of
+truth for anyone (human or AI) contributing to this plugin.
 
 ---
 
