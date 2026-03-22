@@ -1,157 +1,171 @@
 # DS Component Catalogue — Documentation Progress
 
-Track which FDS components have been documented in `resources/component-catalogue.md`.
+Track which FDS components have been documented across the per-group catalogue
+files under `resources/component-catalogue-*.md`.
+
+| Group                | File                                                   |
+| -------------------- | ------------------------------------------------------ |
+| Index + quick lookup | `resources/component-catalogue.md`                     |
+| Core                 | `resources/component-catalogue-core.md`                |
+| Content              | `resources/component-catalogue-content.md`             |
+| Selection and input  | `resources/component-catalogue-selection-input.md`     |
+| Feedback indicators  | `resources/component-catalogue-feedback-indicators.md` |
+| Overlays             | `resources/component-catalogue-overlays.md`            |
+| Form                 | `resources/component-catalogue-form.md`                |
 
 To add a component, run the `Add DS Component to Catalogue` prompt.
-To initialise the Token Reference and Known FDS Gaps sections, run `Initialise DS Catalogue`.
+To initialise the Token Reference and Known FDS Gaps sections, run
+`Initialise DS Catalogue`.
 
 **Legend**: ✅ Documented | ⬜ Not yet documented
 
+Groups mirror the Storybook left-hand sidebar at
+https://designsystem.life.gov.sg/react/index.html
+
 ---
 
-## Layout
+## Core
 
-| Component          | Sub-path                                                       | Status       |
-| ------------------ | -------------------------------------------------------------- | ------------ |
-| Layout (grid/flex) | `layout`                                                       | ⬜            |
-| Layout.ColDiv      | `layout` (as `Layout.ColDiv`)                                  | ⬜            |
-| Divider            | `divider`                                                      | ⬜            |
-| Icon               | (no sub-path — use `@lifesg/react-design-system` icon exports) | ⬜            |
-| Masonry            | `masonry`                                                      | 🚫 Deprecated |
+| Component          | Sub-path                                                       | Status |
+| ------------------ | -------------------------------------------------------------- | ------ |
+| Icon               | (no sub-path — use `@lifesg/react-design-system` icon exports) | ✅      |
+| Typography         | `typography`                                                   | ✅      |
+| Layout (grid/flex) | `layout`                                                       | ✅      |
+| Layout.ColDiv      | `layout` (as `Layout.ColDiv`)                                  | ✅      |
+| Divider            | `divider`                                                      | ✅      |
+| Markup             | `markup`                                                       | ⬜      |
+| TextList           | `text-list`                                                    | ⬜      |
+| ErrorDisplay       | `error-display`                                                | ⬜      |
 
-## Typography
+## Content
 
-| Component  | Sub-path     | Status |
-| ---------- | ------------ | ------ |
-| Typography | `typography` | ✅      |
-| Markup     | `markup`     | ⬜      |
-| TextList   | `text-list`  | ⬜      |
+| Component               | Sub-path                    | Status |
+| ----------------------- | --------------------------- | ------ |
+| Card                    | `card`                      | ✅      |
+| Tab                     | `tab`                       | ✅      |
+| Accordion               | `accordion`                 | ✅      |
+| Table                   | `table`                     | ⬜      |
+| DataTable               | `data-table`                | ⬜      |
+| UneditableSection       | `uneditable-section`        | ⬜      |
+| BoxContainer            | `box-container`             | ⬜      |
+| FullscreenImageCarousel | `fullscreen-image-carousel` | ⬜      |
 
 ## Navigation
 
 | Component  | Sub-path     | Status |
 | ---------- | ------------ | ------ |
-| Breadcrumb | `breadcrumb` | ⬜      |
-| LocalNav   | `local-nav`  | ⬜      |
+| Breadcrumb | `breadcrumb` | ✅      |
 | Navbar     | `navbar`     | ⬜      |
-| Sidenav    | `sidenav`    | ⬜      |
-| Tab        | `tab`        | ⬜      |
 | Pagination | `pagination` | ⬜      |
 | Footer     | `footer`     | ⬜      |
 | Masthead   | `masthead`   | ⬜      |
+| Sidenav    | `sidenav`    | ⬜      |
+| LocalNav   | `local-nav`  | ⬜      |
+| LinkList   | `link-list`  | ⬜      |
+| Avatar     | `avatar`     | ⬜      |
 
-## Button
+## Selection and input
 
-| Component      | Sub-path           | Status |
-| -------------- | ------------------ | ------ |
-| Button         | `button`           | ✅      |
-| ButtonWithIcon | `button-with-icon` | ⬜      |
-| IconButton     | `icon-button`      | ⬜      |
-| ImageButton    | `image-button`     | ⬜      |
-| SingpassButton | `singpass-button`  | ⬜      |
+| Component                          | Sub-path              | Status |
+| ---------------------------------- | --------------------- | ------ |
+| Button                             | `button`              | ✅      |
+| Checkbox                           | `checkbox`            | ✅      |
+| RadioButton                        | `radio-button`        | ✅      |
+| Toggle                             | toggle                | ✅      |
+| Calendar (date picker)             | `calendar`            | ✅      |
+| FileUpload                         | `file-upload`         | ⬜      |
+| FileDownload                       | `file-download`       | ⬜      |
+| OtpInput                           | `otp-input`           | ⬜      |
+| SingpassButton                     | `singpass-button`     | ⬜      |
+| IconButton                         | `icon-button`         | ⬜      |
+| ButtonWithIcon                     | `button-with-icon`    | ⬜      |
+| Filter                             | `filter`              | ⬜      |
+| Filter.Addons (FilterItemCheckbox) | `filter/addons`       | ⬜      |
+| FeedbackRating                     | `feedback-rating`     | ⬜      |
+| DateNavigator                      | `date-navigator`      | ⬜      |
+| ImageButton                        | `image-button`        | ⬜      |
+| Schedule                           | `schedule`            | ⬜      |
+| TimeSlotBar                        | `time-slot-bar`       | ⬜      |
+| TimeSlotBarWeek                    | `time-slot-bar-week`  | ⬜      |
+| TimeSlotWeekView                   | `time-slot-week-view` | ⬜      |
+| TimeTable                          | `timetable`           | ⬜      |
+
+## Feedback indicators
+
+| Component                                                          | Sub-path              | Status |
+| ------------------------------------------------------------------ | --------------------- | ------ |
+| Alert                                                              | `alert`               | ✅      |
+| Toast                                                              | `toast`               | ✅      |
+| Tag                                                                | `tag`                 | ✅      |
+| Badge                                                              | `badge`               | ⬜      |
+| ProgressIndicator                                                  | `progress-indicator`  | ⬜      |
+| NotificationBanner                                                 | `notification-banner` | ⬜      |
+| Timeline                                                           | `timeline`            | ⬜      |
+| Pill                                                               | `pill`                | ⬜      |
+| Animations                                                         | `animations`          | ⬜      |
+| Animations.Customisable (LoadingDotsSpinner, ThemedLoadingSpinner) | `animations`          | ⬜      |
+| CountdownTimer                                                     | `countdown-timer`     | ⬜      |
+| SmartAppBanner                                                     | `smart-app-banner`    | ⬜      |
+
+## Overlays
+
+| Component     | Sub-path     | Status |
+| ------------- | ------------ | ------ |
+| ModalV2       | `modal-v2`   | ✅      |
+| Modal         | `modal`      | ✅      |
+| Menu          | `menu`       | ✅      |
+| Drawer        | `drawer`     | ⬜      |
+| PopoverV2     | `popover-v2` | ⬜      |
+| PopoverInline | `popover-v2` | ⬜      |
+| Overlay       | `overlay`    | ⬜      |
 
 ## Form
 
 | Component                                       | Sub-path                    | Status |
 | ----------------------------------------------- | --------------------------- | ------ |
-| Input                                           | `input`                     | ✅      |
 | Form.Input                                      | `form`                      | ✅      |
-| InputGroup                                      | `input-group`               | ⬜      |
+| Input                                           | `input`                     | ✅      |
 | Form.Select (InputSelect)                       | `input-select`              | ✅      |
+| Form.Textarea (InputTextarea)                   | `input-textarea`            | ✅      |
+| Form.Label                                      | `form`                      | ⬜      |
+| Form.DateInput                                  | `date-input`                | ⬜      |
 | Form.MultiSelect (InputMultiSelect)             | `input-multi-select`        | ⬜      |
+| Form.PhoneNumberInput                           | `phone-number-input`        | ⬜      |
+| Form.MaskedInput (MaskedInput)                  | `masked-input`              | ⬜      |
+| InputGroup                                      | `input-group`               | ⬜      |
+| Form.DateRangeInput                             | `date-range-input`          | ⬜      |
+| Form.Timepicker                                 | `timepicker`                | ⬜      |
+| Form.OtpVerification                            | `otp-verification`          | ⬜      |
+| Form.UnitNumberInput                            | `unit-number`               | ⬜      |
+| Form.PredictiveTextInput                        | `predictive-text-input`     | ⬜      |
+| Form.TimeRangePicker                            | `time-range-picker`         | ⬜      |
+| Form.Slider (InputSlider)                       | `input-slider`              | ⬜      |
+| Form.RangeSlider (InputRangeSlider)             | `input-range-slider`        | ⬜      |
 | Form.NestedSelect (InputNestedSelect)           | `input-nested-select`       | ⬜      |
 | Form.NestedMultiSelect (InputNestedMultiSelect) | `input-nested-multi-select` | ⬜      |
 | Form.RangeSelect (InputRangeSelect)             | `input-range-select`        | ⬜      |
-| Form.Slider (InputSlider)                       | `input-slider`              | ⬜      |
-| Form.RangeSlider (InputRangeSlider)             | `input-range-slider`        | ⬜      |
-| Form.Textarea (InputTextarea)                   | `input-textarea`            | ⬜      |
-| Form.MaskedInput (MaskedInput)                  | `masked-input`              | ⬜      |
-| Form.PhoneNumberInput                           | `phone-number-input`        | ⬜      |
-| Form.PredictiveTextInput                        | `predictive-text-input`     | ⬜      |
-| OtpInput                                        | `otp-input`                 | ⬜      |
-| Form.OtpVerification                            | `otp-verification`          | ⬜      |
-| Checkbox                                        | `checkbox`                  | ✅      |
-| RadioButton                                     | `radio-button`              | ✅      |
-| Toggle                                          | `toggle`                    | ⬜      |
-| Calendar (date picker)                          | `calendar`                  | ⬜      |
-| Form.DateInput                                  | `date-input`                | ⬜      |
-| Form.DateRangeInput                             | `date-range-input`          | ⬜      |
-| DateNavigator                                   | `date-navigator`            | ⬜      |
-| Form.Timepicker                                 | `timepicker`                | ⬜      |
-| Form.TimeRangePicker                            | `time-range-picker`         | ⬜      |
-| Form.UnitNumberInput                            | `unit-number`               | ⬜      |
 | Form.CustomField                                | `form`                      | ⬜      |
-| Form.ESignature                                 | `e-signature`               | ⬜      |
-| Form.HistogramSlider                            | `histogram-slider`          | ⬜      |
-| Form.Label                                      | `form`                      | ⬜      |
 | Form.SelectHistogram                            | `select-histogram`          | ⬜      |
-| Filter                                          | `filter`                    | ⬜      |
-| Filter.Addons (FilterItemCheckbox)              | `filter/addons`             | ⬜      |
+| Form.HistogramSlider                            | `histogram-slider`          | ⬜      |
+| Form.ESignature                                 | `e-signature`               | ⬜      |
 
-## Feedback & Overlays
+## Deprecated
 
-| Component                                                          | Sub-path              | Status |
-| ------------------------------------------------------------------ | --------------------- | ------ |
-| Alert                                                              | `alert`               | ✅      |
-| Animations                                                         | `animations`          | ⬜      |
-| Animations.Customisable (LoadingDotsSpinner, ThemedLoadingSpinner) | `animations`          | ⬜      |
-| Modal                                                              | `modal`               | ✅      |
-| Modal V2                                                           | `modal-v2`            | ✅      |
-| Toast                                                              | `toast`               | ⬜      |
-| ErrorDisplay                                                       | `error-display`       | ⬜      |
-| NotificationBanner                                                 | `notification-banner` | ⬜      |
-| ProgressIndicator                                                  | `progress-indicator`  | ⬜      |
-| CountdownTimer                                                     | `countdown-timer`     | ⬜      |
-| Overlay                                                            | `overlay`             | ⬜      |
-| Drawer                                                             | `drawer`              | ⬜      |
+> These components appear under the Deprecated section in Storybook.
+> Do not document them; use the recommended replacement instead.
 
-## Display & Data
-
-| Component               | Sub-path                    | Status                             |
-| ----------------------- | --------------------------- | ---------------------------------- |
-| Accordion               | `accordion`                 | ✅                                  |
-| Avatar                  | `avatar`                    | ⬜                                  |
-| Badge                   | `badge`                     | ⬜                                  |
-| Card                    | `card`                      | ✅                                  |
-| BoxContainer            | `box-container`             | ⬜                                  |
-| DataTable               | `data-table`                | ⬜                                  |
-| Table                   | `table`                     | ⬜                                  |
-| Tag                     | `tag`                       | ⬜                                  |
-| Pill                    | `pill`                      | ⬜                                  |
-| Tooltip                 | `tooltip`                   | 🚫 Deprecated                       |
-| PopoverInline           | `popover-v2`                | ⬜                                  |
-| Popover V2              | `popover-v2`                | ⬜                                  |
-| Popover (old)           | `popover`                   | 🚫 Deprecated — use `PopoverInline` |
-| Timeline                | `timeline`                  | ⬜                                  |
-| LinkList                | `link-list`                 | ⬜                                  |
-| UneditableSection       | `uneditable-section`        | ⬜                                  |
-| FileDownload            | `file-download`             | ⬜                                  |
-| FileUpload              | `file-upload`               | ⬜                                  |
-| FeedbackRating          | `feedback-rating`           | ⬜                                  |
-| FullscreenImageCarousel | `fullscreen-image-carousel` | ⬜                                  |
-| Menu                    | `menu`                      | ⬜                                  |
-
-## Scheduling
-
-| Component        | Sub-path              | Status |
-| ---------------- | --------------------- | ------ |
-| Schedule         | `schedule`            | ⬜      |
-| TimeSlotBar      | `time-slot-bar`       | ⬜      |
-| TimeSlotBarWeek  | `time-slot-bar-week`  | ⬜      |
-| TimeSlotWeekView | `time-slot-week-view` | ⬜      |
-| TimeTable        | `timetable`           | ⬜      |
-
-## Platform
-
-| Component      | Sub-path           | Status |
-| -------------- | ------------------ | ------ |
-| SmartAppBanner | `smart-app-banner` | ⬜      |
+| Component     | Sub-path  | Notes                       |
+| ------------- | --------- | --------------------------- |
+| Masonry       | `masonry` | No replacement              |
+| Popover (old) | `popover` | Use `PopoverInline` instead |
+| Tooltip       | `tooltip` | No direct replacement in v3 |
 
 ---
 
 ## Foundation
 
-> Topics documented in `resources/foundations-tokens.md` and `resources/theme-setup.md`.
+> Topics documented in `resources/foundations-tokens.md` and
+> `resources/theme-setup.md`.
 > To add a section, run the `Add DS Foundation to Catalogue` prompt.
 
 | Topic                        | File                    | Status                               |
@@ -173,6 +187,7 @@ To initialise the Token Reference and Known FDS Gaps sections, run `Initialise D
 
 ---
 
-**Progress**: 12 / 77 components documented (3 deprecated excluded from count)
+**Progress**: 23 / 90 components documented (3 deprecated excluded from count)
 
-> New sub-components confirmed via Storybook full expansion: `Layout.ColDiv`, `Filter.Addons`, `Animations.Customisable`.
+> New sub-components confirmed via Storybook full expansion:
+> `Layout.ColDiv`, `Filter.Addons`, `Animations.Customisable`.

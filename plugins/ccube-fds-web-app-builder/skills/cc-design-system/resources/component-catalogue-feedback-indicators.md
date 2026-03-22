@@ -1,0 +1,228 @@
+> **Feedback indicators** group — Alert, Animations, Badge, Pill, Tag,
+> Timeline, Toast, NotificationBanner, ProgressIndicator, and related
+> components.
+> For other groups see the other `resources/component-catalogue-*.md` files.
+> For modals, drawers, and overlays see
+> `resources/component-catalogue-overlays.md`.
+> For the cross-cutting Figma → FDS Quick Lookup table, see
+> `resources/component-catalogue.md`.
+
+---
+
+## Feedback indicators
+
+> Components that communicate status, progress, or system messages to the
+> user. Scan this group when the Figma frame shows coloured banners, toasts,
+> badges, pills, tags, timelines, or any non-modal notification UI.
+
+### Alert
+
+**Import**: `import { Alert } from "@lifesg/react-design-system/alert"`
+
+**Category**: Feedback indicators
+
+**Decision rule**
+> Use `Alert` when the Figma frame shows an inline coloured banner conveying
+> status (success, error, warning, info, or description) — use
+> `NotificationBanner` for full-width page-level banners or `Toast` for
+> transient dismissable pop-ups.
+
+**When to use**
+- Inline form validation summaries (error type) shown above or below a form.
+- Status messages after an action (success or warning) that remain visible on
+  the page.
+- Informational callout boxes (description type) that provide contextual
+  guidance.
+
+**When NOT to use**
+| Situation                              | Use instead                                                                 |
+| -------------------------------------- | --------------------------------------------------------------------------- |
+| Transient message that auto-dismisses  | `Toast` from `@lifesg/react-design-system/toast`                            |
+| Full-width page-level notification bar | `NotificationBanner` from `@lifesg/react-design-system/notification-banner` |
+
+**Key props**
+| Prop               | Type                                                                   | Required | Notes                                                                                                         |
+| ------------------ | ---------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| type               | `"success"` \| `"warning"` \| `"error"` \| `"info"` \| `"description"` | yes      | Determines the colour scheme, default icon, and semantic role. `"description"` = neutral grey callout.        |
+| showIcon           | `boolean`                                                              | no       | Whether to render the status icon. Defaults to `true`.                                                        |
+| customIcon         | `JSX.Element`                                                          | no       | Replaces the default status icon with a custom element.                                                       |
+| sizeType           | `"default"` \| `"small"`                                               | no       | Visual size variant. `"small"` reduces padding and font size. Defaults to `"default"`.                        |
+| actionLink         | `AnchorHTMLAttributes<HTMLAnchorElement>`                              | no       | Renders a hyperlink inside the alert (e.g. "Learn more" or "View details").                                   |
+| actionLinkIcon     | `JSX.Element`                                                          | no       | Icon rendered alongside `actionLink`.                                                                         |
+| maxCollapsedHeight | `number`                                                               | no       | Content height (px) at which the alert collapses with a "Show more" toggle. Useful for verbose error details. |
+| data-testid        | `string`                                                               | no       | Test selector on the alert element.                                                                           |
+
+**Canonical usage**
+```tsx
+import { Alert } from "@lifesg/react-design-system/alert";
+
+{/* Success confirmation */}
+<Alert type="success" data-testid="submission-success">
+  Your application has been submitted successfully.
+</Alert>
+
+{/* Error summary with action link */}
+<Alert
+  type="error"
+  actionLink={{ href: "#errors", children: "View all errors" }}
+>
+  There are 3 errors in your form. Please review and correct them.
+</Alert>
+
+{/* Informational callout (neutral) */}
+<Alert type="description" showIcon={false}>
+  This information is used to verify your identity.
+</Alert>
+
+{/* Small warning inline */}
+<Alert type="warning" sizeType="small">
+  This action cannot be undone.
+</Alert>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                | Map to  | Condition                                                    |
+| -------------------------------------------- | ------- | ------------------------------------------------------------ |
+| Alert banner (success, error, warning, info) | `Alert` | Inline coloured banner with icon and message text            |
+| Description / informational callout box      | `Alert` | Set `type="description"` for neutral grey callout            |
+| Alert with a "Learn more" or action link     | `Alert` | Pass `actionLink` prop with `href` and `children`            |
+| Collapsed alert with "Show more" toggle      | `Alert` | Set `maxCollapsedHeight` to desired collapse threshold in px |
+| Small compact alert row                      | `Alert` | Set `sizeType="small"`                                       |
+
+---
+
+### Tag
+
+**Import**: `import { Tag } from "@lifesg/react-design-system/tag"`
+
+**Category**: Feedback indicators
+
+**Decision rule**
+> Use `Tag` when the Figma frame shows a small coloured chip communicating a
+> category, status, or selection label — use `Badge` for numeric count
+> indicators or `Pill` for dismissable filter chips.
+
+**When to use**
+- Category or classification labels on list items, cards, or tables (e.g.,
+  "Draft", "Approved", "Pending").
+- Colour-coded status indicators where text must accompany the colour cue.
+- Interactive filter chips that users can tap to trigger an action, especially
+  when a larger touch target on mobile is needed.
+
+**When NOT to use**
+| Situation                                             | Use instead                                      |
+| ----------------------------------------------------- | ------------------------------------------------ |
+| Numeric count / unread indicator next to an icon      | `Badge` from `@lifesg/react-design-system/badge` |
+| Removable filter pill with a dismiss/close button     | `Pill` from `@lifesg/react-design-system/pill`   |
+| Persistent inline status banner with descriptive text | `Alert` from `@lifesg/react-design-system/alert` |
+
+**Key props**
+| Prop         | Type                                                                                   | Required | Notes                                                                                 |
+| ------------ | -------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------- |
+| type         | `"solid"` \| `"outline"`                                                               | yes      | Display format. `"solid"` = filled background; `"outline"` = border-only.             |
+| colorType    | `"black"` \| `"grey"` \| `"green"` \| `"yellow"` \| `"red"` \| `"blue"` \| `"primary"` | no       | Colour scheme. Defaults to `"black"`.                                                 |
+| interactive  | `boolean`                                                                              | no       | Makes the tag tappable; touch target increases on tablet/mobile. Defaults to `false`. |
+| icon         | `JSX.Element`                                                                          | no       | Icon element rendered alongside the label text.                                       |
+| iconPosition | `"left"` \| `"right"`                                                                  | no       | Position of the icon relative to the label. Defaults to `"left"`.                     |
+
+**Canonical usage**
+```tsx
+// Solid status tag
+import { Tag } from "@lifesg/react-design-system/tag";
+
+<Tag type="solid" colorType="green">Active</Tag>
+
+// Outline category tag
+<Tag type="outline" colorType="blue">Pending review</Tag>
+
+// Interactive tag with left icon
+<Tag type="solid" colorType="primary" interactive icon={<FilterIcon />}>
+  Filter
+</Tag>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern              | Map to | Condition                                                             |
+| ------------------------------------------ | ------ | --------------------------------------------------------------------- |
+| Coloured label chip / category tag         | `Tag`  | Static text label with colour; use `type="outline"` or `type="solid"` |
+| Interactive filter chip (tappable)         | `Tag`  | Set `interactive={true}`; larger touch target on mobile               |
+| Status chip with icon                      | `Tag`  | Pass `icon` JSX element; use `iconPosition` for placement             |
+| Status indicator tag (text-only, coloured) | `Tag`  | Use `colorType` to match the status colour                            |
+
+---
+
+### Toast
+
+**Import**: `import { Toast } from "@lifesg/react-design-system/toast"`
+
+**Category**: Feedback indicators
+
+**Decision rule**
+> Use `Toast` for transient, dismissable pop-up notifications about system
+> status changes — use `Alert` for persistent inline messages that remain
+> visible on the page.
+
+**When to use**
+- Confirming a background action (save, update, delete) with a brief status
+  message that can auto-dismiss.
+- Surfacing non-critical warnings or info updates that do not block the user.
+- Showing a dismissable error that the user can acknowledge and continue
+  working.
+
+**When NOT to use**
+| Situation                                           | Use instead                                                                 |
+| --------------------------------------------------- | --------------------------------------------------------------------------- |
+| Persistent inline validation or status message      | `Alert` from `@lifesg/react-design-system/alert`                            |
+| Full-width page-level notification bar              | `NotificationBanner` from `@lifesg/react-design-system/notification-banner` |
+| Action requires user confirmation before proceeding | `ModalV2` from `@lifesg/react-design-system/modal-v2`                       |
+
+**Key props**
+| Prop            | Type                                                | Required | Notes                                                                                       |
+| --------------- | --------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| type            | `"success"` \| `"warning"` \| `"error"` \| `"info"` | yes      | Controls colour scheme and status icon.                                                     |
+| label           | `string` \| `JSX.Element`                           | yes      | Main content. When `title` is also set, renders as a description sub-label below it.        |
+| title           | `string` \| `JSX.Element`                           | no       | Optional heading rendered above `label`.                                                    |
+| autoDismiss     | `boolean`                                           | no       | Automatically dismisses after `autoDismissTime` ms. Defaults to `false`.                    |
+| autoDismissTime | `number`                                            | no       | Milliseconds until auto-dismissal. Requires `autoDismiss={true}`. Defaults to `4000` (4 s). |
+| fixed           | `boolean`                                           | no       | Keeps the Toast fixed at the top of the page on scroll. Defaults to `true`.                 |
+| actionButton    | `{ label: string; onClick: () => void }`            | no       | Renders a call-to-action button inside the Toast.                                           |
+
+**Canonical usage**
+```tsx
+// Success toast with auto-dismiss
+import { Toast } from "@lifesg/react-design-system/toast";
+
+<Toast
+  type="success"
+  label="Your bookings have been updated."
+  autoDismiss
+/>
+
+// Warning toast with title, custom dismiss time, and action button
+<Toast
+  type="warning"
+  title="Unknown characters"
+  label="The template contains characters that cannot be updated. Please remove them and try again."
+  autoDismiss
+  autoDismissTime={8000}
+  actionButton={{ label: "Review", onClick: handleReview }}
+  onDismiss={handleClose}
+/>
+
+// Error toast — persists until manually dismissed
+<Toast
+  type="error"
+  title="System error"
+  label="An internal system error has occurred. Please log out and try again."
+  onDismiss={handleClose}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                                 | Map to  | Condition                                                           |
+| ------------------------------------------------------------- | ------- | ------------------------------------------------------------------- |
+| Toast / snackbar notification (success, warning, error, info) | `Toast` | Floating overlay-style status message, not inline in page flow      |
+| Status pop-up with title and description text                 | `Toast` | Set both `title` and `label` props                                  |
+| Auto-dismissing notification pop-up                           | `Toast` | Set `autoDismiss={true}` and optional `autoDismissTime`             |
+| Toast with "Undo" or CTA button                               | `Toast` | Pass `actionButton` with `label` and `onClick`                      |
+| Sticky top-of-page notification that persists on scroll       | `Toast` | `fixed` defaults to `true`; set `fixed={false}` to scroll with page |
