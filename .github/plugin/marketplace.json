@@ -22,7 +22,13 @@
       "source": "./plugins/ccube-software-craft",
       "description": "VS Code agent plugin for software engineering knowledge — SOLID principles, design patterns, clean code, architecture styles, git workflow, testing strategy, and debugging methodology. For anyone writing software, not just dedicated engineers.",
       "version": "1.0.0",
-      "skills": ["./skills/cc-engineering-principles"],
+      "skills": [
+        "./skills/cc-engineering-principles",
+        "./skills/cc-security-standards",
+        "./skills/cc-software-craft-standards",
+        "./skills/cc-taming-copilot",
+        "./skills/cc-markdown-standards"
+      ],
       "instructions": "./instructions",
       "agents": "./agents"
     }
