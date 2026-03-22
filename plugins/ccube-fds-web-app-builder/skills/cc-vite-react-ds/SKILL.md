@@ -29,39 +29,63 @@ Do NOT use when:
 
 ## Prerequisites
 
-- **Node.js 18+** and **npm** must be installed and available in PATH. Verify with `node -v` before executing.
+- **Node.js 18+** and **npm** must be installed and available in PATH.
+  Verify with `node -v` before executing.
 
 ## Required Information
 
-Before executing, gather the following. If any required input is missing, ask the user — collect all missing fields in a single message before proceeding.
+Before executing, gather the following. If any required input is missing,
+ask the user — collect all missing fields in a single message before
+proceeding.
 
 1. **Project name** (required, kebab-case)
-   - If missing, ask: "What should the project be named? Use kebab-case, e.g., `my-app`."
-2. **Target directory** (required, absolute path where the project folder will be created)
-   - If missing, ask: "Where should the project be created? Provide an absolute path (e.g., `/Users/username/projects`). If you want to use your home directory, I will resolve it to its absolute path for you."
-   - If the user provides `~`, resolve it to an absolute path before proceeding: run `echo $HOME` in terminal and use the output.
+   - If missing, ask: "What should the project be named? Use kebab-case,
+     e.g., `my-app`."
+2. **Target directory** (required, absolute path where the project
+   folder will be created)
+   - If missing, ask: "Where should the project be created? Provide an
+     absolute path (e.g., `/Users/username/projects`). If you want to
+     use your home directory, I will resolve it to its absolute path
+     for you."
+   - If the user provides `~`, resolve it to an absolute path before
+     proceeding: run `echo $HOME` in terminal and use the output.
 3. **Initial features** (optional — proceed without asking if not mentioned)
 
-> Monorepo setup is out of scope for this skill. If the user explicitly requests a monorepo integration, advise them to scaffold the standalone project first using this skill, then integrate it manually into their workspace.
+> Monorepo setup is out of scope for this skill. If the user explicitly
+> requests a monorepo integration, advise them to scaffold the standalone
+> project first using this skill, then integrate it manually into their
+> workspace.
 
 ## Execution Steps
 
-> This skill creates standalone Vite + React apps only. Monorepo integration is out of scope — see Required Information above.
+> This skill creates standalone Vite + React apps only. Monorepo
+> integration is out of scope — see Required Information above.
 
 ### Automated Setup (Recommended)
 
-The initialization script performs ALL steps automatically. This is the recommended approach.
+The initialization script performs ALL steps automatically. This is the
+recommended approach.
 
 **Script Location**: `scripts/init-vite-react-project.sh`
 
-**Before running**: Verify Node.js is available by running `node -v` in terminal. If the command fails, install Node.js 18+ from nodejs.org before proceeding.
+**Before running**: Verify Node.js is available by running `node -v` in
+terminal. If the command fails, install Node.js 18+ from nodejs.org
+before proceeding.
 
-> **CRITICAL — run as background process**: This script runs multiple `npm install` steps that can take 2-5 minutes. You MUST launch it with `isBackground: true`. After starting it, poll with `get_terminal_output` every 30 seconds until the output contains `✅ Project created successfully!`. Do NOT run it as a foreground command — it will be killed before completion.
+> **CRITICAL — run as background process**: This script runs multiple
+> `npm install` steps that can take 2-5 minutes. You MUST launch it
+> with `isBackground: true`. After starting it, poll with
+> `get_terminal_output` every 30 seconds until the output contains
+> `✅ Project created successfully!`. Do NOT run it as a foreground
+> command — it will be killed before completion.
 
 **Finding the script**:
-1. Use `file_search` with pattern `init-vite-react-project.sh` — this is the primary and most reliable discovery method across environments.
-2. If `file_search` returns no results, the skill is not installed in this environment. Fall back to the Manual Setup steps below.
-3. Known hint paths (verify with `file_search` first — paths may differ per environment):
+1. Use `file_search` with pattern `init-vite-react-project.sh` — this
+   is the primary and most reliable discovery method across environments.
+2. If `file_search` returns no results, the skill is not installed in
+   this environment. Fall back to the Manual Setup steps below.
+3. Known hint paths (verify with `file_search` first — paths may
+   differ per environment):
    - Plugin install (macOS): `~/Library/Application Support/Code/agentPlugins/<marketplace-org-path>/plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh`
    - Workspace source: `<workspace-root>/plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh`
 
@@ -69,9 +93,11 @@ The initialization script performs ALL steps automatically. This is the recommen
 ```bash
 bash "<absolute-path-to-script>" "<project-name>" "<target-directory>"
 ```
-Launch with `isBackground: true`. Then poll `get_terminal_output` until you see `✅ Project created successfully!`.
+Launch with `isBackground: true`. Then poll `get_terminal_output` until
+you see `✅ Project created successfully!`.
 
-**Example** (path shown is illustrative — use `file_search` to obtain your actual path):
+**Example** (path shown is illustrative — use `file_search` to obtain
+your actual path):
 ```bash
 bash "~/Library/Application Support/Code/agentPlugins/<marketplace-org-path>/plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh" "my-chatbot-app" "/Users/username/projects"
 ```
@@ -80,13 +106,47 @@ bash "~/Library/Application Support/Code/agentPlugins/<marketplace-org-path>/plu
 1. Creates Vite project with React + TypeScript template
 2. Installs @lifesg/react-design-system and peer dependencies
 3. Creates directory structure (components/, pages/, providers/, utils/)
-4. Configures ThemeProvider wrapper for FDS
-5. Updates main.tsx with theme provider
-6. Creates initial App.tsx with FDS components
-7. Generates project README.md
 
-**After script completes** (confirmed via `get_terminal_output` showing `✅ Project created successfully!`), verify:
-- ✅ `npm run dev` starts without errors
+The script intentionally does NOT generate ThemeProvider, `main.tsx`,
+or `App.tsx`. You MUST create those files after the script completes
+— see **File Setup (Post-Script)** below.
+
+**After script completes** (confirmed via `get_terminal_output` showing
+`✅ Project created successfully!`), proceed to File Setup below.
+
+---
+
+### File Setup (Post-Script)
+
+After the script completes, you MUST create the following files. Use
+your knowledge of the installed FDS version to write correct imports
+— check the [FDS Storybook](https://react.designsystem.life.gov.sg/)
+or [FDS docs](https://designsystem.life.gov.sg/) if you are unsure of
+the current API.
+
+#### `src/providers/ThemeProvider.tsx`
+
+Create a ThemeProvider wrapper using the `ThemeProvider` export from
+`@lifesg/react-design-system/theme`. Wrap children in the FDS theme
+context.
+
+#### `src/main.tsx`
+
+Update the entry point to wrap `<App />` with your `ThemeProvider`.
+
+#### `src/App.tsx`
+
+Replace the default Vite App with a minimal FDS-styled layout using
+`Layout` and `Text` components from `@lifesg/react-design-system`.
+
+#### `README.md`
+
+Create a project README documenting the stack, `npm run dev`,
+`npm run build`, and links to the FDS documentation.
+
+**Verification**: After creating these files, run `npm run dev` in the
+project directory and confirm:
+- ✅ Dev server starts without errors
 - ✅ Browser shows FDS-styled content
 - ✅ No console errors related to styled-components or FDS
 
@@ -94,7 +154,10 @@ bash "~/Library/Application Support/Code/agentPlugins/<marketplace-org-path>/plu
 
 ### Manual Setup (Fallback)
 
-If the automated script cannot be located or fails, execute these steps manually:
+If the automated script cannot be located or fails, execute these steps
+manually. Steps 1-3 replace the script; steps 4-7 are the same file
+creation steps as the **File Setup (Post-Script)** section above and
+should use the current FDS API.
 
 #### Step 1: Create Vite Project
 
@@ -230,23 +293,29 @@ After project creation, verify:
 
 **Error: "Directory already exists"**
 - **Cause**: Project folder already present
-- **Solution**: Choose different project name, or delete existing folder, or proceed with existing project
+- **Solution**: Choose different project name, or delete existing
+  folder, or proceed with existing project
 
 **Error: npm create vite fails with network error**
 - **Cause**: npm registry connectivity issue
-- **Solution**: Check internet connection, verify npm registry access, or use manual setup steps
+- **Solution**: Check internet connection, verify npm registry access,
+  or use manual setup steps
 
 **Error: FDS installation fails**
 - **Cause**: Private registry access issue or version mismatch
-- **Solution**: Verify access to FDS package registry, check package.json for version conflicts
+- **Solution**: Verify access to FDS package registry, check
+  package.json for version conflicts
 
 **Error: Script exits mid-execution**
 - **Cause**: Partial failure (e.g., Vite created but FDS install failed)
-- **Solution**: Navigate to the project folder and complete remaining steps manually from Step 2 onward
+- **Solution**: Navigate to the project folder and complete remaining
+  steps manually from Step 2 onward
 
 **Error: Script not found (`file_search` returns no results)**
-- **Cause**: The skill is not installed in this environment, or the workspace structure does not match expected paths
-- **Solution**: Use the Manual Setup steps below — they replicate every step the script performs
+- **Cause**: The skill is not installed in this environment, or the
+  workspace structure does not match expected paths
+- **Solution**: Use the Manual Setup steps below — they replicate every
+  step the script performs
 
 ### Runtime Errors
 
@@ -323,9 +392,10 @@ After successful execution, report:
 
 ### `scripts/init-vite-react-project.sh`
 
-Automated project initialization script. Use `file_search` to locate the absolute path before running. Usage:
+Handles the slow, non-deterministic operations: `npm create vite`,
+`npm install`, and `mkdir`. Does NOT generate ThemeProvider or app
+files — those are created by Copilot in the File Setup step. Use
+`file_search` to locate the absolute path before running. Usage:
 ```bash
 bash "<absolute-path-to-script>" "<project-name>" "<target-directory>"
 ```
-
-See `scripts/` directory for implementation details.
