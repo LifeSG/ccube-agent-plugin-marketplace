@@ -62,6 +62,39 @@ The file types this repo authors and maintains:
 
 Follow these steps exactly when adding a new plugin to this marketplace.
 
+### Step 0 — Clarify requirements then explore (MANDATORY)
+
+You MUST complete two phases before creating any files.
+
+**Phase A — Gather requirements**: If the plugin name, purpose, or skill
+inventory has not been explicitly stated by the user, ask for them now.
+Confirm all of the following before proceeding:
+
+- Plugin name (lowercase, hyphen-separated)
+- One-sentence description of what the plugin does
+- List of skills to include: name and trigger condition for each
+- Whether the plugin needs instruction files or agents
+
+Do not invent requirements. Proceed to Phase B only after the user confirms.
+
+**Phase B — Explore existing structure**: You MUST read and understand the
+existing plugin layout before writing any files. This prevents deviation from
+established naming and front matter conventions.
+
+Execute these reads in order:
+
+1. Read `.github/plugin/marketplace.json` to understand the registry schema
+   and how existing plugins are registered.
+2. List the `plugins/` directory to see all existing plugin names and layouts.
+3. Pick the most complete existing plugin and read its full directory tree,
+   including at least one `SKILL.md`, one `.instructions.md`, and one
+   `.agent.md` if present.
+4. Note the naming patterns, front matter conventions, folder layout, and
+   `description` phrasing used in the existing plugin before writing a single
+   file for the new one.
+
+Only after completing all four reads should you proceed to Step 1.
+
 ### Step 1 — Create the plugin directory
 
 Create the directory `plugins/<plugin-name>/` at the repo root. Use a
@@ -76,11 +109,10 @@ For each always-on instruction the plugin enforces, create:
 plugins/<plugin-name>/instructions/<name>.instructions.md
 ```
 
-All files in the folder are automatically included. Register the folder in `marketplace.json`:
-
-```json
-"instructions": "./instructions"
-```
+All files in the folder are automatically included. The `"instructions"`
+field in this plugin's `marketplace.json` entry will be set to
+`"./instructions"`. Do not edit `marketplace.json` now — all registration
+is done in Step 6.
 
 ### Step 3 — Add agents (optional)
 
@@ -90,11 +122,24 @@ For each specialized agent the plugin provides, create:
 plugins/<plugin-name>/agents/<name>.agent.md
 ```
 
-All files in the folder are automatically included. Register the folder in `marketplace.json`:
+All files in the folder are automatically included. The `"agents"` field in
+this plugin's `marketplace.json` entry will be set to `"./agents"`. Do not
+edit `marketplace.json` now — all registration is done in Step 6.
 
-```json
-"agents": "./agents"
+### Step 3.5 — Add prompts (optional)
+
+Repo-wide slash-command prompts live at the **repo root** under `prompts/`,
+not inside a plugin directory:
+
 ```
+prompts/<name>.prompt.md
+```
+
+Prompt files are NOT registered in `marketplace.json`. Any `.prompt.md` file
+placed in `prompts/` is automatically available as a slash command across all
+plugins in this repo.
+
+See the Canonical Front Matter Templates section for required fields.
 
 ### Step 4 — Add skills
 
@@ -122,6 +167,10 @@ Create `plugins/<plugin-name>/README.md` that describes:
 - Optionally a `## Instructions` and `## Agents` section if the plugin
   includes those file types.
 
+Use the existing plugin's README as your structural reference. Read
+`plugins/ccube-fds-web-app-builder/README.md` to see the expected level of
+detail, tone, and section layout before writing.
+
 ### Step 6 — Register in marketplace.json
 
 Open `.github/plugin/marketplace.json` and append a new entry to the
@@ -141,12 +190,16 @@ Open `.github/plugin/marketplace.json` and append a new entry to the
 }
 ```
 
-- `"source"` MUST be a path relative to the repo root pointing to the plugin
-  directory.
-- All paths are relative to the plugin's `source` directory.
+- `"source"` is resolved from the **repository root by the marketplace
+  loader**, not relative to `marketplace.json` itself. The value MUST start
+  with `./` (e.g. `"./plugins/ccube-fds-web-app-builder"` is correct;
+  omitting `./` will break resolution).
+- All other paths (`"skills"`, `"instructions"`, `"agents"`) are relative to
+  the plugin's `"source"` directory.
 - `"instructions"` and `"agents"` point to their respective folders; all files
   within are automatically included.
 - Omit `"instructions"` or `"agents"` if the plugin has none.
+- New plugins MUST start at `"version": "1.0.0"`.
 - Increment `"version"` using semantic versioning when updating an existing
   plugin.
 
@@ -158,7 +211,9 @@ Before committing, verify:
 2. `plugins/<plugin-name>/README.md` exists and lists all skills (and any
    instructions or agents).
 3. The plugin entry is present in `.github/plugin/marketplace.json` with
-   correct `"source"`, `"skills"`, `"instructions"`, and `"agents"` paths.
+   correct paths, AND every subdirectory under `plugins/<plugin-name>/skills/`
+   has a corresponding entry in the `"skills"` array. An unregistered skill
+   folder will silently fail to load.
 4. All `SKILL.md` files pass the standard front matter and content checks
    listed in the [Acceptance Checks](#acceptance-checks-for-new-customization-files)
    section below.
@@ -253,9 +308,14 @@ on macOS vs Linux).
 ---
 name: 'Short Display Name'
 description: 'Use when: <specific trigger phrase>. Applies <what it enforces>.'
-applyTo: '**/*.tsx'
+applyTo: '**/*.tsx, **/*.jsx'
 ---
 ```
+
+The `**/*.tsx, **/*.jsx` pattern is appropriate for FDS instructions because
+FDS rules apply to all React component files regardless of directory depth.
+For instructions scoped to a specific folder, use a more specific pattern
+(e.g. `src/components/**/*.tsx`).
 
 ### `.prompt.md`
 
@@ -267,15 +327,25 @@ agent: agent
 ---
 ```
 
+The `agent` field is required. Choose the correct mode: `ask` (chat only, no
+file edits), `agent` (full agentic mode, can read and write files), or `plan`
+(shows a plan for user confirmation before acting). Default to `agent` for
+most FDS workflow prompts.
+
 ### `.agent.md`
 
 ```markdown
 ---
 name: 'Agent Name'
 description: 'Use when: <trigger>. Specializes in <domain>.'
-tools: [readFile, createFile, codebase]
 ---
 ```
+
+The `tools` field is optional. Omit it to allow all available tools, or
+declare a restricted list to scope the agent's capabilities and prevent
+unintended actions (e.g. `tools: [readFile, codebase]`). Common tool names:
+`readFile`, `createFile`, `editFile`, `codebase`, `search`, `runCommand`,
+`fetch`.
 
 ### `SKILL.md`
 
@@ -283,8 +353,17 @@ tools: [readFile, createFile, codebase]
 ---
 name: skill-name
 description: 'Use when: <trigger>. Provides <what the skill does>.'
+user-invokable: false
 ---
 ```
+
+Set `user-invokable: false` when the skill should only activate automatically
+via semantic matching and not appear in the skill picker list. Set `true` or
+omit to allow manual invocation.
+
+The `argument-hint` field is optional. Add it to display hint text in the
+chat input when the skill is invoked. Example:
+`argument-hint: 'Describe the component or page to build'`.
 
 <!-- </file-templates> -->
 
@@ -319,9 +398,12 @@ Before committing a new or updated customization file, verify:
 
 1. Front matter is valid YAML and all required fields are present.
 2. `description` contains concrete trigger phrases for reliable semantic
-   matching.
+   matching. A concrete trigger phrase names the user's stated goal or the
+   artefact being worked on. Good: `"Use when: user asks to scaffold a new
+   Vite + React project"`. Bad: `"Helps with React setup"` — too vague,
+   will not reliably match.
 3. Language is clear enough for users with varying technical backgrounds to
-   follow without external help.
+   follow without reference to external documentation during the task.
 4. FDS references point to official documentation links, not inline
    reproductions of docs.
 5. Scope is focused — one file, one concern.
