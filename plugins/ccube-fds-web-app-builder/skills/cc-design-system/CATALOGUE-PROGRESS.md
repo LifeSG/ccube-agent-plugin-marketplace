@@ -154,21 +154,22 @@ To initialise the Token Reference and Known FDS Gaps sections, run `Initialise D
 > Topics documented in `resources/foundations-tokens.md` and `resources/theme-setup.md`.
 > To add a section, run the `Add DS Foundation to Catalogue` prompt.
 
-| Topic                        | File                    | Status                      |
-| ---------------------------- | ----------------------- | --------------------------- |
-| Installation                 | `theme-setup.md`        | ✅                           |
-| Theme Presets & ThemeSpec    | `theme-setup.md`        | ✅                           |
-| DSThemeProvider              | `theme-setup.md`        | ✅                           |
-| Advanced Theme Customisation | `theme-setup.md`        | ⬜                           |
-| Dark Mode                    | `theme-setup.md`        | ⬜                           |
-| Colour tokens                | `foundations-tokens.md` | ✅                           |
-| Spacing tokens               | `foundations-tokens.md` | ✅                           |
-| Font tokens                  | `foundations-tokens.md` | ✅ (basic usage + overrides) |
-| Breakpoints / MediaQuery     | `foundations-tokens.md` | ⬜                           |
-| Shadow                       | `foundations-tokens.md` | ⬜                           |
-| Border Radius                | `foundations-tokens.md` | ⬜                           |
-| Z-index                      | `foundations-tokens.md` | ⬜                           |
-| Motion                       | `foundations-tokens.md` | ⬜                           |
+| Topic                        | File                    | Status                               |
+| ---------------------------- | ----------------------- | ------------------------------------ |
+| Installation                 | `theme-setup.md`        | ✅                                    |
+| Theme Presets & ThemeSpec    | `theme-setup.md`        | ✅                                    |
+| DSThemeProvider              | `theme-setup.md`        | ✅                                    |
+| Advanced Theme Customisation | `theme-setup.md`        | ⬜                                    |
+| Dark Mode                    | `theme-setup.md`        | ⬜                                    |
+| Colour tokens                | `foundations-tokens.md` | ✅ (semantic + primitive + overrides) |
+| Spacing tokens               | `foundations-tokens.md` | ✅                                    |
+| Font tokens                  | `foundations-tokens.md` | ✅ (basic usage + overrides)          |
+| Breakpoints / MediaQuery     | `foundations-tokens.md` | ✅                                    |
+| Shadow                       | `foundations-tokens.md` | ✅                                    |
+| Border                       | `foundations-tokens.md` | ✅                                    |
+| Border Radius                | `foundations-tokens.md` | ✅                                    |
+| Z-index                      | `foundations-tokens.md` | ⬜                                    |
+| Motion                       | `foundations-tokens.md` | ✅                                    |
 
 ---
 
