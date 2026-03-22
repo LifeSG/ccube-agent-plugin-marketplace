@@ -124,15 +124,11 @@ your knowledge of the installed FDS version to write correct imports
 or [FDS docs](https://designsystem.life.gov.sg/) if you are unsure of
 the current API.
 
-#### `src/providers/ThemeProvider.tsx`
+#### `src/providers/ThemeProvider.tsx` and `src/main.tsx`
 
-Create a ThemeProvider wrapper using the `ThemeProvider` export from
-`@lifesg/react-design-system/theme`. Wrap children in the FDS theme
-context.
-
-#### `src/main.tsx`
-
-Update the entry point to wrap `<App />` with your `ThemeProvider`.
+Read `resources/theme-setup.md` from the `cc-design-system` skill and
+follow **Installation Step 3** exactly — it creates both the wrapper
+file and updates `main.tsx` to import it.
 
 #### `src/App.tsx`
 
@@ -155,7 +151,7 @@ project directory and confirm:
 ### Manual Setup (Fallback)
 
 If the automated script cannot be located or fails, execute these steps
-manually. Steps 1-3 replace the script; steps 4-7 are the same file
+manually. Steps 1-3 replace the script; steps 4-6 are the same file
 creation steps as the **File Setup (Post-Script)** section above and
 should use the current FDS API.
 
@@ -181,43 +177,14 @@ npm install -D @types/styled-components
 mkdir -p src/components src/pages src/providers src/utils
 ```
 
-#### Step 4: Configure Theme Provider
+#### Step 4: Set up the theme provider and main entry point
 
-Create `src/providers/ThemeProvider.tsx`:
+Read `resources/theme-setup.md` from the `cc-design-system` skill and
+follow **Installation Step 3** exactly. Wire `DSThemeProvider` directly
+in `src/main.tsx` — no separate wrapper file is needed unless the
+project requires a runtime theme toggle.
 
-```typescript
-import { ThemeProvider as FDSThemeProvider } from '@lifesg/react-design-system/theme';
-import { ReactNode } from 'react';
-
-interface Props {
-  children: ReactNode;
-}
-
-export function ThemeProvider({ children }: Props) {
-  return <FDSThemeProvider>{children}</FDSThemeProvider>;
-}
-```
-
-#### Step 5: Update Main Entry Point
-
-Modify `src/main.tsx`:
-
-```typescript
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { ThemeProvider } from './providers/ThemeProvider';
-import App from './App';
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <ThemeProvider>
-      <App />
-    </ThemeProvider>
-  </React.StrictMode>
-);
-```
-
-#### Step 6: Create Initial App Structure
+#### Step 5: Create Initial App Structure
 
 Replace `src/App.tsx`:
 
@@ -239,7 +206,7 @@ function App() {
 export default App;
 ```
 
-#### Step 7: Add Project Documentation
+#### Step 6: Add Project Documentation
 
 Create `README.md`:
 
