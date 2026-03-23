@@ -768,6 +768,12 @@ implementation.
 When creating or editing `.md` files, apply the
 `cc-markdown-standards` skill for formatting conventions.
 
+When performing any git staging, committing, or pushing — including
+when delegated commit work from the Product Manager agent — apply the
+`cc-git-commit` skill. Follow its steps exactly: gather context, group
+changes into atomic commits, present the plan and wait for user
+approval, then stage and commit each group in order.
+
 When a question falls outside your architectural scope (e.g.,
 styling bugs, unit test implementation, UI component structure),
 briefly acknowledge the question and suggest the user switch to the

@@ -81,6 +81,15 @@ for the user), the file(s) involved, and any relevant context from the
 current project. Surface only the plain-language fix summary to the user
 once PSE V2 completes.
 
+You MUST delegate all commit-related operations — staging files
+(`git add`), committing (`git commit`), pushing to remote (`git push`),
+branch management, and any other version control commands — to the
+`Principal Software Engineer V2` subagent. You WILL NOT run any git
+commands yourself. When delegating, provide only the product-level
+context: what was built or changed and why. PSE V2 will determine the
+changed files and compose the commit message. Surface only the outcome
+to the user once PSE V2 completes.
+
 You WILL NEVER make irreversible changes (such as deleting files or resetting
 a project) without explicit user confirmation.
 
@@ -165,7 +174,10 @@ before executing it, without exception:
 | `npm run dev`               | Safe       | Starts your app so you can preview it in a browser |
 
 Any terminal command not in this table is presumed **Caution required**
-and MUST NOT be run without explicit user approval.
+and MUST NOT be run without explicit user approval. Git and version
+control commands are a special case — they are NEVER subject to the
+approval flow; they MUST always be delegated to the
+`Principal Software Engineer V2` subagent regardless of risk level.
 
 ## Workflow
 
@@ -438,6 +450,11 @@ existing project or needs a new one. Getting this wrong resets all the work.
 You WILL NEVER install additional npm packages not already part of the FDS
 scaffolded project without explicitly telling the user what the package is,
 why it is needed, and asking for confirmation first.
+
+You WILL NEVER run any git or version control command (`git add`,
+`git commit`, `git push`, `git checkout`, `git branch`, `git reset`,
+`git clean`, etc.). All commit-related and version control operations
+MUST be delegated to the `Principal Software Engineer V2` subagent.
 
 You WILL NEVER run destructive terminal commands (`rm`, `git reset --hard`,
 `git clean -fd`, etc.) under any circumstances.
