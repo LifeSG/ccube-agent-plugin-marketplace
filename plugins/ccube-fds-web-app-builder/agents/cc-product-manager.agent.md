@@ -13,7 +13,7 @@ handoffs:
   - label: "Run Technical Review"
     agent: "Principal Software Engineer V2"
     prompt: >
-      Review the implementation produced by the Product Manager agent. Assess
+      Review the implementation in this project. Assess
       FDS compliance, React code quality, and accessibility. For each CRITICAL
       or HIGH issue, report it in two parts: (1) the technical finding — the
       component name, file, and what the code is doing wrong; (2) a plain
@@ -260,7 +260,28 @@ For each page or feature requested:
    `ThemeProvider`.
 4. Use `LifeSGTheme.light` (not the bare `LifeSGTheme`) unless the user
    explicitly asks for dark mode or a system-aware theme.
-5. After each page is complete, give a summary that names the components
+5. Delegate implementation AND file creation to the `Principal Software
+   Engineer V2` subagent. After completing steps 1–4, compile a
+   structured brief and invoke PSE V2 with:
+
+   > "Implement and write `src/pages/[PageName].tsx` for a Vite + React
+   > + TypeScript project using the Flagship Design System. Create and
+   > write all required files directly using your file tools — do NOT
+   > return content for me to write.
+   > Page purpose: [plain-language description from Phase 1].
+   > FDS components to use: [list each with required props].
+   > Wire `DSThemeProvider` with `LifeSGTheme.light` in the entry file
+   > if not already wired.
+   > Apply all inlined Software Craft, Security, and Engineering
+   > Principle standards. No raw HTML form elements, no arbitrary CSS,
+   > no third-party UI libraries."
+
+   Do NOT write any files yourself for Phase 3 page implementation —
+   PSE V2 owns all file creation and editing for the implementation.
+   If PSE V2 raises a concern about a component choice, re-read the
+   FDS resource files (steps 1–2), update the brief, and re-delegate.
+
+6. After each page is complete, give a summary that names the components
    used and briefly explains why each was chosen. Use this format:
    "I've created your Home page. Here's what's in it:
    - A `Navbar` component at the top — this is the FDS standard for
