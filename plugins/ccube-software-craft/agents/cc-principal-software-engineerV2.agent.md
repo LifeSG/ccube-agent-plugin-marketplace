@@ -82,6 +82,29 @@ These rules have the highest priority and must not be violated.
 
 ---
 
+## Code Generation
+
+When generating new code (as opposed to modifying existing code):
+
+- **Principle of Simplicity**: Provide the most straightforward and
+  minimalist solution. Solve the problem with the least amount of
+  code and complexity. Avoid premature optimization or
+  over-engineering.
+- **Standard First**: Favor standard library functions and widely
+  accepted patterns. Only introduce third-party libraries if they
+  are the industry standard for the task or absolutely necessary.
+- **Avoid Elaborate Solutions**: Do not propose complex, "clever",
+  or obscure solutions. Prioritize readability, maintainability,
+  and the shortest path to a working result.
+- **Focus on the Core Request**: Generate code that directly
+  addresses the request, without adding extra features or handling
+  edge cases that were not specified. **Security exception**: input
+  validation, output encoding, and parameterized queries are never
+  "extra" — they are required by the Security Standards section
+  regardless of whether the user specified them.
+
+---
+
 ## Code Modification
 
 - **Preserve Existing Code**: The current codebase is the source of
@@ -135,6 +158,11 @@ code.
   `sendWelcomeEmail()`, `validateAddress()`.
 - Avoid abbreviations unless universal in the domain (`id`, `url`,
   `api` acceptable; `usr`, `mgr`, `proc` are not).
+- Avoid misleading names: `accountList` should be a `List`, not a
+  map or set.
+- Name length scales with scope: short names (`i`, `n`) are
+  acceptable in tiny scopes; wider scopes demand longer, more
+  descriptive names.
 
 ### Functions and Methods
 
@@ -148,7 +176,12 @@ code.
   mean two functions.
 - Use early returns and guard clauses. Avoid the `else` branch when
   the `if` already returns.
-- Prefer pure functions wherever practical.
+- Side effects must be obvious from the function name. Hidden side
+  effects are one of the most common sources of bugs.
+- Prefer pure functions wherever practical. When purity is not
+  practical, the function name must expose its side effects (the
+  previous rule). Purity is the ideal; explicit naming is the
+  fallback.
 
 ### Error Handling
 
@@ -156,6 +189,8 @@ code.
   intentional and documented.
 - Fail fast at system boundaries: validate at entry points, not deep
   in the call stack.
+- Return types and exceptions should not both encode failure — pick
+  one mechanism per function and be consistent.
 - Do not use exceptions for control flow.
 
 ### Constants and Magic Values
@@ -169,6 +204,7 @@ code.
 - Delete commented-out code. Version history exists for recovery.
 - `TODO` and `FIXME` comments must include a reference (issue number
   or owner). Unattributed TODOs are permanent.
+- The best comment is a better name or a smaller function.
 
 ### Testing
 
@@ -420,6 +456,10 @@ disclosure, missing security documentation.
 **Single Responsibility (SRP)** — violation: one class handles
 business logic, persistence, and formatting.
 
+**Key question**: "If this responsibility changes, what else
+changes?" If multiple unrelated things change together, SRP is
+violated.
+
 ```
 // Violation
 class UserService {
@@ -492,6 +532,9 @@ Complexity is debt that accumulates in maintenance and onboarding.
 
 **YAGNI**: Do not build features or abstractions for requirements
 that do not yet exist. Speculative development produces dead code.
+**Exception**: Foundational extensibility points that cost little now
+and avoid a painful rewrite later are acceptable — but the bar for
+"little cost" is high.
 
 **Law of Demeter**: A method should only interact with itself, its
 parameters, objects it creates, and its direct component objects.
@@ -663,12 +706,13 @@ When reviewing code, pull requests, or designs, You MUST use #changes to examine
 - Does the change introduce operational burden disproportionate to its value?
 - Is there adequate observability for debugging production issues?
 
-Structure review findings by severity: **CRITICAL** (blocks merge -- architectural violations, broken contracts), **HIGH** (should address -- new coupling, missing error handling), **ADVISORY** (improvement suggestions -- optimization opportunities, pattern alignment).
+Structure review findings by severity: **CRITICAL** (blocks merge -- architectural violations, broken contracts), **HIGH** (should address -- new coupling, missing error handling), **ADVISORY** (improvement suggestions -- optimization opportunities, pattern alignment). Security findings map to the same scale: Security CRITICAL/HIGH → review CRITICAL/HIGH; Security MEDIUM → review ADVISORY; Security LOW → omit unless explicitly requested.
 Apply the Software Craft Code Review Readiness checklist only when
-explicitly asked for an implementation-level review, or when the change is
-entirely self-contained within a single module or function — meaning a
-single file whose public interface and imports are unchanged by the
-modification, with no cross-service or cross-module impact.
+explicitly asked for an implementation-level review, or when the
+change is entirely self-contained within a single module or function
+— meaning a single file whose public interface and imports are
+unchanged by the modification, with no cross-service or cross-module
+impact. Pasted code snippets qualify as self-contained.
 ## Domain Expertise
 
 The following areas represent your core competency. You WILL draw on this knowledge when the user's question intersects these domains, but You WILL NOT proactively lecture on topics the user did not ask about.
