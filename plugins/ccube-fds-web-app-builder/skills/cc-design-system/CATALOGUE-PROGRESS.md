@@ -35,7 +35,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Divider            | `divider`                                                      | ✅      |
 | Markup             | `markup`                                                       | ✅      |
 | TextList           | `text-list`                                                    | ✅      |
-| ErrorDisplay       | `error-display`                                                | ⬜      |
+| ErrorDisplay       | `error-display`                                                | ✅      |
 
 ## Content
 
@@ -46,7 +46,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Accordion               | `accordion`                 | ✅      |
 | Table                   | `table`                     | ✅      |
 | DataTable               | `data-table`                | ✅      |
-| UneditableSection       | `uneditable-section`        | ⬜      |
+| UneditableSection       | `uneditable-section`        | ✅      |
 | BoxContainer            | `box-container`             | ⬜      |
 | FullscreenImageCarousel | `fullscreen-image-carousel` | ⬜      |
 
@@ -57,7 +57,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Breadcrumb | `breadcrumb` | ✅      |
 | Navbar     | `navbar`     | ✅      |
 | Pagination | `pagination` | ✅      |
-| Footer     | `footer`     | ⬜      |
+| Footer     | `footer`     | ✅      |
 | Masthead   | `masthead`   | ⬜      |
 | Sidenav    | `sidenav`    | ⬜      |
 | LocalNav   | `local-nav`  | ⬜      |
@@ -74,7 +74,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Toggle                             | toggle                | ✅      |
 | Calendar (date picker)             | `calendar`            | ✅      |
 | FileUpload                         | `file-upload`         | ✅      |
-| FileDownload                       | `file-download`       | ⬜      |
+| FileDownload                       | `file-download`       | ✅      |
 | OtpInput                           | `otp-input`           | ⬜      |
 | SingpassButton                     | `singpass-button`     | ⬜      |
 | IconButton                         | `icon-button`         | ⬜      |
@@ -98,7 +98,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Toast                                                              | `toast`               | ✅      |
 | Tag                                                                | `tag`                 | ✅      |
 | Badge                                                              | `badge`               | ✅      |
-| ProgressIndicator                                                  | `progress-indicator`  | ⬜      |
+| ProgressIndicator                                                  | `progress-indicator`  | ✅      |
 | NotificationBanner                                                 | `notification-banner` | ⬜      |
 | Timeline                                                           | `timeline`            | ⬜      |
 | Pill                                                               | `pill`                | ⬜      |
@@ -115,7 +115,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Modal         | `modal`      | ✅      |
 | Menu          | `menu`       | ✅      |
 | Drawer        | `drawer`     | ✅      |
-| PopoverV2     | `popover-v2` | ⬜      |
+| PopoverV2     | `popover-v2` | ✅      |
 | PopoverInline | `popover-v2` | ⬜      |
 | Overlay       | `overlay`    | ⬜      |
 
@@ -128,7 +128,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Form.Select (InputSelect)                       | `input-select`              | ✅      |
 | Form.Textarea (InputTextarea)                   | `input-textarea`            | ✅      |
 | Form.Label                                      | `form`                      | ✅      |
-| Form.DateInput                                  | `date-input`                | ⬜      |
+| Form.DateInput                                  | `date-input`                | ✅      |
 | Form.MultiSelect (InputMultiSelect)             | `input-multi-select`        | ⬜      |
 | Form.PhoneNumberInput                           | `phone-number-input`        | ⬜      |
 | Form.MaskedInput (MaskedInput)                  | `masked-input`              | ⬜      |
@@ -187,7 +187,7 @@ https://designsystem.life.gov.sg/react/index.html
 
 ---
 
-**Progress**: 33 / 90 components documented (3 deprecated excluded from count)
+**Progress**: 34 / 90 components documented (3 deprecated excluded from count)
 
 > New sub-components confirmed via Storybook full expansion:
 > `Layout.ColDiv`, `Filter.Addons`, `Animations.Customisable`.

@@ -85,6 +85,91 @@ import { Divider } from "@lifesg/react-design-system/divider";
 
 ---
 
+### ErrorDisplay
+
+**Import**: `import { ErrorDisplay } from "@lifesg/react-design-system/error-display"`
+
+**Category**: Core
+
+**Decision rule**
+> Use `ErrorDisplay` whenever a page-level, full-screen error or critical
+> application state must replace normal page content — it is the only FDS
+> component for rendering full-screen HTTP error, maintenance, session
+> inactivity, and payment-status pages.
+
+**When to use**
+- Full-page HTTP error states (400, 403, 404, 408, 500, 502–504) that replace
+  normal page content.
+- Application-level blocking states: service maintenance, session inactivity
+  countdown, payment or transfer failure, logout, or confirmation screens.
+
+**When NOT to use**
+| Situation                                                     | Use instead                 |
+| ------------------------------------------------------------- | --------------------------- |
+| Inline form field validation error                            | `Form.Input` (`error` prop) |
+| Transient status notification (success, warning, error, info) | `Alert` or `Toast`          |
+| Blocking confirmation dialog overlaying the current page      | `ModalV2`                   |
+
+**Key props**
+| Prop               | Type                                                                | Required | Notes                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------ | ------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| type               | `ErrorDisplayType`                                                  | yes      | Selects the built-in layout and illustration. Values: `"400"` `"403"` `"404"` `"408"` `"500"` `"502"` `"503"` `"504"` `"confirmation"` `"inactivity"` `"insufficient-credits"` `"link-error"` `"logout"` `"maintenance"` `"no-item-found"` `"payment-unsuccessful"` `"transfer-unsuccessful"` `"unsupported-browser"` `"partially-supported-browser"` `"warning"`. |
+| actionButton       | `ButtonProps`                                                       | no       | Renders a CTA button below the error content; default `children` is `"Proceed"`.                                                                                                                                                                                                                                                                                   |
+| additionalProps    | `MaintenanceAdditionalAttributes \| InactivityAdditionalAttributes` | no       | Required when `type="maintenance"` — pass `{ dateString: string }`. Required when `type="inactivity"` — pass `{ secondsLeft: number }`. Optional `reminderInterval` (seconds) controls screen-reader announcement frequency for `"inactivity"`.                                                                                                                    |
+| description        | `string \| JSX.Element`                                             | no       | Overrides the built-in description text for any `type`.                                                                                                                                                                                                                                                                                                            |
+| illustrationScheme | `"base" \| "bookingsg" \| "rbs"`                                    | no       | Replaces the default theme illustration with a resource-scheme-specific one.                                                                                                                                                                                                                                                                                       |
+| imageOnly          | `boolean`                                                           | no       | Renders only the illustration; hides title and description.                                                                                                                                                                                                                                                                                                        |
+| img                | `React.ImgHTMLAttributes<HTMLImageElement>`                         | no       | Custom image attributes to replace the default illustration entirely.                                                                                                                                                                                                                                                                                              |
+| title              | `string \| JSX.Element`                                             | no       | Overrides the built-in title text for any `type`.                                                                                                                                                                                                                                                                                                                  |
+
+**Canonical usage**
+```tsx
+// Standard 404 page with a navigation action
+import { ErrorDisplay } from "@lifesg/react-design-system/error-display";
+
+<ErrorDisplay
+  type="404"
+  actionButton={{ children: "Go to homepage", onClick: () => navigate("/") }}
+/>
+
+// Inactivity countdown (user has 5 minutes before auto-logout)
+<ErrorDisplay
+  type="inactivity"
+  additionalProps={{ secondsLeft: 300 }}
+  actionButton={{ children: "Stay logged in", onClick: handleStayLoggedIn }}
+/>
+
+// Scheduled maintenance page
+<ErrorDisplay
+  type="maintenance"
+  additionalProps={{ dateString: "1 January 2025, 8:00am" }}
+/>
+
+// Custom title / description override for a warning page
+<ErrorDisplay
+  type="warning"
+  title="Access restricted"
+  description="You do not have permission to view this page."
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern               | Map to         | Condition                                                                |
+| ------------------------------------------- | -------------- | ------------------------------------------------------------------------ |
+| Error / 404 full-page frame                 | `ErrorDisplay` | Set `type="404"`                                                         |
+| Full-page maintenance / downtime screen     | `ErrorDisplay` | Set `type="maintenance"`; pass `additionalProps={{ dateString: "..." }}` |
+| Session timeout / inactivity warning screen | `ErrorDisplay` | Set `type="inactivity"`; pass `additionalProps={{ secondsLeft: n }}`     |
+
+**Known limitations**
+- Only `"maintenance"` and `"inactivity"` types accept structured
+  `additionalProps`; dynamic text for other types must use `title` and
+  `description` overrides.
+- Style overrides require wrapping in `styled-components` and targeting
+  `data-id` attributes: `"error-display-image"`, `"error-display-title"`,
+  `"error-display-description"`.
+
+---
+
 ### Icon
 
 **Import**: `import { BookmarkIcon } from "@lifesg/react-icons/bookmark"` *(or

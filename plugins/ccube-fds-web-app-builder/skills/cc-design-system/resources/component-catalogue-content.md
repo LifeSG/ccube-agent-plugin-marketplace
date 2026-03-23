@@ -393,3 +393,101 @@ import { Table } from "@lifesg/react-design-system/table";
 **Known limitations**
 - No built-in sorting, selection, empty state, or loading UI.
 - Consumers must implement sticky headers, pagination, and row actions.
+
+---
+
+### UneditableSection
+
+**Import**:
+`import { UneditableSection } from "@lifesg/react-design-system/uneditable-section"`
+
+**Category**: Content
+
+**Decision rule**
+> Use `UneditableSection` when the Figma frame shows a read-only labelled
+> field block (e.g., pre-filled personal information) — if the fields are
+> editable, use `Form.*` components instead.
+
+**When to use**
+- Displaying pre-populated, read-only user data such as personal details
+  retrieved from a government identity source (name, NRIC, address, DOB).
+- Review or confirmation steps where values are presented for the user to
+  verify but cannot be changed on that page.
+
+**When NOT to use**
+| Situation                                             | Use instead                                                                     |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------- |
+| User must edit the displayed values                   | `Form.Input`, `Form.Select` etc. from `@lifesg/react-design-system/form`        |
+| Structured data with column headers and multiple rows | `Table` or `DataTable` from `@lifesg/react-design-system/table` or `data-table` |
+
+**Key props (UneditableSection)**
+| Prop          | Type                           | Required | Notes                                                                                             |
+| ------------- | ------------------------------ | -------- | ------------------------------------------------------------------------------------------------- |
+| items         | `UneditableSectionItemProps[]` | no       | Pre-built item rendering via label/value pairs; omit when composing from scratch with `children`. |
+| title         | `string`                       | no       | Section heading rendered as `Text.H3`.                                                            |
+| description   | `string`                       | no       | Subtitle rendered as `Text.Body` below the title.                                                 |
+| background    | `boolean`                      | no       | `true` (default) shows a grey background; `false` renders transparent.                            |
+| stretch       | `boolean`                      | no       | Full-width layout with fixed padding, ignoring masthead alignment.                                |
+| fullWidth     | `boolean`                      | no       | Removes default `Layout.Content` spacing; use inside a custom container.                          |
+| topSection    | `JSX.Element`                  | no       | Custom slot rendered above the item list (e.g., a "Pull latest" link).                            |
+| bottomSection | `JSX.Element`                  | no       | Custom slot rendered below the item list (e.g., a disclaimer).                                    |
+| children      | `JSX.Element \| JSX.Element[]` | no       | Full custom composition via `UneditableSection.ItemSection` and `.Item`.                          |
+
+**Key props (UneditableSectionItemProps)**
+| Prop              | Type                        | Required | Notes                                                              |
+| ----------------- | --------------------------- | -------- | ------------------------------------------------------------------ |
+| label             | `string`                    | yes      | Field label text.                                                  |
+| value             | `string \| React.ReactNode` | yes      | Displayed value; masking is only available for string values.      |
+| displayWidth      | `"half" \| "full"`          | no       | Column span within the section grid; defaults to `"full"`.         |
+| maskState         | `"masked" \| "unmasked"`    | no       | Shows mask/unmask toggle icon; if `undefined`, no controls render. |
+| maskLoadingState  | `"loading" \| "fail"`       | no       | State during async mask/unmask; shows spinner or error with retry. |
+| maskChar          | `string`                    | no       | Character substituted for masked characters; defaults to `•`.      |
+| maskRange         | `number[]`                  | no       | `[startIndex, endIndex]` range of characters to mask.              |
+| unmaskRange       | `number[]`                  | no       | `[startIndex, endIndex]` range of characters to keep visible.      |
+| maskRegex         | `RegExp`                    | no       | Regex whose matches are replaced with `maskChar`.                  |
+| maskTransformer   | `(value: string) => string` | no       | Custom function that produces the masked string.                   |
+| disableMaskUnmask | `boolean`                   | no       | Silently masks/unmasks with no user-facing toggle indicator.       |
+| alert             | `AlertProps`                | no       | Renders an `Alert` below this item.                                |
+
+**Canonical usage**
+```tsx
+// Pre-filled personal info section with a masked NRIC field
+import { UneditableSection } from "@lifesg/react-design-system/uneditable-section";
+
+<UneditableSection
+  title="Your personal information"
+  description="Retrieved from MyInfo"
+  items={[
+    { label: "Full name", value: "Tom Tan Li Ho" },
+    {
+      label: "NRIC / FIN",
+      value: "S1234567D",
+      maskState: "masked",
+      maskRange: [1, 5],
+    },
+    { label: "Date of birth", value: "6 November 1992" },
+    {
+      label: "Residential address",
+      value: "Block 287, #05-11, Tampines Street 22",
+      displayWidth: "full",
+    },
+  ]}
+  onUnmask={(item) => handleUnmask(item)}
+  onMask={(item) => handleMask(item)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                                  | Map to                   | Condition                                                          |
+| -------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------ |
+| Read-only data section / pre-filled personal info block        | `UneditableSection`      | Grey-background section with label-value field rows                |
+| Individual label-value field row in a read-only section        | `UneditableSection.Item` | One per field; pass through the `items` array                      |
+| Masked / partially hidden sensitive value with eye-icon toggle | `UneditableSection.Item` | Set `maskState` and masking props (`maskRange`, `maskRegex`, etc.) |
+| Transparent read-only section (no background)                  | `UneditableSection`      | Set `background={false}`                                           |
+
+**Composition patterns**
+- Use `topSection` and `bottomSection` to slot in `Button` or `Alert`
+  components around the item list without losing the section structure.
+- Compose from scratch with `UneditableSection.ItemSection` and
+  `UneditableSection.Item` when items need custom children (e.g., a list
+  or icon) rather than a plain string value.

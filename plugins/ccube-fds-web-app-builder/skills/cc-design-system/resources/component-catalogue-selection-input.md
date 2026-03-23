@@ -231,6 +231,121 @@ import { Checkbox } from "@lifesg/react-design-system/checkbox";
 
 ---
 
+### FileDownload
+
+**Import**: `import { FileDownload } from "@lifesg/react-design-system/file-download"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `FileDownload` when the Figma frame shows a list of files the user
+> should **download** — use `FileUpload` when the user needs to supply files
+> to the application.
+
+**When to use**
+- A panel that lists one or more downloadable files (attachments, generated
+  reports, exported documents).
+- Scenarios where a file requires server-side generation before it becomes
+  available — use the `ready` flag on each item to block the download until
+  the file is ready.
+
+**When NOT to use**
+| Situation                                           | Use instead                                                 |
+| --------------------------------------------------- | ----------------------------------------------------------- |
+| User needs to select and upload files to the server | `FileUpload` from `@lifesg/react-design-system/file-upload` |
+
+**Key props**
+
+*`FileDownloadProps`*
+| Prop        | Type                                                     | Required | Notes                                                                                    |
+| ----------- | -------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------- |
+| fileItems   | `FileItemDownloadProps[]`                                | yes      | Array of file items to display; each item requires `id`, `name`, `mimeType`, `filePath`. |
+| onDownload  | `(file: FileItemDownloadProps) => void \| Promise<void>` | yes      | Called when a file row is clicked — perform the fetch/save logic here.                   |
+| title       | `string \| JSX.Element`                                  | no       | Heading above the file list. Supports bold, links, and list markup.                      |
+| description | `string \| JSX.Element`                                  | no       | Supporting text below the title. Accepts the same markup as `title`.                     |
+| styleType   | `"bordered" \| "no-border"`                              | no       | Outer container border variant. Defaults to `"bordered"`.                                |
+| id          | `string`                                                 | no       | Unique identifier on the root element.                                                   |
+| data-testid | `string`                                                 | no       | Test selector on the root element.                                                       |
+
+*`FileItemDownloadProps`*
+| Prop                  | Type                        | Required | Notes                                                                                         |
+| --------------------- | --------------------------- | -------- | --------------------------------------------------------------------------------------------- |
+| id                    | `string`                    | yes      | Unique identifier for this file entry.                                                        |
+| name                  | `string`                    | yes      | Display file name including extension, e.g. `"report.pdf"`.                                   |
+| mimeType              | `string`                    | yes      | MIME type, e.g. `"application/pdf"` or `"image/jpeg"`.                                        |
+| filePath              | `string`                    | yes      | Remote URL passed to `onDownload` as `file.filePath`.                                         |
+| size                  | `number`                    | no       | File size in bytes; rendered as a human-readable label next to the name.                      |
+| ready                 | `boolean`                   | no       | Whether the file is available for download. Defaults to `true`; set `false` while generating. |
+| errorMessage          | `string \| React.ReactNode` | no       | Custom message to show when the download fails.                                               |
+| thumbnailImageDataUrl | `string`                    | no       | Base64 or URL thumbnail displayed alongside the file entry.                                   |
+| truncateText          | `boolean`                   | no       | Truncates long file names. Defaults to `true`.                                                |
+
+**Canonical usage**
+```tsx
+// Bordered file download panel (default)
+import { FileDownload } from "@lifesg/react-design-system/file-download";
+
+<FileDownload
+  title="Downloads"
+  description="Click a file to save it to your device."
+  fileItems={[
+    {
+      id: "file-1",
+      name: "report.pdf",
+      mimeType: "application/pdf",
+      size: 149504,
+      filePath: "https://example.com/files/report.pdf",
+    },
+    {
+      id: "file-2",
+      name: "summary.txt",
+      mimeType: "text/plain",
+      size: 1024,
+      filePath: "https://example.com/files/summary.txt",
+    },
+  ]}
+  onDownload={async (file) => {
+    const res = await fetch(file.filePath);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = file.name;
+    a.click();
+    URL.revokeObjectURL(url);
+  }}
+/>
+
+// File not yet ready — blocked until server-side generation completes
+<FileDownload
+  title="Generated report"
+  fileItems={[
+    {
+      id: "gen-1",
+      name: "export.pdf",
+      mimeType: "application/pdf",
+      filePath: "/api/exports/gen-1",
+      ready: isReady,
+    },
+  ]}
+  onDownload={handleDownload}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                | Map to         | Condition                                       |
+| -------------------------------------------- | -------------- | ----------------------------------------------- |
+| Downloadable file list / attachment panel    | `FileDownload` | Pass `fileItems` array and `onDownload` handler |
+| Borderless downloadable file attachment area | `FileDownload` | Set `styleType="no-border"`                     |
+| File item in generating / not-ready state    | `FileDownload` | Set `ready={false}` on `FileItemDownloadProps`  |
+
+**Composition patterns**
+- Pair with `FileUpload` from `@lifesg/react-design-system/file-upload` in
+  upload-then-download workflows — show `FileUpload` for the input step and
+  `FileDownload` to present the processed result for retrieval.
+
+---
+
 ### RadioButton
 
 **Import**:

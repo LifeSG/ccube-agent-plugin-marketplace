@@ -74,6 +74,85 @@ import { Breadcrumb } from "@lifesg/react-design-system/breadcrumb";
 
 ---
 
+### Footer
+
+**Import**: `import { Footer } from "@lifesg/react-design-system/footer"`
+
+**Category**: Navigation
+
+**Decision rule**
+> Use `Footer` for the mandatory site-wide bottom section with directory
+> links, disclaimer links, and copyright information; use `Navbar` for all
+> top-of-page primary navigation.
+
+**When to use**
+- Full-page layouts requiring directory navigation, mandated disclaimer
+  links (Privacy Statement, Terms of Use, Report Vulnerability), and
+  copyright information at the bottom of the page.
+- Dedicated app pages where only the minimal, disclaimer-links-only version
+  is needed (omit `links`, `showDownloadAddon`, and `showResourceAddon`).
+
+**When NOT to use**
+| Situation                                         | Use instead |
+| ------------------------------------------------- | ----------- |
+| Primary navigation bar at the top of every page   | `Navbar`    |
+| Section-level vertical navigation in a side panel | `Sidenav`   |
+
+**Key props**
+| Prop              | Type                           | Required | Notes                                                                                                                                   |
+| ----------------- | ------------------------------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| links             | `FooterLinkProps<T>[][]`       | no       | Multi-array of link objects; each inner array renders as a separate column in the footer.                                               |
+| disclaimerLinks   | `DisclaimerLinks`              | no       | Override `href`, `rel`, or `external` on the three mandated links (`privacy`, `termsOfUse`, `reportVulnerability`). Link text is fixed. |
+| lastUpdated       | `Date`                         | no       | Last updated date shown in the footer bottom. Ignored when `copyrightInfo` is set.                                                      |
+| copyrightInfo     | `string`                       | no       | Replaces the auto-generated copyright line; setting this makes `lastUpdated` irrelevant.                                                |
+| logoSrc           | `string`                       | no       | Custom logo image source. Defaults to the active theme service logo.                                                                    |
+| hideLogo          | `boolean`                      | no       | Hides the logo and aligns links to the leftmost position.                                                                               |
+| layout            | `"default" \| "stretch"`       | no       | `"stretch"` expands footer content to full width, ignoring masthead alignment. Default: `"default"`.                                    |
+| showDownloadAddon | `boolean`                      | no       | Shows App Store / Google Play download buttons in the footer.                                                                           |
+| showResourceAddon | `boolean`                      | no       | Shows theme-specific resource content in the right section. `showDownloadAddon` takes precedence if both are `true`.                    |
+| children          | `JSX.Element \| JSX.Element[]` | no       | Custom content for the top section, overriding the default logo, links, and download section.                                           |
+
+**Canonical usage**
+```tsx
+// Standard site footer with directory link columns and default disclaimer links
+import { Footer } from "@lifesg/react-design-system/footer";
+
+<Footer
+  links={[
+    [
+      { children: "Home", href: "/" },
+      { children: "Services", href: "/services" },
+    ],
+    [
+      { children: "About us", href: "/about" },
+      { children: "Contact", href: "/contact" },
+    ],
+  ]}
+  lastUpdated={new Date()}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                           | Map to   | Condition                                                     |
+| ------------------------------------------------------- | -------- | ------------------------------------------------------------- |
+| Footer — minimal, disclaimer links only                 | `Footer` | Omit `links`; disclaimer links are always rendered by default |
+| Footer with App Store / Google Play download badges     | `Footer` | Set `showDownloadAddon={true}`                                |
+| Footer with full-width stretched layout                 | `Footer` | Set `layout="stretch"` to ignore masthead width constraint    |
+| Site footer with logo, link columns, and disclaimer bar | `Footer` | Full-width bottom section with directory and legal links      |
+
+**Composition patterns**
+- Pair with `Navbar` at page level: `Navbar` at the top, `Footer` at the
+  bottom, with `Layout.Container` wrapping the page body between them.
+
+**Known limitations**
+- Disclaimer link text (Privacy Statement, Terms of Use, Report
+  Vulnerability) is fixed and cannot be customised; only `href`, `rel`, and
+  `external` attributes are overridable via `disclaimerLinks`.
+- `showResourceAddon` content is theme-specific (e.g., MyLegacy agency
+  logos); it is not configurable via props beyond toggling visibility.
+
+---
+
 ### Navbar
 
 **Import**: `import { Navbar } from "@lifesg/react-design-system/navbar"`

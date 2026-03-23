@@ -78,6 +78,83 @@ import { Input } from "@lifesg/react-design-system/input";
 
 ---
 
+### Form.DateInput
+
+**Import**:
+`import { DateInput } from "@lifesg/react-design-system/date-input"` *(or via
+`Form.DateInput` from `@lifesg/react-design-system/form`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.DateInput` when the Figma frame shows a single date picker field
+> that opens a calendar dropdown — use `Form.DateRangeInput` when both a
+> start date and an end date are required.
+
+**When to use**
+- Any labelled form field that collects a single calendar date from the user.
+- When the design shows a day / month / year segmented input with a calendar
+  pop-up on interaction.
+
+**When NOT to use**
+| Situation                                      | Use instead                                                               |
+| ---------------------------------------------- | ------------------------------------------------------------------------- |
+| User must provide a start date AND an end date | `Form.DateRangeInput` from `@lifesg/react-design-system/date-range-input` |
+| Always-visible calendar panel (no text input)  | `Calendar` from `@lifesg/react-design-system/calendar`                    |
+
+**Key props**
+| Prop                   | Type                          | Required | Notes                                                                                           |
+| ---------------------- | ----------------------------- | -------- | ----------------------------------------------------------------------------------------------- |
+| label                  | `string` \| `FormLabelProps`  | no       | Label above the field. Pass `FormLabelProps` to add a tooltip/popover addon.                    |
+| errorMessage           | `string` \| `React.ReactNode` | no       | Error text shown below the field; also triggers red border styling.                             |
+| value                  | `string`                      | no       | Controlled date in `"YYYY-MM-DD"` format.                                                       |
+| minDate                | `string`                      | no       | Earliest selectable date in `"YYYY-MM-DD"` format (inclusive).                                  |
+| maxDate                | `string`                      | no       | Latest selectable date in `"YYYY-MM-DD"` format (inclusive).                                    |
+| disabledDates          | `string[]`                    | no       | Specific dates to grey out, each in `"YYYY-MM-DD"` format.                                      |
+| allowDisabledSelection | `boolean`                     | no       | When `true`, visually disabled dates remain selectable.                                         |
+| withButton             | `boolean`                     | no       | Shows "Done" and "Cancel" buttons in the dropdown. Defaults to `true`; always `true` on mobile. |
+| disabled               | `boolean`                     | no       | Disables the field entirely.                                                                    |
+| readOnly               | `boolean`                     | no       | Shows the value without allowing changes.                                                       |
+| error                  | `boolean`                     | no       | Applies error styling when `errorMessage` is not set.                                           |
+| hideInputKeyboard      | `boolean`                     | no       | Hides the software keyboard on field focus (useful on touch devices).                           |
+| zIndex                 | `number`                      | no       | Custom z-index for the calendar dropdown (default `50`). Set when z-index conflicts occur.      |
+| dropdownRootNode       | `RefObject<HTMLElement>`      | no       | Override mount point for the dropdown (default `document.body`); use to share scroll context.   |
+| data-testid            | `string`                      | no       | Test selector on the input element.                                                             |
+| data-error-testid      | `string`                      | no       | Test selector on the error message element.                                                     |
+
+**Canonical usage**
+```tsx
+// Labelled date field with date range constraint and error message
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.DateInput
+  label="Date of birth"
+  value={value}
+  minDate="1900-01-01"
+  maxDate="2024-12-31"
+  errorMessage={errors.dob}
+  onChange={(date) => setValue(date)}
+  data-testid="dob-input"
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                | Map to           | Condition                                                                    |
+| -------------------------------------------- | ---------------- | ---------------------------------------------------------------------------- |
+| Date picker / date input field (single date) | `Form.DateInput` | Field has a label and opens a calendar dropdown; use via the `Form` wrapper. |
+| Date input (standalone, no label)            | `DateInput`      | Use standalone import from `date-input` without the `Form` wrapper.          |
+| Date field with restricted date range        | `Form.DateInput` | Set `minDate` and/or `maxDate` to match the design constraints.              |
+| Date field with blackout / unavailable dates | `Form.DateInput` | Pass `disabledDates` array with each entry in `"YYYY-MM-DD"` format.         |
+
+**Composition patterns**
+- When the dropdown renders inside a scrollable container, pass
+  `dropdownRootNode` pointing to that container to prevent scroll-behind
+  clipping.
+- Pair with a `zIndex` override if rendered inside `Modal` or `Overlay` and
+  the default z-index auto-adjustment is insufficient.
+
+---
+
 ### Form.Input
 
 **Import**:

@@ -148,6 +148,73 @@ import { Badge } from "@lifesg/react-design-system/badge";
 
 ---
 
+### ProgressIndicator
+
+**Import**: `import { ProgressIndicator } from "@lifesg/react-design-system/progress-indicator"`
+
+**Category**: Feedback indicators
+
+**Decision rule**
+> Use `ProgressIndicator` when the Figma frame shows a horizontal multi-step
+> process indicator with labelled steps — use `Timeline` for vertical
+> chronological event sequences or history logs.
+
+**When to use**
+- Multi-step form wizards or application flows where the user needs to see
+  their current position and total step count at a glance.
+- Onboarding flows or checkout processes with a fixed number of sequential,
+  named steps.
+
+**When NOT to use**
+| Situation                                                     | Use instead                                                |
+| ------------------------------------------------------------- | ---------------------------------------------------------- |
+| Vertical list of past or future events in chronological order | `Timeline` from `@lifesg/react-design-system/timeline`     |
+| Animated loading / spinner state with no discrete steps       | `Animations` from `@lifesg/react-design-system/animations` |
+
+**Key props**
+| Prop             | Type                  | Required | Notes                                                                                                  |
+| ---------------- | --------------------- | -------- | ------------------------------------------------------------------------------------------------------ |
+| steps            | `T[]`                 | yes      | Array of step items; may be plain strings or objects.                                                  |
+| currentIndex     | `number`              | yes      | 0-based index of the currently active step.                                                            |
+| displayExtractor | `(item: T) => string` | no       | Derives the display label from each step item; required when `steps` holds objects instead of strings. |
+| id               | `string`              | no       | Unique DOM id for the component.                                                                       |
+| data-testid      | `string`              | no       | Test selector.                                                                                         |
+
+**Canonical usage**
+```tsx
+// String steps — displayExtractor not needed
+import { ProgressIndicator } from "@lifesg/react-design-system/progress-indicator";
+
+const steps = ["Application", "Review", "Decision", "Completion"];
+
+<ProgressIndicator steps={steps} currentIndex={1} />
+
+// Object steps — provide displayExtractor
+const objectSteps = [
+  { id: 1, label: "Application" },
+  { id: 2, label: "Review" },
+  { id: 3, label: "Decision" },
+];
+
+<ProgressIndicator
+  steps={objectSteps}
+  currentIndex={0}
+  displayExtractor={(item) => item.label}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                | Map to              | Condition                                                                      |
+| -------------------------------------------- | ------------------- | ------------------------------------------------------------------------------ |
+| Multi-step wizard form progress              | `ProgressIndicator` | Horizontal numbered step chain; set `currentIndex` to the 0-based active step  |
+| Step indicator / progress steps (horizontal) | `ProgressIndicator` | Any horizontal labelled step nav showing current position in a multi-step flow |
+
+**Known limitations**
+- The deprecated `fadeColor` and `fadePosition` props have no visual effect
+  and will be removed in v3.0.0; do not use them.
+
+---
+
 ### Tag
 
 **Import**: `import { Tag } from "@lifesg/react-design-system/tag"`

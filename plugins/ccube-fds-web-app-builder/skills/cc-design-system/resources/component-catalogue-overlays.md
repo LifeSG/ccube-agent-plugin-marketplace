@@ -325,3 +325,92 @@ import { Button } from "@lifesg/react-design-system/button";
 **Known limitations**
 - `ModalV2.Card` has no built-in title/header slot — add a heading element
   manually at the top of `ModalV2.Content`.
+
+---
+
+### PopoverV2
+
+**Import**:
+`import { PopoverV2, PopoverTrigger } from "@lifesg/react-design-system/popover-v2"`
+
+**Category**: Overlays
+
+**Decision rule**
+> Use `PopoverTrigger` when a Figma element shows a floating info bubble or
+> rich tooltip anchored to a specific trigger — not a full dropdown menu or
+> inline underline trigger.
+
+**When to use**
+- Contextual information panels or rich tooltips that appear on click or
+  hover of a button, icon, or interactive element.
+- Floating UI (e.g. detail card, mini-form supplement) that is spatially
+  anchored to a trigger and dismissed on outside interaction.
+
+**When NOT to use**
+| Situation                                               | Use instead     |
+| ------------------------------------------------------- | --------------- |
+| Inline text or icon trigger with underline styling      | `PopoverInline` |
+| Contextual action list (menu items, navigation links)   | `Menu`          |
+| Full-viewport blocking dialog requiring acknowledgement | `ModalV2`       |
+| Persistent supplemental panel alongside the page        | `Drawer`        |
+
+**Key props (PopoverTrigger)**
+| Prop             | Type                                                                                                                                                                 | Required | Notes                                                                                                            |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| children         | `React.ReactNode`                                                                                                                                                    | yes      | The element the user clicks or hovers to open the popover.                                                       |
+| popoverContent   | `string \| JSX.Element \| ((renderProps: PopoverRenderProps) => React.ReactNode)`                                                                                    | yes      | Popover body. Use a render function with `enableResize` to access `maxHeight` and `overflow`.                    |
+| trigger          | `"click" \| "hover"`                                                                                                                                                 | no       | Interaction that opens the popover. Default `"click"`.                                                           |
+| position         | `"top" \| "top-start" \| "top-end" \| "bottom" \| "bottom-start" \| "bottom-end" \| "left" \| "left-start" \| "left-end" \| "right" \| "right-start" \| "right-end"` | no       | Preferred placement relative to trigger. Default `"top"`. Auto-adjusts when space is limited.                    |
+| zIndex           | `number`                                                                                                                                                             | no       | Override default z-index when stacking context conflicts arise.                                                  |
+| rootNode         | `RefObject<HTMLElement>`                                                                                                                                             | no       | Host element for the portal. Use when the trigger's parent has a higher z-index.                                 |
+| delay            | `{ open?: number; close?: number }`                                                                                                                                  | no       | Millisecond delays before open/close. Default `{ open: 0, close: 500 }`. Not applied for `trigger="click"`.      |
+| enableFlip       | `boolean`                                                                                                                                                            | no       | Flip to opposite side when preferred position would overflow viewport. Default `true`.                           |
+| enableResize     | `boolean`                                                                                                                                                            | no       | Resize popover height to fit remaining viewport space; content becomes scrollable. Default `false`.              |
+| overflow         | `"visible" \| "hidden" \| "clip" \| "scroll" \| "auto"`                                                                                                              | no       | Overflow behaviour inside the popover. Use with `enableResize`. Default `"auto"`.                                |
+| isModal          | `boolean`                                                                                                                                                            | no       | Traps focus inside popover when `true`. Set `false` for non-modal usage (e.g. navigation menus). Default `true`. |
+| triggerOnFocus   | `boolean`                                                                                                                                                            | no       | Opens the popover when the trigger receives keyboard focus via Tab. Default `false`.                             |
+| popoverAriaLabel | `string`                                                                                                                                                             | no       | Accessible label for the popover region. Default `"More information"`.                                           |
+
+**Key props (PopoverV2)**
+| Prop      | Type                                                    | Required | Notes                                                                |
+| --------- | ------------------------------------------------------- | -------- | -------------------------------------------------------------------- |
+| children  | `string \| JSX.Element`                                 | yes      | Content rendered inside the popover bubble.                          |
+| visible   | `boolean`                                               | no       | Controls visibility when used standalone (without `PopoverTrigger`). |
+| overflow  | `"visible" \| "hidden" \| "clip" \| "scroll" \| "auto"` | no       | Overflow behaviour of the popover container.                         |
+| maxHeight | `number`                                                | no       | Maximum height in pixels; applies when `enableResize` is active.     |
+| ariaLabel | `string`                                                | no       | Accessible label for the popover element.                            |
+
+**Canonical usage**
+```tsx
+// Click-activated contextual popover anchored to a button
+import { PopoverV2, PopoverTrigger } from "@lifesg/react-design-system/popover-v2";
+
+<PopoverTrigger
+  popoverContent={<PopoverV2>More details about this item.</PopoverV2>}
+  position="top"
+  trigger="click"
+>
+  <button>More info</button>
+</PopoverTrigger>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                       | Map to           | Condition                                                           |
+| --------------------------------------------------- | ---------------- | ------------------------------------------------------------------- |
+| Contextual information bubble anchored to a trigger | `PopoverTrigger` | Any floating info panel opened by clicking or hovering a UI element |
+| Hover tooltip anchored to trigger element           | `PopoverTrigger` | Set `trigger="hover"` for hover-activated content                   |
+
+**Composition patterns**
+- Use `PopoverTrigger` as the outer wrapper with `PopoverV2` as the
+  `popoverContent` value for the standard styled popover appearance.
+- With `enableResize`, pass `popoverContent` as a render function to receive
+  `maxHeight` and `overflow` and apply them to a scrollable inner container.
+- `PopoverInline` is also exported from the same `popover-v2` sub-path; it
+  provides inline text/icon triggers with built-in underline styling and is
+  documented separately.
+
+**Known limitations**
+- `PopoverV2` alone has no positioning logic; always pair it with
+  `PopoverTrigger` (or manage `visible` and positioning manually).
+- Mobile viewports automatically render the popover as a modal regardless of
+  the `isModal` setting.
