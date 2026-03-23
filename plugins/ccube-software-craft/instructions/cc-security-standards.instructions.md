@@ -1,12 +1,10 @@
 ---
-name: "cc-security-standards"
 description: >-
   OWASP Top 10 security rules and vulnerability patterns. Apply to ALL
   code generation, modification, and review tasks — enforces injection
   prevention, access control, cryptographic safety, and secure defaults
-  across every code change regardless of language or framework. ALWAYS
-  load when writing or editing any code.
-user-invokable: false
+  across every code change regardless of language or framework.
+applyTo: "**/*"
 ---
 
 # OWASP Top 10 Security Standards
@@ -163,6 +161,7 @@ exposure).
 
 - Verify file type validation (whitelist, not blacklist)
 - Check file size limits and enforcement
+- Verify virus/malware scanning integration
 - Check path traversal prevention
 - Verify secure file storage permissions
 - Check for metadata sanitization
@@ -174,6 +173,20 @@ exposure).
 - Verify session timeout and absolute timeout
 - Check for session fixation vulnerabilities
 - Verify logout functionality destroys sessions
+- Check for concurrent session limits
+
+---
+
+## Security Analysis Workflow
+
+For EACH changed file, you MUST:
+
+1. Identify data flows: Where does user input enter? Where does it go?
+2. Check trust boundaries: Does data cross security boundaries?
+3. Verify validation: Is all input validated at boundaries?
+4. Check authorization: Are access controls enforced?
+5. Assess data sensitivity: Is sensitive data properly protected?
+6. Review error handling: Do errors leak sensitive information?
 
 ---
 
@@ -196,6 +209,14 @@ const p = path.join('./uploads', path.basename(req.params.filename))  // SECURE
 exec(`ping ${userInput}`)  // VULNERABLE
 execFile('ping', [userInput])  // SECURE
 
+// CRITICAL: Insecure Deserialization
+const obj = eval(userInput)  // VULNERABLE
+const obj = JSON.parse(userInput)  // BETTER (but still validate)
+
+// HIGH: Missing Authorization
+app.get('/admin/users', (req, res) => { ... })  // VULNERABLE
+app.get('/admin/users', authMiddleware, isAdmin, (req, res) => { ... })  // SECURE
+
 // HIGH: Hardcoded Secret
 const apiKey = "sk-1234567890abcdef"  // VULNERABLE
 const apiKey = process.env.API_KEY  // SECURE
@@ -212,21 +233,29 @@ const token = crypto.randomBytes(32).toString('hex')  // SECURE
 **CRITICAL** (must fix before merge):
 - Unauthenticated access to sensitive operations
 - SQL/NoSQL/Command injection
+- Remote code execution possibilities
 - Hardcoded credentials or secrets
 - Broken authentication
+- Data exposure to unauthorized users
 
 **HIGH** (should fix before merge):
 - Missing authorization checks
 - XSS vulnerabilities
 - CSRF on state-changing operations
+- Insecure cryptographic algorithms
 - Session management flaws
+- Sensitive data in logs or error messages
 
 **MEDIUM** (fix soon):
 - Missing security headers
 - Weak input validation
+- Information disclosure in errors
 - Missing rate limiting
 - Overly permissive CORS
+- Insufficient logging
 
 **LOW** (improvement recommended):
 - Non-critical information disclosure
 - Missing security documentation
+- Weak password policies
+- Missing security comments in complex logic

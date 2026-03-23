@@ -1,11 +1,10 @@
 ---
-name: "cc-markdown-standards"
 description: >-
   Markdown formatting rules: 80-character hard line wrap, heading
   hierarchy (no H1), fenced code blocks with language tags, table
   alignment, and YAML front matter conventions. Apply whenever creating
   or editing any .md or markdown file.
-user-invokable: false
+applyTo: "**/*.md"
 ---
 
 # Markdown Formatting Standards

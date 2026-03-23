@@ -1,8 +1,10 @@
 ---
 description: >-
-  Technology-agnostic coding standards that apply to all files. Enforces
-  naming, function design, error handling, testing expectations, and
-  documentation hygiene independently of language or framework.
+  Mandatory coding standards for naming, function design, error handling,
+  constants, comments, testing, documentation, accessibility, and module
+  design. Apply to ALL code generation and modification tasks across any
+  language or framework — these are the minimum quality bar for any code
+  written or changed.
 applyTo: "**/*"
 ---
 
