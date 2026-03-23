@@ -10,9 +10,7 @@
 
 > User interaction controls that trigger actions or collect selections. Scan
 > this group when the Figma frame contains buttons, checkboxes, radio buttons,
-> toggles, file upload/download controls, date/time pickers, or scheduling
 > grids.
-
 ### Button
 
 **Import**: `import { Button } from "@lifesg/react-design-system/button"`
@@ -66,10 +64,8 @@ import { Button } from "@lifesg/react-design-system/button";
 <Button.Small styleType="secondary">Save draft</Button.Small>
 <Button.Large>Get started</Button.Large>
 ```
-
 **Figma mapping hints**
 | Figma element / layer pattern             | Map to           | Condition                           |
-| ----------------------------------------- | ---------------- | ----------------------------------- |
 | Primary / filled CTA button (text only)   | `Button.Default` | `styleType` defaults to `"default"` |
 | Secondary / outlined button (text only)   | `Button.Default` | Set `styleType="secondary"`         |
 | Ghost / light button (text only)          | `Button.Default` | Set `styleType="light"`             |
@@ -82,9 +78,7 @@ import { Button } from "@lifesg/react-design-system/button";
 **Composition patterns**
 - Pair with `ButtonWithIcon` (`@lifesg/react-design-system/button-with-icon`)
   in the same button group when some actions need an icon and others do not —
-  they share the same `styleType` API.
 
----
 
 ### Calendar
 
@@ -131,13 +125,10 @@ import { Button } from "@lifesg/react-design-system/button";
 // Single-date inline calendar (default)
 import { Calendar } from "@lifesg/react-design-system/calendar";
 
-<Calendar
   value={selectedDate}
   onChange={(date) => setSelectedDate(date)}
 />
-
 // Multi-date selection — toggle individual dates on and off
-<Calendar
   variant="multi"
   values={selectedDates}
   maxSelectable={5}
@@ -152,9 +143,7 @@ import { Calendar } from "@lifesg/react-design-system/calendar";
   disabledDates={["2026-03-25", "2026-03-26"]}
   onChange={(date) => setSelectedDate(date)}
 />
-```
 
-**Figma mapping hints**
 | Figma element / layer pattern              | Map to     | Condition                                           |
 | ------------------------------------------ | ---------- | --------------------------------------------------- |
 | Inline / always-visible date picker panel  | `Calendar` | Always-on display, no input field trigger           |
@@ -204,7 +193,6 @@ import { Calendar } from "@lifesg/react-design-system/calendar";
 | id            | `string`                 | no       | Associates with a `<label>` element for accessibility — from `InputHTMLAttributes`. |
 
 **Canonical usage**
-```tsx
 // Controlled multi-select checkbox
 import { Checkbox } from "@lifesg/react-design-system/checkbox";
 

@@ -158,6 +158,81 @@ import { Typography } from "@lifesg/react-design-system/typography";
 
 ---
 
+### DataTable
+
+**Import**: `import { DataTable } from "@lifesg/react-design-system/data-table"`
+
+**Category**: Content
+
+**Decision rule**
+> Use `DataTable` when tabular UI needs built-in interactions (sorting,
+> multi-select, loading, and empty states); use `Table` for fully custom,
+> low-level markup without built-in table behaviours.
+
+**When to use**
+- Operational list views where users sort columns, select rows, or perform
+  batch actions.
+- Data grids that need loading skeletons and configurable empty-state
+  messaging without building those patterns manually.
+
+**When NOT to use**
+| Situation                                                 | Use instead |
+| --------------------------------------------------------- | ----------- |
+| Bespoke table layouts with custom row/column span control | `Table`     |
+
+**Key props**
+| Prop              | Type                                           | Required | Notes                                                                       |
+| ----------------- | ---------------------------------------------- | -------- | --------------------------------------------------------------------------- |
+| headers           | `(string \| HeaderItemProps)[]`                | yes      | Column configuration; use `HeaderItemProps` for clickable/sortable headers. |
+| rows              | `RowProps[]`                                   | no       | Row data array; each row requires `id` and matching field keys.             |
+| enableMultiSelect | `boolean`                                      | no       | Shows row selection checkboxes.                                             |
+| enableSelectAll   | `boolean`                                      | no       | Shows header checkbox for bulk select/clear.                                |
+| sortIndicators    | `{ [fieldKey]: "asc" \| "desc" }`              | no       | Controls visible sort direction indicators per column.                      |
+| loadState         | `"success" \| "loading"`                       | no       | Displays loading UI when `"loading"`.                                       |
+| emptyView         | `ErrorDisplayAttributes`                       | no       | Overrides default empty-view message and presentation.                      |
+| enableActionBar   | `boolean`                                      | no       | Shows action bar when one or more rows are selected.                        |
+| selectedIds       | `string[]`                                     | no       | Controlled selected row ids for multi-select mode.                          |
+| onHeaderClick     | `(fieldKey: string) => void`                   | no       | Fired when a clickable header is selected.                                  |
+| onSelect          | `(rowId: string, isSelected: boolean) => void` | no       | Fired when a row checkbox is toggled.                                       |
+
+**Canonical usage**
+```tsx
+// Sortable, selectable data table with loading and empty-state support
+import { DataTable } from "@lifesg/react-design-system/data-table";
+
+<DataTable
+  headers={[
+    { fieldKey: "title", label: "Title", clickable: true },
+    { fieldKey: "status", label: "Status", clickable: true },
+    "updatedAt",
+  ]}
+  rows={rows}
+  enableMultiSelect
+  enableSelectAll
+  selectedIds={selectedIds}
+  sortIndicators={{ title: "asc" }}
+  loadState={isLoading ? "loading" : "success"}
+  onHeaderClick={(fieldKey) => setSortField(fieldKey)}
+  onSelect={(rowId, isSelected) => handleSelect(rowId, isSelected)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                    | Map to      | Condition                                                          |
+| ------------------------------------------------ | ----------- | ------------------------------------------------------------------ |
+| Data table with sortable headers and status rows | `DataTable` | Table includes sort affordances and column-level ordering controls |
+| Selectable table with bulk action bar            | `DataTable` | Row checkboxes plus selected-items action strip are required       |
+
+**Composition patterns**
+- Combine `enableMultiSelect`, `selectedIds`, and `enableActionBar` for
+  batch-processing screens.
+
+**Known limitations**
+- Source code snippets for sorting in docs are illustrative and require
+  consumer-managed sorting logic/state.
+
+---
+
 ### Tab
 
 **Import**: `import { Tab } from "@lifesg/react-design-system/tab"`

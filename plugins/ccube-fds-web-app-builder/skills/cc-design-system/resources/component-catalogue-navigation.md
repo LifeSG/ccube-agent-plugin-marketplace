@@ -152,3 +152,69 @@ import { Navbar } from "@lifesg/react-design-system/navbar";
   post-click scroll/focus transitions until dismissal completes.
 - Uses an SG masthead web-component script; strict CSP setups may need to
   whitelist `https://cdn.jsdelivr.net/npm/@govtechsg/sgds-web-component@3/components/Masthead/index.umd.js`.
+
+---
+
+### Pagination
+
+**Import**: `import { Pagination } from "@lifesg/react-design-system/pagination"`
+
+**Category**: Navigation
+
+**Decision rule**
+> Use `Pagination` when users must navigate across numbered result pages;
+> use infinite-scroll patterns only when explicit page position and jump
+> controls are not required.
+
+**When to use**
+- List or table views split across pages where users need predictable
+  next/previous navigation and current-page visibility.
+- Data-heavy screens where changing page size improves scanning and task speed.
+
+**When NOT to use**
+| Situation                                         | Use instead  |
+| ------------------------------------------------- | ------------ |
+| Hierarchical navigation path (Home > Section > …) | `Breadcrumb` |
+
+**Key props**
+| Prop                | Type                                       | Required | Notes                                           |
+| ------------------- | ------------------------------------------ | -------- | ----------------------------------------------- |
+| activePage          | `number`                                   | yes      | Current page number.                            |
+| totalItems          | `number`                                   | yes      | Total result count used to compute page ranges. |
+| pageSize            | `number`                                   | no       | Items per page; defaults to `10`.               |
+| showFirstAndLastNav | `boolean`                                  | no       | Shows jump-to-first and jump-to-last controls.  |
+| showPageSizeChanger | `boolean`                                  | no       | Shows desktop page-size dropdown.               |
+| pageSizeOptions     | `PageSizeItemProps<T>[]`                   | no       | Custom page-size options (`value`, `label`).    |
+| onPageChange        | `(page: number) => void`                   | no       | Fired when a new page is selected.              |
+| onPageSizeChange    | `(page: number, pageSize: number) => void` | no       | Fired when page size changes.                   |
+| data-testid         | `string`                                   | no       | Test selector on the component root.            |
+
+**Canonical usage**
+```tsx
+// Paginated result navigation with page-size changer
+import { Pagination } from "@lifesg/react-design-system/pagination";
+
+<Pagination
+  activePage={currentPage}
+  totalItems={totalItems}
+  pageSize={20}
+  showFirstAndLastNav
+  showPageSizeChanger
+  pageSizeOptions={[
+    { value: 10, label: "10 / page" },
+    { value: 20, label: "20 / page" },
+    { value: 50, label: "50 / page" },
+  ]}
+  onPageChange={(page) => setCurrentPage(page)}
+  onPageSizeChange={(page, size) => handlePageSizeChange(page, size)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern          | Map to       | Condition                                                            |
+| -------------------------------------- | ------------ | -------------------------------------------------------------------- |
+| Pagination controls below a list/table | `Pagination` | Numbered page navigation with previous/next movement                 |
+| Pagination with page-size dropdown     | `Pagination` | `showPageSizeChanger` and optional custom `pageSizeOptions` required |
+
+**Known limitations**
+- Page-size changer is desktop-only per component behaviour.

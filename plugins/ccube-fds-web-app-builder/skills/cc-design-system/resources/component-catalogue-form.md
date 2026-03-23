@@ -152,6 +152,67 @@ import { Form } from "@lifesg/react-design-system/form";
 
 ---
 
+### Form.Label
+
+**Import**:
+`import { Form } from "@lifesg/react-design-system/form"` → `<Form.Label />`
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.Label` when you need a standalone form label (with optional
+> tooltip/popover addon and subtitle) in custom layouts; use `Form.Input` or
+> other `Form.*` wrappers when label and control should be rendered together.
+
+**When to use**
+- Custom form compositions where label placement is decoupled from the input
+  component.
+- Labels that need helper addon bubbles (`tooltip`/`popover`) or subtitles.
+
+**When NOT to use**
+| Situation                           | Use instead  |
+| ----------------------------------- | ------------ |
+| Standard labelled single-line field | `Form.Input` |
+
+**Key props**
+| Prop                  | Type                     | Required | Notes                                                          |
+| --------------------- | ------------------------ | -------- | -------------------------------------------------------------- |
+| children              | `React.ReactNode`        | yes      | Main label content text/elements.                              |
+| addon                 | `FormLabelAddonProps`    | no       | Helper addon configuration for tooltip/popover bubble content. |
+| subtitle              | `string \| JSX.Element`  | no       | Secondary descriptive text below main label.                   |
+| disabled              | `string`                 | no       | Applies disabled-style display state for label presentation.   |
+| data-testid *(addon)* | `string`                 | no       | Test selector for addon trigger.                               |
+| type *(addon)*        | `"tooltip" \| "popover"` | no       | Addon interaction style; defaults to `"popover"`.              |
+| icon *(addon)*        | `JSX.Element`            | no       | Custom addon icon; default is info-circle icon.                |
+| zIndex *(addon)*      | `number`                 | no       | Custom z-index for popover addon layer.                        |
+
+**Canonical usage**
+```tsx
+// Standalone label with helper addon and subtitle in custom field layout
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.Label
+  subtitle="Shown on your public profile"
+  addon={{
+    type: "tooltip",
+    content: "Choose a clear label that users can easily identify.",
+  }}
+>
+  Profile name
+</Form.Label>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                | Map to       | Condition                                                           |
+| -------------------------------------------- | ------------ | ------------------------------------------------------------------- |
+| Standalone form label with helper icon/addon | `Form.Label` | Label rendered independently of input with tooltip/popover guidance |
+
+**Composition patterns**
+- Pair `Form.Label` with `Input`, `InputSelect`, or `FileUpload` for bespoke
+  form layouts where wrappers like `Form.Input` are too opinionated.
+
+---
+
 ### Form.Select (InputSelect)
 
 **Import**:

@@ -14,6 +14,64 @@
 > Figma frame shows a dialog, bottom sheet, side panel, backdrop overlay,
 > contextual popover, or dropdown menu.
 
+### Drawer
+
+**Import**: `import { Drawer } from "@lifesg/react-design-system/drawer"`
+
+**Category**: Overlays
+
+**Decision rule**
+> Use `Drawer` for right-side panel overlays focused on supplemental
+> task content; use `ModalV2` for centred dialogs or multi-direction slide
+> overlays with broader modal composition needs.
+
+**When to use**
+- Side-panel experiences that keep users in context while viewing/editing
+  related details.
+- Overlay panels where a heading and close affordance are needed with
+  straightforward open/close control.
+
+**When NOT to use**
+| Situation                                      | Use instead |
+| ---------------------------------------------- | ----------- |
+| Confirmation dialog with footer action buttons | `ModalV2`   |
+
+**Key props**
+| Prop           | Type              | Required | Notes                                       |
+| -------------- | ----------------- | -------- | ------------------------------------------- |
+| show           | `boolean`         | yes      | Controls drawer visibility.                 |
+| heading        | `string`          | no       | Header text shown at the top of the drawer. |
+| children       | `React.ReactNode` | no       | Drawer body content.                        |
+| onClose        | `() => void`      | no       | Fired when close button is pressed.         |
+| onOverlayClick | `() => void`      | no       | Fired when backdrop is clicked.             |
+| className      | `string`          | no       | Custom class for styling hooks.             |
+| data-testid    | `string`          | no       | Test selector on drawer root.               |
+
+**Canonical usage**
+```tsx
+// Side panel for detail preview/editing
+import { Drawer } from "@lifesg/react-design-system/drawer";
+
+<Drawer
+  show={isOpen}
+  heading="Application details"
+  onClose={() => setIsOpen(false)}
+  onOverlayClick={() => setIsOpen(false)}
+>
+  <p>Drawer content goes here.</p>
+</Drawer>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern          | Map to   | Condition                                                    |
+| -------------------------------------- | -------- | ------------------------------------------------------------ |
+| Slide-in side panel overlay from right | `Drawer` | Context panel opens over page with backdrop and close action |
+
+**Known limitations**
+- Drawer orientation is right-side focused in current component behaviour.
+
+---
+
 ### Menu
 
 **Import**: `import { Menu } from "@lifesg/react-design-system/menu"`

@@ -316,6 +316,75 @@ import { Markup } from "@lifesg/react-design-system/markup";
 
 ---
 
+### TextList
+
+**Import**: `import { TextList } from "@lifesg/react-design-system/text-list"`
+
+**Category**: Core
+
+**Decision rule**
+> Use `TextList` when Figma shows semantic ordered/unordered list structures
+> with bullet/counter styling; use `Markup` only when list HTML comes from CMS
+> rich-text content.
+
+**When to use**
+- Bulleted requirement, feature, or checklist content where order does not
+  matter.
+- Numbered step sequences where order, counter style, or start/reverse
+  numbering must be controlled.
+
+**When NOT to use**
+| Situation                                                   | Use instead |
+| ----------------------------------------------------------- | ----------- |
+| Rich text block sourced from CMS/HTML containing mixed tags | `Markup`    |
+
+**Key props**
+| Prop                             | Type                                                          | Required | Notes                                                      |
+| -------------------------------- | ------------------------------------------------------------- | -------- | ---------------------------------------------------------- |
+| children                         | `JSX.Element \| JSX.Element[]`                                | yes      | List item content nodes.                                   |
+| size                             | `TypographySizeType`                                          | no       | Font size token; inherits parent text size if omitted.     |
+| bottomMargin                     | `number`                                                      | no       | Bottom spacing below list (rem units, base 16px).          |
+| bulletType *(TextList.Ul)*       | `"disc" \| "circle" \| "square" \| "none" \| React.ReactNode` | no       | Unordered list marker style, including custom bullet node. |
+| counterType *(TextList.Ol)*      | `"lower-alpha" \| "decimal" \| "lower-roman"`                 | no       | Ordered list numbering system; defaults to `"decimal"`.    |
+| counterSeparator *(TextList.Ol)* | `string`                                                      | no       | Separator after counter (e.g. `")"`, `"."`, `"="`).        |
+| reversed *(TextList.Ol)*         | `boolean`                                                     | no       | Reverses counting order.                                   |
+| start *(TextList.Ol)*            | `number`                                                      | no       | Starting counter value for ordered lists.                  |
+
+**Canonical usage**
+```tsx
+// Ordered process steps with alphabetic counters
+import { TextList } from "@lifesg/react-design-system/text-list";
+
+<TextList.Ol counterType="lower-alpha" counterSeparator=")" start={1}>
+  <li>Upload supporting documents</li>
+  <li>Review your details</li>
+  <li>Submit the application</li>
+</TextList.Ol>
+
+// Unordered feature list with square bullets
+<TextList.Ul bulletType="square" size="body-md">
+  <li>Real-time updates</li>
+  <li>Secure access controls</li>
+  <li>Audit history</li>
+</TextList.Ul>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern        | Map to        | Condition                                                                                 |
+| ------------------------------------ | ------------- | ----------------------------------------------------------------------------------------- |
+| Bulleted text list / checklist group | `TextList.Ul` | Unordered items using `disc`, `circle`, `square`, or custom bullets                       |
+| Numbered step list / ordered process | `TextList.Ol` | Ordered counters required; tune `counterType`, `counterSeparator`, `start`, or `reversed` |
+
+**Composition patterns**
+- Place `TextList` inside `Typography.Body*` wrappers to inherit page text
+  rhythm while retaining semantic list markup.
+
+**Known limitations**
+- Nested ordered list formats beyond built-in counter styles require
+  styled-component overrides.
+
+---
+
 ### Typography
 
 **Import**: `import { Typography } from "@lifesg/react-design-system/typography"`

@@ -39,6 +39,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Tel / phone field (standalone, no label)                      | `Input`            | form                | Use `type="tel"` and `spacing` prop                                        |
 | Text field with error state, no label                         | `Input`            | form                | Set `error={true}`                                                         |
 | Text field with label                                         | `Form.Input`       | form                | Default choice for any labelled single-line input                          |
+| Standalone form label with helper icon/addon                  | `Form.Label`       | form                | Use when label and field are rendered separately in custom layouts         |
 | Text field with label + tooltip icon                          | `Form.Input`       | form                | Pass `label` as `FormLabelProps` with `addon`                              |
 | Text field in multi-column form grid                          | `Form.Input`       | form                | Add `layoutType="grid"` and col span props                                 |
 | Textarea (standalone, no label)                               | `Textarea`         | form                | Use standalone import for label-free usage                                 |
@@ -55,7 +56,10 @@ https://designsystem.life.gov.sg/react/index.html
 | Breadcrumb trail / page location path                         | `Breadcrumb`       | navigation          | Any multi-level hierarchy; last item is always non-interactive             |
 | Breadcrumb with slash separators                              | `Breadcrumb`       | navigation          | Set `separatorStyle="slash"`                                               |
 | Header navigation bar with brand, links, and utility actions  | `Navbar`           | navigation          | Desktop links collapse into a drawer on mobile/tablet                      |
+| Pagination controls below a list/table                        | `Pagination`       | navigation          | Numbered page navigation with previous/next movement                       |
+| Pagination with page-size dropdown                            | `Pagination`       | navigation          | Enable `showPageSizeChanger` and optional custom `pageSizeOptions`         |
 | Slide-in side panel (right or left)                           | `ModalV2`          | overlays            | Set `animationFrom="right"` or `animationFrom="left"`                      |
+| Slide-in side panel overlay from right                        | `Drawer`           | overlays            | Context panel with heading, backdrop, and close action                     |
 | Modal footer with primary + secondary buttons                 | `ModalV2.Footer`   | overlays            | Pass `primaryButton` and `secondaryButton` as `Button.*` nodes             |
 | Avatar / user-profile menu in navbar                          | `Menu`             | overlays            | Pass `Avatar` as the trigger element; group items in `Menu.Section`        |
 | Contextual action menu (click or hover trigger)               | `Menu`             | overlays            | Compose with `Menu.Content`, `Menu.Section`, `Menu.Item`, `Menu.Link`      |
@@ -64,7 +68,9 @@ https://designsystem.life.gov.sg/react/index.html
 | Single collapsible row (standalone, no group)                 | `Accordion.Item`   | content             | Set `collapsible={true}` for always-visible non-collapsible rows           |
 | FAQ list / expandable Q&A items                               | `Accordion`        | content             | Set `enableExpandAll` to show a Show All / Hide All control                |
 | Card surface / elevated container                             | `Card`             | content             | Any `<div>` with elevated shadow or rounded border in Figma                |
+| Data table with sortable headers and status rows              | `DataTable`        | content             | Built-in sorting indicators with structured row rendering                  |
 | Data grid with merged cells or custom row/col spans           | `Table`            | content             | Use low-level table structure; choose `DataTable` for sorting/selection    |
+| Selectable table with bulk action bar                         | `DataTable`        | content             | Enable row selection and selected-items action controls                    |
 | Horizontal tab bar / selector strip                           | `Tab`              | content             | Multiple label tabs that switch which content panel is visible             |
 | Individual tab panel / content section                        | `Tab.Item`         | content             | One `Tab.Item` per panel; tab order mirrors JSX order                      |
 | Tab selector with numeric badge / count                       | `Tab.Item`         | content             | Set `titleAddon` with badge content; `position` defaults to `"right"`      |
@@ -72,13 +78,16 @@ https://designsystem.life.gov.sg/react/index.html
 | Horizontal separator spanning a grid row                      | `Divider`          | core                | Set `layoutType="grid"` with `desktopCols`, `tabletCols`, `mobileCols`     |
 | Heading text (H1–H6)                                          | `Typography`       | core                | Use `Typography.HeadingXXL` → `Typography.HeadingXS` variants              |
 | Body / paragraph text                                         | `Typography`       | core                | Use `Typography.BodyBL` → `Typography.BodyXS` variants                     |
+| Bulleted text list / checklist group                          | `TextList.Ul`      | core                | Unordered list bullets with `bulletType` options                           |
 | Hyperlink / anchor                                            | `Typography`       | core                | Use `Typography.LinkBL` → `Typography.LinkXS` variants                     |
 | HTML / rich text content block (bold, links, lists)           | `Markup`           | core                | Use for CMS/HTML-rich content; plain text should use `Typography.*`        |
+| Numbered step list / ordered process                          | `TextList.Ol`      | core                | Ordered counters via `counterType`, `counterSeparator`, and `start`        |
 | Borderless calendar panel                                     | `Calendar`         | selection-input     | Set `styleType="no-border"`                                                |
 | Calendar with blackout / unavailable dates                    | `Calendar`         | selection-input     | Pass `disabledDates`, `minDate`, or `maxDate`                              |
 | Calendar with multiple selected dates                         | `Calendar`         | selection-input     | Set `variant="multi"`                                                      |
 | Inline / always-visible date picker panel                     | `Calendar`         | selection-input     | Always-on display, no input field trigger                                  |
 | Checkbox (single or group)                                    | `Checkbox`         | selection-input     | Use `checked` + `indeterminate` for all selection states                   |
+| File upload dropzone with attachment list                     | `FileUpload`       | selection-input     | Drag/drop or click upload with managed file items                          |
 | Icon symbol — filled / solid variant                          | `{Name}FillIcon`   | core                | Append `Fill` before `Icon` in the name; import from `@lifesg/react-icons` |
 | Icon symbol — outline / stroke variant                        | `{Name}Icon`       | core                | Import from `@lifesg/react-icons/{kebab-name}` for tree-shaking            |
 | Indeterminate / partial select checkbox                       | `Checkbox`         | selection-input     | Set `indeterminate={true}`                                                 |
@@ -88,10 +97,13 @@ https://designsystem.life.gov.sg/react/index.html
 | Toggle with description text below label                      | `Toggle`           | selection-input     | Set `subLabel`                                                             |
 | Toggle without visible border                                 | `Toggle`           | selection-input     | Set `styleType="no-border"`                                                |
 | Toggle with remove / dismiss button                           | `Toggle`           | selection-input     | Set `removable={true}` and handle `onRemove`                               |
+| Sortable uploaded file gallery/list                           | `FileUpload`       | selection-input     | Set `sortable={true}` and handle reorder via `onSort`                      |
 | Dropdown / select field with label                            | `Form.Select`      | form                | Wraps `InputSelect` with label and error message                           |
 | Dropdown select (standalone, no label)                        | `InputSelect`      | form                | Use `valueExtractor` + `listExtractor` to map option objects               |
 | Searchable dropdown / autocomplete select                     | `InputSelect`      | form                | Set `enableSearch={true}` and optionally `searchFunction`                  |
 | Alert banner (success, error, warning, info)                  | `Alert`            | feedback-indicators | Set `type` to `"success"`, `"error"`, `"warning"`, or `"info"`             |
+| Notification count badge on icon/avatar                       | `Badge`            | feedback-indicators | Number badge with optional anchored offset                                 |
+| Notification dot indicator                                    | `Badge`            | feedback-indicators | Dot-style attention indicator without text                                 |
 | Auto-dismissing notification pop-up                           | `Toast`            | feedback-indicators | Set `autoDismiss={true}`; default dismiss time is 4 s                      |
 | Dashed separator line                                         | `Divider`          | core                | Set `lineStyle="dashed"`                                                   |
 | Description / informational callout box                       | `Alert`            | feedback-indicators | Set `type="description"`                                                   |

@@ -91,6 +91,63 @@ import { Alert } from "@lifesg/react-design-system/alert";
 
 ---
 
+### Badge
+
+**Import**: `import { Badge } from "@lifesg/react-design-system/badge"`
+
+**Category**: Feedback indicators
+
+**Decision rule**
+> Use `Badge` for compact notification indicators (dot or count), especially
+> when anchored to another UI element; use `Tag` when status text labels are
+> required.
+
+**When to use**
+- Unread count indicators on icons, avatars, or menu triggers.
+- Minimal status signalling with dot-style badges where text is unnecessary.
+
+**When NOT to use**
+| Situation                               | Use instead |
+| --------------------------------------- | ----------- |
+| Status requires visible text label/chip | `Tag`       |
+
+**Key props**
+| Prop        | Type                                                                                | Required | Notes                                                                               |
+| ----------- | ----------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------- |
+| variant     | `"number" \| "number-with-border" \| "dot" \| "dot-with-border" \| "square-number"` | no       | Visual badge style; defaults to `"number"`.                                         |
+| count       | `number`                                                                            | no       | Numeric value for number-based variants; values >= 1000 are truncated (e.g. `1K+`). |
+| color       | `"default" \| "important"`                                                          | no       | Colour tone for emphasis.                                                           |
+| children    | `JSX.Element`                                                                       | no       | Anchor target when badge is overlaid at corner position.                            |
+| badgeOffset | `[string, string]`                                                                  | no       | Top-right offset tuple `[left, top]` using CSS lengths.                             |
+| data-testid | `string`                                                                            | no       | Test identifier; defaults to `"badge"`.                                             |
+
+**Canonical usage**
+```tsx
+// Anchored notification count badge on an icon button
+import { Badge } from "@lifesg/react-design-system/badge";
+
+<Badge
+  variant="number-with-border"
+  color="important"
+  count={12}
+  badgeOffset={["-4px", "2px"]}
+>
+  <button type="button">Inbox</button>
+</Badge>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern           | Map to  | Condition                                                         |
+| --------------------------------------- | ------- | ----------------------------------------------------------------- |
+| Notification count badge on icon/avatar | `Badge` | Use number variants and optional `badgeOffset` when anchored      |
+| Notification dot indicator              | `Badge` | Use `variant="dot"` or `"dot-with-border"` for non-numeric alerts |
+
+**Known limitations**
+- Intended for short counts/indicators only; long textual statuses should use
+  `Tag`.
+
+---
+
 ### Tag
 
 **Import**: `import { Tag } from "@lifesg/react-design-system/tag"`
