@@ -33,7 +33,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Layout (grid/flex) | `layout`                                                       | ✅      |
 | Layout.ColDiv      | `layout` (as `Layout.ColDiv`)                                  | ✅      |
 | Divider            | `divider`                                                      | ✅      |
-| Markup             | `markup`                                                       | ⬜      |
+| Markup             | `markup`                                                       | ✅      |
 | TextList           | `text-list`                                                    | ⬜      |
 | ErrorDisplay       | `error-display`                                                | ⬜      |
 
@@ -44,7 +44,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Card                    | `card`                      | ✅      |
 | Tab                     | `tab`                       | ✅      |
 | Accordion               | `accordion`                 | ✅      |
-| Table                   | `table`                     | ⬜      |
+| Table                   | `table`                     | ✅      |
 | DataTable               | `data-table`                | ⬜      |
 | UneditableSection       | `uneditable-section`        | ⬜      |
 | BoxContainer            | `box-container`             | ⬜      |
@@ -55,7 +55,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Component  | Sub-path     | Status |
 | ---------- | ------------ | ------ |
 | Breadcrumb | `breadcrumb` | ✅      |
-| Navbar     | `navbar`     | ⬜      |
+| Navbar     | `navbar`     | ✅      |
 | Pagination | `pagination` | ⬜      |
 | Footer     | `footer`     | ⬜      |
 | Masthead   | `masthead`   | ⬜      |
@@ -187,7 +187,7 @@ https://designsystem.life.gov.sg/react/index.html
 
 ---
 
-**Progress**: 23 / 90 components documented (3 deprecated excluded from count)
+**Progress**: 26 / 90 components documented (3 deprecated excluded from count)
 
 > New sub-components confirmed via Storybook full expansion:
 > `Layout.ColDiv`, `Filter.Addons`, `Animations.Customisable`.

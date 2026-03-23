@@ -54,6 +54,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Bottom sheet that slides up                                   | `ModalV2`          | overlays            | Set `animationFrom="bottom"`                                               |
 | Breadcrumb trail / page location path                         | `Breadcrumb`       | navigation          | Any multi-level hierarchy; last item is always non-interactive             |
 | Breadcrumb with slash separators                              | `Breadcrumb`       | navigation          | Set `separatorStyle="slash"`                                               |
+| Header navigation bar with brand, links, and utility actions  | `Navbar`           | navigation          | Desktop links collapse into a drawer on mobile/tablet                      |
 | Slide-in side panel (right or left)                           | `ModalV2`          | overlays            | Set `animationFrom="right"` or `animationFrom="left"`                      |
 | Modal footer with primary + secondary buttons                 | `ModalV2.Footer`   | overlays            | Pass `primaryButton` and `secondaryButton` as `Button.*` nodes             |
 | Avatar / user-profile menu in navbar                          | `Menu`             | overlays            | Pass `Avatar` as the trigger element; group items in `Menu.Section`        |
@@ -63,6 +64,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Single collapsible row (standalone, no group)                 | `Accordion.Item`   | content             | Set `collapsible={true}` for always-visible non-collapsible rows           |
 | FAQ list / expandable Q&A items                               | `Accordion`        | content             | Set `enableExpandAll` to show a Show All / Hide All control                |
 | Card surface / elevated container                             | `Card`             | content             | Any `<div>` with elevated shadow or rounded border in Figma                |
+| Data grid with merged cells or custom row/col spans           | `Table`            | content             | Use low-level table structure; choose `DataTable` for sorting/selection    |
 | Horizontal tab bar / selector strip                           | `Tab`              | content             | Multiple label tabs that switch which content panel is visible             |
 | Individual tab panel / content section                        | `Tab.Item`         | content             | One `Tab.Item` per panel; tab order mirrors JSX order                      |
 | Tab selector with numeric badge / count                       | `Tab.Item`         | content             | Set `titleAddon` with badge content; `position` defaults to `"right"`      |
@@ -71,6 +73,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Heading text (H1–H6)                                          | `Typography`       | core                | Use `Typography.HeadingXXL` → `Typography.HeadingXS` variants              |
 | Body / paragraph text                                         | `Typography`       | core                | Use `Typography.BodyBL` → `Typography.BodyXS` variants                     |
 | Hyperlink / anchor                                            | `Typography`       | core                | Use `Typography.LinkBL` → `Typography.LinkXS` variants                     |
+| HTML / rich text content block (bold, links, lists)           | `Markup`           | core                | Use for CMS/HTML-rich content; plain text should use `Typography.*`        |
 | Borderless calendar panel                                     | `Calendar`         | selection-input     | Set `styleType="no-border"`                                                |
 | Calendar with blackout / unavailable dates                    | `Calendar`         | selection-input     | Pass `disabledDates`, `minDate`, or `maxDate`                              |
 | Calendar with multiple selected dates                         | `Calendar`         | selection-input     | Set `variant="multi"`                                                      |

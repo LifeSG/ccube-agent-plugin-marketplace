@@ -247,3 +247,74 @@ const [active, setActive] = React.useState(0);
 **Known limitations**
 - Tab labels exceeding 20 characters are truncated on tablet and mobile
   viewports with no built-in tooltip to reveal the full text.
+
+---
+
+### Table
+
+**Import**: `import { Table } from "@lifesg/react-design-system/table"`
+
+**Category**: Content
+
+**Decision rule**
+> Use `Table` when you need low-level, fully custom table markup (for example
+> row/column spans or bespoke cell rendering); use `DataTable` when you need
+> built-in sorting, selection, loading, and empty-state behaviours.
+
+**When to use**
+- Displaying tabular data that needs custom `<thead>`, `<tbody>`, merged
+  cells, or fixed column widths.
+- Product layouts where semantic table structure is required but advanced
+  DataTable interactions are intentionally not needed.
+
+**When NOT to use**
+| Situation                                                          | Use instead |
+| ------------------------------------------------------------------ | ----------- |
+| Table requires built-in row selection, loading, or sort indicators | `DataTable` |
+
+**Key props**
+| Prop               | Type                            | Required | Notes                                                            |
+| ------------------ | ------------------------------- | -------- | ---------------------------------------------------------------- |
+| `Table`            | `HTMLTableElement` props        | no       | Root `<table>` wrapper; supports standard table attributes.      |
+| `Table.Head`       | `HTMLTableSectionElement` props | no       | Table head section wrapper (`<thead>`).                          |
+| `Table.Body`       | `HTMLTableSectionElement` props | no       | Table body section wrapper (`<tbody>`).                          |
+| `Table.Row`        | `HTMLTableRowElement` props     | no       | Row wrapper (`<tr>`).                                            |
+| `Table.HeaderCell` | `HTMLTableCellElement` props    | no       | Header cell wrapper (`<th>`); use style width for fixed columns. |
+| `Table.Cell`       | `HTMLTableCellElement` props    | no       | Data cell wrapper (`<td>`); supports `colSpan` / `rowSpan`.      |
+
+**Canonical usage**
+```tsx
+// Lightweight table with fixed widths and custom row rendering
+import { Table } from "@lifesg/react-design-system/table";
+
+<Table>
+  <Table.Head>
+    <Table.Row>
+      <Table.HeaderCell style={{ width: "30%" }}>Name</Table.HeaderCell>
+      <Table.HeaderCell style={{ width: "45%" }}>Email</Table.HeaderCell>
+      <Table.HeaderCell>Status</Table.HeaderCell>
+    </Table.Row>
+  </Table.Head>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>John Doe</Table.Cell>
+      <Table.Cell>john@example.com</Table.Cell>
+      <Table.Cell>Pending</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                    | Map to  | Condition                                             |
+| ------------------------------------------------ | ------- | ----------------------------------------------------- |
+| Data grid with merged cells / grouped row labels | `Table` | Design requires `rowSpan` or `colSpan` semantics      |
+| Simple tabular list with custom cell composition | `Table` | Consumer controls all cell rendering and interactions |
+
+**Composition patterns**
+- Wrap `Table` in a horizontally scrollable container when Figma shows wide
+  desktop-first tables that must remain usable on mobile.
+
+**Known limitations**
+- No built-in sorting, selection, empty state, or loading UI.
+- Consumers must implement sticky headers, pagination, and row actions.

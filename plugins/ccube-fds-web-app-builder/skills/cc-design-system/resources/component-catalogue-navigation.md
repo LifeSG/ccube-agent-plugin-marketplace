@@ -71,3 +71,84 @@ import { Breadcrumb } from "@lifesg/react-design-system/breadcrumb";
   components (e.g., Next.js `<Link>`) must be integrated via `onClick` +
   `href`, or by passing router-aware `children` — there is no built-in `as`
   prop for router adapter integration.
+
+---
+
+### Navbar
+
+**Import**: `import { Navbar } from "@lifesg/react-design-system/navbar"`
+
+**Category**: Navigation
+
+**Decision rule**
+> Use `Navbar` for top-of-page primary navigation that combines branding,
+> nav links, and action buttons across responsive viewports; use `Breadcrumb`
+> only for hierarchical wayfinding inside a page path.
+
+**When to use**
+- Site-level navigation bars with brand logo, top-level links, and
+  utility/action controls.
+- Responsive headers where desktop links collapse into a mobile drawer.
+
+**When NOT to use**
+| Situation                                              | Use instead  |
+| ------------------------------------------------------ | ------------ |
+| User only needs page-path context (Home > Section > …) | `Breadcrumb` |
+| Vertical side navigation for section-level IA          | `Sidenav`    |
+
+**Key props**
+| Prop                      | Type                                        | Required | Notes                                                                       |
+| ------------------------- | ------------------------------------------- | -------- | --------------------------------------------------------------------------- |
+| items                     | `NavItemsProps<T>`                          | yes      | Desktop/mobile nav item definitions; mobile defaults to desktop if omitted. |
+| actionButtons             | `NavbarActionButtonsProps`                  | no       | Right-side action buttons; supports button, download, or custom components. |
+| selectedId                | `string`                                    | no       | Current selected navigation item id.                                        |
+| resources                 | `NavbarResourcesProps`                      | no       | Primary and secondary branding configuration.                               |
+| masthead                  | `boolean`                                   | no       | Shows SG masthead section; defaults to `true`.                              |
+| fixed                     | `boolean`                                   | no       | Keeps navbar fixed at top; defaults to `true`.                              |
+| layout                    | `"default" \| "stretch"`                    | no       | `"stretch"` expands navbar content to full width with fixed padding.        |
+| hideNavBranding           | `boolean`                                   | no       | Hides brand logos and aligns nav items left on desktop.                     |
+| hideLinkIndicator         | `boolean`                                   | no       | Hides selected-link indicator styling.                                      |
+| drawerDismissalExclusions | `DrawerDismissalMethod[]`                   | no       | Prevents drawer auto-dismiss for selected actions in mobile/tablet.         |
+| onItemClick               | `(item: NavItemProps<T>) => void`           | no       | Called when a navigation link item is clicked.                              |
+| onActionButtonClick       | `(actionButton: NavbarButtonProps) => void` | no       | Called when an action button is clicked.                                    |
+
+**Canonical usage**
+```tsx
+// Primary website navigation with desktop + mobile item sets
+import { Navbar } from "@lifesg/react-design-system/navbar";
+
+<Navbar
+  items={{
+    desktop: [
+      { id: "home", children: "Home", href: "/" },
+      { id: "services", children: "Services", href: "/services" },
+    ],
+  }}
+  actionButtons={{
+    desktop: [
+      {
+        type: "button",
+        args: { children: "Logout", styleType: "secondary" },
+      },
+    ],
+  }}
+  selectedId="services"
+  onItemClick={(item) => console.log(item.id)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                     | Map to   | Condition                                                  |
+| ------------------------------------------------- | -------- | ---------------------------------------------------------- |
+| Top app/site navigation bar with logo and links   | `Navbar` | Includes primary branding and top-level navigation items   |
+| Mobile nav drawer triggered from header menu icon | `Navbar` | Same nav IA must collapse into drawer on smaller viewports |
+
+**Composition patterns**
+- Add `Avatar` as an uncollapsible custom action button for signed-in user
+  profile access in desktop and mobile layouts.
+
+**Known limitations**
+- Drawer dismissal animation takes about 550ms on mobile/tablet; defer
+  post-click scroll/focus transitions until dismissal completes.
+- Uses an SG masthead web-component script; strict CSP setups may need to
+  whitelist `https://cdn.jsdelivr.net/npm/@govtechsg/sgds-web-component@3/components/Masthead/index.umd.js`.

@@ -255,6 +255,67 @@ import { Layout } from "@lifesg/react-design-system/layout";
 
 ---
 
+### Markup
+
+**Import**: `import { Markup } from "@lifesg/react-design-system/markup"`
+
+**Category**: Core
+
+**Decision rule**
+> Use `Markup` when rendering CMS or rich-text HTML (for example `<strong>`,
+> `<a>`, `<ul>`, `<ol>`) that must keep FDS typography and link styling;
+> use `Typography.*` for plain text-only content.
+
+**When to use**
+- Rich-text content blocks from CMS or markdown pipelines that contain
+  inline tags and list markup.
+- Product help or legal content where links, bold text, and list semantics
+  must render consistently with FDS defaults.
+
+**When NOT to use**
+| Situation                                          | Use instead  |
+| -------------------------------------------------- | ------------ |
+| Plain heading/body text without embedded HTML tags | `Typography` |
+
+**Key props**
+| Prop          | Type                                             | Required | Notes                                                                         |
+| ------------- | ------------------------------------------------ | -------- | ----------------------------------------------------------------------------- |
+| baseTextColor | `string \| ((props: ThemeStyleProps) => string)` | no       | Default text colour for nested markup. If omitted, inherits from parent.      |
+| baseTextSize  | `TypographySizeType`                             | no       | Default font size for nested markup text. If omitted, inherits from parent.   |
+| inline        | `boolean`                                        | no       | Renders as inline `<span>` when `true`; block `<div>` when `false` (default). |
+
+**Canonical usage**
+```tsx
+// Rich text block from CMS content with FDS-safe styling
+import { Markup } from "@lifesg/react-design-system/markup";
+
+<Markup
+  baseTextSize="body-md"
+  baseTextColor={(props) => props.theme.Colour["text-main"]}
+>
+  {`<p>You can use <strong>bold text</strong> to emphasise details.</p>
+    <p>Read the <a href="https://life.gov.sg/">official guide</a>.</p>
+    <ul><li>First item</li><li>Second item</li></ul>`}
+</Markup>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                    | Map to   | Condition                                                                   |
+| ------------------------------------------------ | -------- | --------------------------------------------------------------------------- |
+| Rich text block with mixed styles and hyperlinks | `Markup` | Text includes inline emphasis, links, or list semantics from content source |
+| Numbered or bulleted list content                | `Markup` | List semantics (`<ol>` / `<ul>`) must be preserved                          |
+
+**Composition patterns**
+- Wrap `Markup` inside `Card` or `Accordion.Item` for rich content sections
+  that still require FDS surface and spacing conventions.
+
+**Known limitations**
+- `Markup` styles semantic HTML elements only; it is not a markdown parser.
+- Sanitisation is the consumer's responsibility when rendering user-provided
+  HTML.
+
+---
+
 ### Typography
 
 **Import**: `import { Typography } from "@lifesg/react-design-system/typography"`
