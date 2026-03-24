@@ -174,9 +174,9 @@ import { Footer } from "@lifesg/react-design-system/footer";
 | Primary site navigation with links and actions | `Navbar`    |
 
 **Key props**
-| Prop      | Type      | Required | Notes                                                      |
-| --------- | --------- | -------- | ---------------------------------------------------------- |
-| stretch   | `boolean` | no       | Stretches masthead full width with fixed horizontal padding. |
+| Prop    | Type      | Required | Notes                                                        |
+| ------- | --------- | -------- | ------------------------------------------------------------ |
+| stretch | `boolean` | no       | Stretches masthead full width with fixed horizontal padding. |
 
 **Canonical usage**
 ```tsx
@@ -187,8 +187,8 @@ import { Masthead } from "@lifesg/react-design-system/masthead";
 ```
 
 **Figma mapping hints**
-| Figma element / layer pattern                               | Map to     | Condition                                  |
-| ----------------------------------------------------------- | ---------- | ------------------------------------------ |
+| Figma element / layer pattern                                 | Map to     | Condition                                  |
+| ------------------------------------------------------------- | ---------- | ------------------------------------------ |
 | Official Singapore Government banner at top of page (.gov.sg) | `Masthead` | Mandatory banner above page content header |
 
 **Known limitations**

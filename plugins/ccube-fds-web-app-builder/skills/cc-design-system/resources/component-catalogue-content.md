@@ -119,22 +119,22 @@ import { Accordion } from "@lifesg/react-design-system/accordion";
 - Review pages where a warning/error icon beside the section title is needed.
 
 **When NOT to use**
-| Situation                                        | Use instead      |
-| ------------------------------------------------ | ---------------- |
-| Plain elevated surface with no collapse behavior | `Card`           |
-| Multi-item expandable FAQ/list content           | `Accordion`      |
+| Situation                                        | Use instead |
+| ------------------------------------------------ | ----------- |
+| Plain elevated surface with no collapse behavior | `Card`      |
+| Multi-item expandable FAQ/list content           | `Accordion` |
 
 **Key props**
-| Prop                  | Type                                         | Required | Notes                                          |
-| --------------------- | -------------------------------------------- | -------- | ---------------------------------------------- |
-| title                 | `string \| JSX.Element`                      | yes      | Header label shown in the top row.             |
-| children              | `JSX.Element \| JSX.Element[]`               | yes      | Body content rendered inside the container.    |
-| collapsible           | `boolean`                                    | no       | Enables expand/collapse behavior.              |
-| expanded              | `boolean`                                    | no       | Controls opened state when `collapsible` is on. |
-| clickableHeader       | `boolean`                                    | no       | Makes the whole header toggle expand/collapse. |
-| displayState          | `"default" \| "error" \| "warning"`     | no       | Adds no icon, red icon, or orange icon.        |
-| callToActionComponent | `JSX.Element`                                | no       | Renders a custom action element in header.     |
-| subComponentTestIds   | `BoxContainerSubComponentTestIds`            | no       | Sets test ids for title, handle, and icon.     |
+| Prop                  | Type                                | Required | Notes                                           |
+| --------------------- | ----------------------------------- | -------- | ----------------------------------------------- |
+| title                 | `string \| JSX.Element`             | yes      | Header label shown in the top row.              |
+| children              | `JSX.Element \| JSX.Element[]`      | yes      | Body content rendered inside the container.     |
+| collapsible           | `boolean`                           | no       | Enables expand/collapse behavior.               |
+| expanded              | `boolean`                           | no       | Controls opened state when `collapsible` is on. |
+| clickableHeader       | `boolean`                           | no       | Makes the whole header toggle expand/collapse.  |
+| displayState          | `"default" \| "error" \| "warning"` | no       | Adds no icon, red icon, or orange icon.         |
+| callToActionComponent | `JSX.Element`                       | no       | Renders a custom action element in header.      |
+| subComponentTestIds   | `BoxContainerSubComponentTestIds`   | no       | Sets test ids for title, handle, and icon.      |
 
 **Canonical usage**
 ```tsx
@@ -153,8 +153,8 @@ import { BoxContainer } from "@lifesg/react-design-system/box-container";
 ```
 
 **Figma mapping hints**
-| Figma element / layer pattern                      | Map to         | Condition                                     |
-| -------------------------------------------------- | -------------- | --------------------------------------------- |
+| Figma element / layer pattern                       | Map to         | Condition                                     |
+| --------------------------------------------------- | -------------- | --------------------------------------------- |
 | Boxed content section with title and chevron toggle | `BoxContainer` | Header controls expand/collapse of body block |
 
 **Composition patterns**

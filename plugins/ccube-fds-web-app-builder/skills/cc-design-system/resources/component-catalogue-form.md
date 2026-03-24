@@ -306,25 +306,25 @@ import { Form } from "@lifesg/react-design-system/form";
 - Large option sets that benefit from built-in search and virtualised lists.
 
 **When NOT to use**
-| Situation                                | Use instead   |
-| ---------------------------------------- | ------------- |
-| User can select only one option          | `Form.Select` |
+| Situation                                | Use instead              |
+| ---------------------------------------- | ------------------------ |
+| User can select only one option          | `Form.Select`            |
 | Option hierarchy needs parent/child tree | `Form.NestedMultiSelect` |
 
 **Key props**
-| Prop             | Type                                   | Required | Notes                                              |
-| ---------------- | -------------------------------------- | -------- | -------------------------------------------------- |
-| options          | `T[]`                                  | yes      | Source option objects rendered in dropdown.        |
-| selectedOptions  | `T[]`                                  | no       | Controlled selected option objects.                |
-| valueExtractor   | `(option: T) => V`                     | no       | Derives option value key from each option object.  |
-| listExtractor    | `(option: T) => string`                | no       | Derives display label for each option row.         |
-| enableSearch     | `boolean`                              | no       | Enables text search input within dropdown.         |
-| maxSelectable    | `number`                               | no       | Caps the number of selections allowed.             |
+| Prop             | Type                                 | Required | Notes                                              |
+| ---------------- | ------------------------------------ | -------- | -------------------------------------------------- |
+| options          | `T[]`                                | yes      | Source option objects rendered in dropdown.        |
+| selectedOptions  | `T[]`                                | no       | Controlled selected option objects.                |
+| valueExtractor   | `(option: T) => V`                   | no       | Derives option value key from each option object.  |
+| listExtractor    | `(option: T) => string`              | no       | Derives display label for each option row.         |
+| enableSearch     | `boolean`                            | no       | Enables text search input within dropdown.         |
+| maxSelectable    | `number`                             | no       | Caps the number of selections allowed.             |
 | optionsLoadState | `"success" \| "loading" \| "failed"` | no       | Shows loading/fail state for async option fetches. |
-| variant          | `"default" \| "small"`             | no       | Controls field size style.                         |
-| customLabels     | `DropdownCustomLabelProps`             | no       | Overrides select-all and multi-selected labels.    |
-| dropdownZIndex   | `number`                               | no       | Overrides dropdown stacking order for conflicts.   |
-| errorMessage     | `string \| React.ReactNode`            | no       | Form-level validation message below the field.     |
+| variant          | `"default" \| "small"`               | no       | Controls field size style.                         |
+| customLabels     | `DropdownCustomLabelProps`           | no       | Overrides select-all and multi-selected labels.    |
+| dropdownZIndex   | `number`                             | no       | Overrides dropdown stacking order for conflicts.   |
+| errorMessage     | `string \| React.ReactNode`          | no       | Form-level validation message below the field.     |
 
 **Canonical usage**
 ```tsx
@@ -344,8 +344,8 @@ import { Form } from "@lifesg/react-design-system/form";
 ```
 
 **Figma mapping hints**
-| Figma element / layer pattern                      | Map to             | Condition                              |
-| -------------------------------------------------- | ------------------ | -------------------------------------- |
+| Figma element / layer pattern                         | Map to             | Condition                              |
+| ----------------------------------------------------- | ------------------ | -------------------------------------- |
 | Multi-select dropdown field with selected-count label | `Form.MultiSelect` | User can select multiple items at once |
 
 **Composition patterns**

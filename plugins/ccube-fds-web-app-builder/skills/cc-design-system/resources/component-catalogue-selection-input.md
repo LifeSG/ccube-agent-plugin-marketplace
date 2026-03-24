@@ -361,22 +361,22 @@ import { FileDownload } from "@lifesg/react-design-system/file-download";
 - Flows that need built-in resend action and cooldown handling.
 
 **When NOT to use**
-| Situation                                      | Use instead   |
-| ---------------------------------------------- | ------------- |
-| Normal text or numeric data entry in forms     | `Form.Input`  |
+| Situation                                               | Use instead            |
+| ------------------------------------------------------- | ---------------------- |
+| Normal text or numeric data entry in forms              | `Form.Input`           |
 | Full verification workflow with channel UI and wrappers | `Form.OtpVerification` |
 
 **Key props**
-| Prop              | Type                                   | Required | Notes                                                  |
-| ----------------- | -------------------------------------- | -------- | ------------------------------------------------------ |
-| numOfInput        | `number`                               | yes      | Number of OTP boxes to render.                         |
-| value             | `string[]`                             | no       | Controlled OTP value as one character per index.       |
+| Prop              | Type                                   | Required | Notes                                                   |
+| ----------------- | -------------------------------------- | -------- | ------------------------------------------------------- |
+| numOfInput        | `number`                               | yes      | Number of OTP boxes to render.                          |
+| value             | `string[]`                             | no       | Controlled OTP value as one character per index.        |
 | cooldownDuration  | `number`                               | no       | Cooldown in seconds before resend action is re-enabled. |
-| actionButtonProps | `ButtonProps`                          | no       | Customises the built-in resend/action button.          |
-| otpOnly           | `boolean`                              | no       | Hides built-in action button for external UI control.  |
+| actionButtonProps | `ButtonProps`                          | no       | Customises the built-in resend/action button.           |
+| otpOnly           | `boolean`                              | no       | Hides built-in action button for external UI control.   |
 | prefix            | `{ value: string; separator: string }` | no       | Shows and strips prefix during paste/autofill handling. |
-| errorMessage      | `string \| React.ReactNode`            | no       | Displays validation feedback below the OTP field.      |
-| data-testid       | `string`                               | no       | Test selector on the component root.                   |
+| errorMessage      | `string \| React.ReactNode`            | no       | Displays validation feedback below the OTP field.       |
+| data-testid       | `string`                               | no       | Test selector on the component root.                    |
 
 **Canonical usage**
 ```tsx
@@ -394,9 +394,9 @@ import { OtpInput } from "@lifesg/react-design-system/otp-input";
 ```
 
 **Figma mapping hints**
-| Figma element / layer pattern                | Map to     | Condition                                      |
-| -------------------------------------------- | ---------- | ---------------------------------------------- |
-| One-time-password code input with resend CTA | `OtpInput` | Fixed-length OTP boxes with cooldown action    |
+| Figma element / layer pattern                | Map to     | Condition                                   |
+| -------------------------------------------- | ---------- | ------------------------------------------- |
+| One-time-password code input with resend CTA | `OtpInput` | Fixed-length OTP boxes with cooldown action |
 
 **Known limitations**
 - `otpOnly` removes the built-in button; cooldown UI must then be rendered by
