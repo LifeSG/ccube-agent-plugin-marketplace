@@ -341,3 +341,64 @@ import { Pagination } from "@lifesg/react-design-system/pagination";
 
 **Known limitations**
 - Page-size changer is desktop-only per component behaviour.
+
+---
+
+### Sidenav
+
+**Import**: `import { Sidenav } from "@lifesg/react-design-system/sidenav"`
+
+**Category**: Navigation
+
+**Decision rule**
+> Use `Sidenav` when navigation is presented as a persistent left rail with
+> optional nested subitems; use `Navbar` when top horizontal navigation is
+> required.
+
+**When to use**
+- Section-level navigation on desktop layouts with many related pages.
+- Information architectures that need grouped items and expandable subitems.
+
+**When NOT to use**
+| Situation                                    | Use instead  |
+| -------------------------------------------- | ------------ |
+| Top-of-page primary site navigation          | `Navbar`     |
+| Breadcrumb path context for current location | `Breadcrumb` |
+
+**Key props**
+| Prop        | Type              | Required | Notes                                              |
+| ----------- | ----------------- | -------- | -------------------------------------------------- |
+| children    | `React.ReactNode` | yes      | One or more `Sidenav.Group` sections.              |
+| fixed       | `boolean`         | no       | Fixes the sidenav to the left; defaults to `true`. |
+| aria-label  | `string`          | no       | Accessibility label; defaults to `"Sidebar"`.      |
+| className   | `string`          | no       | Custom class selector on root container.           |
+| data-testid | `string`          | no       | Test selector on component root.                   |
+| id          | `string`          | no       | Unique identifier for the root element.            |
+
+**Canonical usage**
+```tsx
+// Left-rail navigation with grouped items and nested drawer subitems
+import { Sidenav } from "@lifesg/react-design-system/sidenav";
+
+<Sidenav>
+  <Sidenav.Group label="Application">
+    <Sidenav.Item selected>Overview</Sidenav.Item>
+    <Sidenav.Item>
+      Services
+      <Sidenav.DrawerItem>
+        <Sidenav.DrawerSubitem>Housing</Sidenav.DrawerSubitem>
+        <Sidenav.DrawerSubitem>Health</Sidenav.DrawerSubitem>
+      </Sidenav.DrawerItem>
+    </Sidenav.Item>
+  </Sidenav.Group>
+</Sidenav>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                    | Map to    | Condition                                          |
+| ------------------------------------------------ | --------- | -------------------------------------------------- |
+| Side navigation rail with nested flyout subitems | `Sidenav` | Left-side grouped nav with optional drawer subnav. |
+
+**Composition patterns**
+- Use with `Layout.Container` page shells where the content area sits beside
+  the fixed left navigation rail.

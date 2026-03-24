@@ -297,6 +297,68 @@ import { DataTable } from "@lifesg/react-design-system/data-table";
 
 ---
 
+### FullscreenImageCarousel
+
+**Import**: `import { FullscreenImageCarousel } from "@lifesg/react-design-system/fullscreen-image-carousel"`
+
+**Category**: Content
+
+**Decision rule**
+> Use `FullscreenImageCarousel` when users must open images in a full-screen
+> zoomable gallery overlay; use inline image components when no overlay or
+> image-to-image navigation is required.
+
+**When to use**
+- Image preview overlays where users can move between multiple images.
+- Cases needing zoom/magnifier controls and optional thumbnail navigation.
+
+**When NOT to use**
+| Situation                                      | Use instead |
+| ---------------------------------------------- | ----------- |
+| Simple static image in page content            | `Card`      |
+| Blocking confirmation dialog with text/actions | `ModalV2`   |
+
+**Key props**
+| Prop                   | Type                                     | Required | Notes                                                      |
+| ---------------------- | ---------------------------------------- | -------- | ---------------------------------------------------------- |
+| show                   | `boolean`                                | yes      | Controls whether the carousel overlay is visible.          |
+| items                  | `FullscreenCarouselItemProps[]`          | yes      | List of images to render in the carousel.                  |
+| animationFrom          | `"top" \| "bottom" \| "left" \| "right"` | no       | Entry animation direction; defaults to `"bottom"`.         |
+| initialActiveItemIndex | `number`                                 | no       | Starting image index; defaults to `0`.                     |
+| hideNavigation         | `boolean`                                | no       | Hides previous/next arrow controls.                        |
+| hideThumbnail          | `boolean`                                | no       | Hides the bottom thumbnail strip.                          |
+| hideMagnifier          | `boolean`                                | no       | Hides the zoom/magnifier control.                          |
+| hideCounter            | `boolean`                                | no       | Hides the pagination counter pill.                         |
+| zIndex                 | `number`                                 | no       | Custom stacking order for overlay layering conflicts.      |
+| onClose                | `() => void`                             | no       | Called when the user closes the overlay or presses Escape. |
+
+**Canonical usage**
+```tsx
+// Full-screen image gallery with zoom/navigation controls
+import { FullscreenImageCarousel } from "@lifesg/react-design-system/fullscreen-image-carousel";
+
+<FullscreenImageCarousel
+  show={isOpen}
+  items={[
+    { src: "/images/receipt-1.jpg", alt: "Receipt page 1" },
+    { src: "/images/receipt-2.jpg", alt: "Receipt page 2" },
+  ]}
+  initialActiveItemIndex={0}
+  onClose={() => setIsOpen(false)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern       | Map to                    | Condition                                        |
+| ----------------------------------- | ------------------------- | ------------------------------------------------ |
+| Fullscreen image carousel / gallery | `FullscreenImageCarousel` | Overlay supports zoom, next/previous, and close. |
+
+**Known limitations**
+- Requires consumer-owned trigger/open state; it does not include a built-in
+  thumbnail trigger button.
+
+---
+
 ### Tab
 
 **Import**: `import { Tab } from "@lifesg/react-design-system/tab"`

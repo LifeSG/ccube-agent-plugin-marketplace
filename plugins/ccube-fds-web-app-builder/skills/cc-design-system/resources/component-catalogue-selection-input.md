@@ -474,6 +474,56 @@ import { RadioButton } from "@lifesg/react-design-system/radio-button";
 
 ---
 
+### SingpassButton
+
+**Import**: `import { SingpassButton } from "@lifesg/react-design-system/singpass-button"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `SingpassButton` when the action is specifically Singpass login; use
+> standard `Button` variants for all non-Singpass actions.
+
+**When to use**
+- Login and identity-verification entry points that route users to Singpass.
+- Screens that must follow official Singpass button branding guidance.
+
+**When NOT to use**
+| Situation                               | Use instead |
+| --------------------------------------- | ----------- |
+| Generic primary or secondary app action | `Button`    |
+
+**Key props**
+| Prop       | Type                              | Required | Notes                                               |
+| ---------- | --------------------------------- | -------- | --------------------------------------------------- |
+| styleType  | `"red-filled" \| "white-filled"`  | no       | Visual variant; defaults to `"white-filled"`.       |
+| disabled   | `boolean`                         | no       | Disables click interaction (inherited button prop). |
+| onClick    | `() => void`                      | no       | Click handler to start Singpass auth flow.          |
+| type       | `"button" \| "submit" \| "reset"` | no       | Native button type for form behavior control.       |
+| aria-label | `string`                          | no       | Accessibility label for screen-reader clarity.      |
+
+**Canonical usage**
+```tsx
+// Official Singpass login call-to-action
+import { SingpassButton } from "@lifesg/react-design-system/singpass-button";
+
+<SingpassButton
+  styleType="white-filled"
+  aria-label="Log in with Singpass"
+  onClick={startSingpassLogin}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern | Map to           | Condition                                           |
+| ----------------------------- | ---------------- | --------------------------------------------------- |
+| Singpass login CTA button     | `SingpassButton` | Use only official white-filled or red-filled style. |
+
+**Known limitations**
+- Intended only for Singpass-auth actions; do not repurpose as a generic CTA.
+
+---
+
 ### Toggle
 
 **Import**: `import { Toggle } from "@lifesg/react-design-system/toggle"`

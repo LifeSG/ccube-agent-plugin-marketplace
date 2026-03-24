@@ -332,6 +332,80 @@ import { Tag } from "@lifesg/react-design-system/tag";
 
 ---
 
+### Timeline
+
+**Import**: `import { Timeline } from "@lifesg/react-design-system/timeline"`
+
+**Category**: Feedback indicators
+
+**Decision rule**
+> Use `Timeline` when the UI must show ordered process steps with per-step
+> status indicators; use `ProgressIndicator` for compact horizontal wizard
+> progress.
+
+**When to use**
+- Process journeys where each step has rich content (links, actions, tags).
+- Vertical step-by-step tracking with completed/current/upcoming states.
+
+**When NOT to use**
+| Situation                                   | Use instead         |
+| ------------------------------------------- | ------------------- |
+| Compact horizontal multi-step wizard header | `ProgressIndicator` |
+
+**Key props**
+| Prop          | Type                  | Required | Notes                                                             |
+| ------------- | --------------------- | -------- | ----------------------------------------------------------------- |
+| items         | `TimelineItemProps[]` | yes      | Timeline entries with `title`, `content`, and optional `variant`. |
+| title         | `string`              | no       | Header text shown above the timeline list.                        |
+| counterOffset | `number`              | no       | Numeric-mode start offset; default is `0` (starts from 1).        |
+| className     | `string`              | no       | Custom class selector on timeline container.                      |
+| startCol      | `number`              | no       | Grid start column when used in a CSS grid layout.                 |
+| colSpan       | `number`              | no       | Grid column span when used in a CSS grid layout.                  |
+| data-testid   | `string`              | no       | Test selector on component root.                                  |
+
+**Type-specific requirements**
+| Type value  | Extra requirement | Notes                                                              |
+| ----------- | ----------------- | ------------------------------------------------------------------ |
+| `"numeric"` | `counterOffset`   | Optional when timeline numbering should continue from prior steps. |
+
+**Canonical usage**
+```tsx
+// Vertical process timeline with mixed item variants
+import { Timeline } from "@lifesg/react-design-system/timeline";
+
+<Timeline
+  title="What happens next"
+  items={[
+    {
+      title: "Submit application",
+      content: <>We received your documents.</>,
+      variant: "completed",
+    },
+    {
+      title: "Review in progress",
+      content: <>We will notify you when review is complete.</>,
+      variant: "current",
+    },
+    {
+      title: "Collection",
+      content: <>Collect at your selected service centre.</>,
+      variant: "upcoming-active",
+    },
+  ]}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern              | Map to     | Condition                                          |
+| ------------------------------------------ | ---------- | -------------------------------------------------- |
+| Process timeline / chronological step list | `Timeline` | Vertical list with per-step state and rich content |
+
+**Composition patterns**
+- Use `Pill` values inside `TimelineItemProps.statuses` to show compact status
+  tags on each step.
+
+---
+
 ### Toast
 
 **Import**: `import { Toast } from "@lifesg/react-design-system/toast"`

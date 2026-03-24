@@ -354,6 +354,77 @@ import { Form } from "@lifesg/react-design-system/form";
 
 ---
 
+### Form.PhoneNumberInput
+
+**Import**:
+`import { Form } from "@lifesg/react-design-system/form"` →
+`<Form.PhoneNumberInput />`
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.PhoneNumberInput` for labelled phone number capture with country
+> code selection; use `Form.Input` only when phone formatting/country handling
+> is not needed.
+
+**When to use**
+- Any form field collecting mobile or contact numbers with selectable country
+  code.
+- Flows requiring optional fixed country and searchable country options.
+
+**When NOT to use**
+| Situation                           | Use instead        |
+| ----------------------------------- | ------------------ |
+| Plain labelled text input           | `Form.Input`       |
+| Standalone no-label phone input row | `PhoneNumberInput` |
+
+**Key props**
+| Prop                    | Type                                     | Required | Notes                                                         |
+| ----------------------- | ---------------------------------------- | -------- | ------------------------------------------------------------- |
+| label                   | `string \| FormLabelProps`               | no       | Label above the field; supports tooltip/popover addon config. |
+| value                   | `PhoneNumberInputValue`                  | no       | Controlled value object with `countryCode` and `number`.      |
+| onChange                | `(value: PhoneNumberInputValue) => void` | no       | Fires when country code or number input changes.              |
+| errorMessage            | `string \| React.ReactNode`              | no       | Validation message below the field.                           |
+| fixedCountry            | `boolean`                                | no       | Locks selection to provided `value.countryCode`.              |
+| enableSearch            | `boolean`                                | no       | Enables text search in country code dropdown.                 |
+| allowClear              | `boolean`                                | no       | Shows clear icon to reset the input value.                    |
+| optionPlaceholder       | `string`                                 | no       | Placeholder text in country selector field.                   |
+| optionSearchPlaceholder | `string`                                 | no       | Placeholder text in country search input.                     |
+| noBorder                | `boolean`                                | no       | Removes border wrapper style around input area.               |
+| disabled                | `boolean`                                | no       | Disables country selection and number entry.                  |
+| readOnly                | `boolean`                                | no       | Displays value without permitting edits.                      |
+
+**Type-specific requirements**
+| Type value     | Extra requirement   | Notes                                                  |
+| -------------- | ------------------- | ------------------------------------------------------ |
+| `fixedCountry` | `value.countryCode` | Required to render and lock the selected country code. |
+
+**Canonical usage**
+```tsx
+// Labelled phone input with country selector and validation
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.PhoneNumberInput
+  label="Mobile number"
+  value={phoneValue}
+  enableSearch
+  allowClear
+  errorMessage={errors.mobileNumber}
+  onChange={(value) => setPhoneValue(value)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                 | Map to                  | Condition                                               |
+| --------------------------------------------- | ----------------------- | ------------------------------------------------------- |
+| Phone number field with country code selector | `Form.PhoneNumberInput` | Labelled form field with selectable international code. |
+
+**Composition patterns**
+- Use standalone `PhoneNumberInput` from `phone-number-input` when label and
+  form error wrapper are not required.
+
+---
+
 ### Form.Select (InputSelect)
 
 **Import**:

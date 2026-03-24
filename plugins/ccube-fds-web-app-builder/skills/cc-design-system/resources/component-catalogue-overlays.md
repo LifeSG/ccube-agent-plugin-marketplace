@@ -328,6 +328,62 @@ import { Button } from "@lifesg/react-design-system/button";
 
 ---
 
+### Overlay
+
+**Import**: `import { Overlay } from "@lifesg/react-design-system/overlay"`
+
+**Category**: Overlays
+
+**Decision rule**
+> Use `Overlay` when you only need a dimmed backdrop layer and custom content
+> control; use `ModalV2` when you need a full dialog structure with card,
+> close controls, and footer slots.
+
+**When to use**
+- Custom overlay experiences requiring just backdrop + click-dismiss behavior.
+- Transitional states where background interaction must be blocked.
+
+**When NOT to use**
+| Situation                                    | Use instead |
+| -------------------------------------------- | ----------- |
+| Standard dialog with built-in content layout | `ModalV2`   |
+| Right-side panel with predefined shell       | `Drawer`    |
+
+**Key props**
+| Prop               | Type         | Required | Notes                                                      |
+| ------------------ | ------------ | -------- | ---------------------------------------------------------- |
+| show               | `boolean`    | yes      | Controls overlay visibility.                               |
+| rootId             | `string`     | no       | Portal target element id; defaults to `body` when omitted. |
+| backgroundBlur     | `boolean`    | no       | Enables background blur effect; defaults to `true`.        |
+| disableTransition  | `boolean`    | no       | Disables show/hide animation transitions.                  |
+| zIndex             | `number`     | no       | Custom stacking level for layered overlays/modals.         |
+| enableOverlayClick | `boolean`    | no       | Enables callback when user clicks on dimmed backdrop.      |
+| onOverlayClick     | `() => void` | no       | Called on backdrop click when `enableOverlayClick={true}`. |
+| id                 | `string`     | no       | Unique element identifier for the overlay root.            |
+
+**Canonical usage**
+```tsx
+// Backdrop overlay with click-to-dismiss behavior
+import { Overlay } from "@lifesg/react-design-system/overlay";
+
+<Overlay
+  show={isOpen}
+  enableOverlayClick
+  onOverlayClick={() => setIsOpen(false)}
+  zIndex={70}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern       | Map to    | Condition                                            |
+| ----------------------------------- | --------- | ---------------------------------------------------- |
+| Page-dimming backdrop overlay layer | `Overlay` | Dimmed background that blocks page interaction only. |
+
+**Known limitations**
+- `backgroundOpacity` is deprecated and has no effect.
+
+---
+
 ### PopoverInline
 
 **Import**:
