@@ -92,16 +92,15 @@ import { Divider } from "@lifesg/react-design-system/divider";
 **Category**: Core
 
 **Decision rule**
-> Use `ErrorDisplay` whenever a page-level, full-screen error or critical
-> application state must replace normal page content — it is the only FDS
-> component for rendering full-screen HTTP error, maintenance, session
-> inactivity, and payment-status pages.
+> Use `ErrorDisplay` when a blocking, full-page state replaces normal page
+> content; use `Alert`, `Toast`, or `ModalV2` when the user should stay on the
+> current page context.
 
 **When to use**
 - Full-page HTTP error states (400, 403, 404, 408, 500, 502–504) that replace
-  normal page content.
-- Application-level blocking states: service maintenance, session inactivity
-  countdown, payment or transfer failure, logout, or confirmation screens.
+  the page body.
+- Blocking application states such as maintenance, inactivity timeout,
+  unsuccessful payment/transfer, logout, or confirmation screens.
 
 **When NOT to use**
 | Situation                                                     | Use instead                 |
@@ -111,16 +110,23 @@ import { Divider } from "@lifesg/react-design-system/divider";
 | Blocking confirmation dialog overlaying the current page      | `ModalV2`                   |
 
 **Key props**
-| Prop               | Type                                                                | Required | Notes                                                                                                                                                                                                                                                                                                                                                              |
-| ------------------ | ------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| type               | `ErrorDisplayType`                                                  | yes      | Selects the built-in layout and illustration. Values: `"400"` `"403"` `"404"` `"408"` `"500"` `"502"` `"503"` `"504"` `"confirmation"` `"inactivity"` `"insufficient-credits"` `"link-error"` `"logout"` `"maintenance"` `"no-item-found"` `"payment-unsuccessful"` `"transfer-unsuccessful"` `"unsupported-browser"` `"partially-supported-browser"` `"warning"`. |
-| actionButton       | `ButtonProps`                                                       | no       | Renders a CTA button below the error content; default `children` is `"Proceed"`.                                                                                                                                                                                                                                                                                   |
-| additionalProps    | `MaintenanceAdditionalAttributes \| InactivityAdditionalAttributes` | no       | Required when `type="maintenance"` — pass `{ dateString: string }`. Required when `type="inactivity"` — pass `{ secondsLeft: number }`. Optional `reminderInterval` (seconds) controls screen-reader announcement frequency for `"inactivity"`.                                                                                                                    |
-| description        | `string \| JSX.Element`                                             | no       | Overrides the built-in description text for any `type`.                                                                                                                                                                                                                                                                                                            |
-| illustrationScheme | `"base" \| "bookingsg" \| "rbs"`                                    | no       | Replaces the default theme illustration with a resource-scheme-specific one.                                                                                                                                                                                                                                                                                       |
-| imageOnly          | `boolean`                                                           | no       | Renders only the illustration; hides title and description.                                                                                                                                                                                                                                                                                                        |
-| img                | `React.ImgHTMLAttributes<HTMLImageElement>`                         | no       | Custom image attributes to replace the default illustration entirely.                                                                                                                                                                                                                                                                                              |
-| title              | `string \| JSX.Element`                                             | no       | Overrides the built-in title text for any `type`.                                                                                                                                                                                                                                                                                                                  |
+| Prop               | Type                                                                                                                                                                                                                                                                                                                           | Required | Notes                                                        |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------------------------------------------------------------ |
+| type               | `"400" \| "403" \| "404" \| "408" \| "500" \| "502" \| "503" \| "504" \| "confirmation" \| "inactivity" \| "insufficient-credits" \| "link-error" \| "logout" \| "maintenance" \| "no-item-found" \| "payment-unsuccessful" \| "transfer-unsuccessful" \| "unsupported-browser" \| "partially-supported-browser" \| "warning"` | yes      | Selects the built-in state variant and default illustration. |
+| actionButton       | `ButtonProps`                                                                                                                                                                                                                                                                                                                  | no       | CTA button below the error content.                          |
+| additionalProps    | `MaintenanceAdditionalAttributes \| InactivityAdditionalAttributes`                                                                                                                                                                                                                                                            | no       | Required for some `type` values; see table below.            |
+| description        | `string \| JSX.Element`                                                                                                                                                                                                                                                                                                        | no       | Overrides the default description text.                      |
+| illustrationScheme | `"base" \| "bookingsg" \| "rbs"`                                                                                                                                                                                                                                                                                               | no       | Switches illustration assets by resource scheme.             |
+| imageOnly          | `boolean`                                                                                                                                                                                                                                                                                                                      | no       | Shows only illustration and hides title/description.         |
+| img                | `React.ImgHTMLAttributes<HTMLImageElement>`                                                                                                                                                                                                                                                                                    | no       | Replaces default illustration using a custom image payload.  |
+| title              | `string \| JSX.Element`                                                                                                                                                                                                                                                                                                        | no       | Overrides the default title text.                            |
+
+**Type-specific requirements**
+| Type value      | Extra requirement                                 | Notes                                                    |
+| --------------- | ------------------------------------------------- | -------------------------------------------------------- |
+| `"maintenance"` | `additionalProps={{ dateString: string }}`        | Date string is required to show planned downtime timing. |
+| `"inactivity"`  | `additionalProps={{ secondsLeft: number }}`       | Countdown seconds are required for timeout messaging.    |
+| `"inactivity"`  | `additionalProps={{ reminderInterval?: number }}` | Optional screen-reader reminder interval in seconds.     |
 
 **Canonical usage**
 ```tsx
@@ -138,19 +144,6 @@ import { ErrorDisplay } from "@lifesg/react-design-system/error-display";
   additionalProps={{ secondsLeft: 300 }}
   actionButton={{ children: "Stay logged in", onClick: handleStayLoggedIn }}
 />
-
-// Scheduled maintenance page
-<ErrorDisplay
-  type="maintenance"
-  additionalProps={{ dateString: "1 January 2025, 8:00am" }}
-/>
-
-// Custom title / description override for a warning page
-<ErrorDisplay
-  type="warning"
-  title="Access restricted"
-  description="You do not have permission to view this page."
-/>
 ```
 
 **Figma mapping hints**
@@ -161,12 +154,11 @@ import { ErrorDisplay } from "@lifesg/react-design-system/error-display";
 | Session timeout / inactivity warning screen | `ErrorDisplay` | Set `type="inactivity"`; pass `additionalProps={{ secondsLeft: n }}`     |
 
 **Known limitations**
-- Only `"maintenance"` and `"inactivity"` types accept structured
-  `additionalProps`; dynamic text for other types must use `title` and
-  `description` overrides.
-- Style overrides require wrapping in `styled-components` and targeting
-  `data-id` attributes: `"error-display-image"`, `"error-display-title"`,
-  `"error-display-description"`.
+- Structured `additionalProps` are supported only for `"maintenance"` and
+  `"inactivity"` types.
+- Deep style overrides require `styled-components` selectors on internal
+  data IDs (`error-display-image`, `error-display-title`,
+  `error-display-description`).
 
 ---
 
