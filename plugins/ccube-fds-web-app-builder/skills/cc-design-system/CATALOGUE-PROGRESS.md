@@ -60,7 +60,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Footer     | `footer`     | ✅      |
 | Masthead   | `masthead`   | ✅      |
 | Sidenav    | `sidenav`    | ✅      |
-| LocalNav   | `local-nav`  | ⬜      |
+| LocalNav   | `local-nav`  | ✅      |
 | LinkList   | `link-list`  | ⬜      |
 | Avatar     | `avatar`     | ⬜      |
 
@@ -77,7 +77,7 @@ https://designsystem.life.gov.sg/react/index.html
 | FileDownload                       | `file-download`       | ✅      |
 | OtpInput                           | `otp-input`           | ✅      |
 | SingpassButton                     | `singpass-button`     | ✅      |
-| IconButton                         | `icon-button`         | ⬜      |
+| IconButton                         | `icon-button`         | ✅      |
 | ButtonWithIcon                     | `button-with-icon`    | ⬜      |
 | Filter                             | `filter`              | ⬜      |
 | Filter.Addons (FilterItemCheckbox) | `filter/addons`       | ⬜      |
@@ -101,7 +101,7 @@ https://designsystem.life.gov.sg/react/index.html
 | ProgressIndicator                                                  | `progress-indicator`  | ✅      |
 | NotificationBanner                                                 | `notification-banner` | ✅      |
 | Timeline                                                           | `timeline`            | ✅      |
-| Pill                                                               | `pill`                | ⬜      |
+| Pill                                                               | `pill`                | ✅      |
 | Animations                                                         | `animations`          | ⬜      |
 | Animations.Customisable (LoadingDotsSpinner, ThemedLoadingSpinner) | `animations`          | ⬜      |
 | CountdownTimer                                                     | `countdown-timer`     | ⬜      |
@@ -131,7 +131,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Form.DateInput                                  | `date-input`                | ✅      |
 | Form.MultiSelect (InputMultiSelect)             | `input-multi-select`        | ✅      |
 | Form.PhoneNumberInput                           | `phone-number-input`        | ✅      |
-| Form.MaskedInput (MaskedInput)                  | `masked-input`              | ⬜      |
+| Form.MaskedInput (MaskedInput)                  | `masked-input`              | ✅      |
 | InputGroup                                      | `input-group`               | ⬜      |
 | Form.DateRangeInput                             | `date-range-input`          | ⬜      |
 | Form.Timepicker                                 | `timepicker`                | ⬜      |
@@ -187,7 +187,7 @@ https://designsystem.life.gov.sg/react/index.html
 
 ---
 
-**Progress**: 46 / 90 components documented (3 deprecated excluded from count)
+**Progress**: 50 / 90 components documented (3 deprecated excluded from count)
 
 > New sub-components confirmed via Storybook full expansion:
 > `Layout.ColDiv`, `Filter.Addons`, `Animations.Customisable`.

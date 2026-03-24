@@ -153,6 +153,76 @@ import { Footer } from "@lifesg/react-design-system/footer";
 
 ---
 
+### LocalNav
+
+**Import**:
+`import { LocalNavMenu, LocalNavDropdown } from "@lifesg/react-design-system/local-nav"`
+
+**Category**: Navigation
+
+**Decision rule**
+> Use `LocalNavMenu`/`LocalNavDropdown` for in-page section navigation within
+> a single page; use `Navbar` for site-level page-to-page navigation.
+
+**When to use**
+- Long pages with multiple anchored sections that need a local table of
+  contents.
+- Responsive layouts that show a vertical local menu on desktop and switch to
+  a sticky dropdown on smaller screens.
+
+**When NOT to use**
+| Situation                                | Use instead  |
+| ---------------------------------------- | ------------ |
+| Global app navigation across routes/pages | `Navbar`     |
+
+**Key props**
+| Prop              | Type                                                                                     | Required | Notes                                                     |
+| ----------------- | ---------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------- |
+| items             | `LocalNavItemProps[]`                                                                    | yes      | Local section entries rendered in menu/dropdown.          |
+| selectedItemIndex | `number`                                                                                 | no       | Sets current active section index.                        |
+| onNavItemSelect   | `(e: React.MouseEvent \| React.KeyboardEvent, item: LocalNavItemProps, index: number) => void` | no       | Called when user selects a local nav item.                |
+| renderItem        | `(item: LocalNavItemProps, renderProps: { selected: boolean; stickied: boolean }) => React.ReactNode` | no       | Custom renderer for nav item display.                     |
+| id                | `string`                                                                                 | no       | Unique identifier on menu/dropdown root.                  |
+| className         | `string`                                                                                 | no       | Custom class selector for styling hooks.                  |
+| data-testid       | `string`                                                                                 | no       | Test selector for root element.                           |
+
+**Canonical usage**
+```tsx
+// Local section navigation: menu on desktop, sticky dropdown on mobile
+import {
+  LocalNavDropdown,
+  LocalNavMenu,
+} from "@lifesg/react-design-system/local-nav";
+
+const items = [
+  { id: "overview", title: "Overview" },
+  { id: "requirements", title: "Requirements" },
+  { id: "faq", title: "FAQ" },
+];
+
+<LocalNavMenu
+  items={items}
+  selectedItemIndex={selectedIndex}
+  onNavItemSelect={(_e, _item, index) => setSelectedIndex(index)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                    | Map to              | Condition                                            |
+| ------------------------------------------------ | ------------------- | ---------------------------------------------------- |
+| Section-level local navigation menu              | `LocalNavMenu`      | Vertical in-page section navigation list.            |
+| Sticky local section dropdown on smaller screens | `LocalNavDropdown`  | Compact sticky selector for the same local nav items. |
+
+**Composition patterns**
+- Pair `LocalNavMenu` (desktop) with `LocalNavDropdown` (mobile/tablet) using
+  one shared `items` source and selected index state.
+
+**Known limitations**
+- Storybook examples note demo-only code for responsive switching; production
+  implementations should use project breakpoints and layout wrappers.
+
+---
+
 ### Masthead
 
 **Import**: `import { Masthead } from "@lifesg/react-design-system/masthead"`

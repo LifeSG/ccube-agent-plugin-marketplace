@@ -346,6 +346,58 @@ import { FileDownload } from "@lifesg/react-design-system/file-download";
 
 ---
 
+### IconButton
+
+**Import**: `import { IconButton } from "@lifesg/react-design-system/icon-button"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `IconButton` when the action is represented by an icon without visible
+> text; use `ButtonWithIcon` when the action must show both icon and label.
+
+**When to use**
+- Compact toolbar, card, or list actions such as archive, close, delete, or
+  settings.
+- Cases where icon-only affordance is visually required and an accessible name
+  can be provided via `aria-label` or `alt`.
+
+**When NOT to use**
+| Situation                                       | Use instead                                                          |
+| ----------------------------------------------- | -------------------------------------------------------------------- |
+| Action requires visible text label for clarity  | `ButtonWithIcon` from `@lifesg/react-design-system/button-with-icon` |
+
+**Key props**
+| Prop                  | Type                                    | Required | Notes                                                         |
+| --------------------- | --------------------------------------- | -------- | ------------------------------------------------------------- |
+| styleType             | `"primary" \| "secondary" \| "light"` | no       | Visual style; defaults to `"primary"`.                       |
+| sizeType              | `"large" \| "default" \| "small"`      | no       | Size variant; defaults to `"default"`.                       |
+| focusableWhenDisabled | `boolean`                               | no       | Keeps disabled control focusable; defaults to `false`.       |
+| disabled              | `boolean`                               | no       | Disables click behavior (inherited button prop).              |
+| data-testid           | `string`                                | no       | Test selector on the button element.                          |
+
+**Canonical usage**
+```tsx
+// Icon-only archive action with accessible name
+import { IconButton } from "@lifesg/react-design-system/icon-button";
+import { BoxIcon } from "@lifesg/react-icons/box";
+
+<IconButton styleType="secondary" sizeType="default">
+  <BoxIcon aria-label="Archive item" />
+</IconButton>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                 | Map to       | Condition                                              |
+| --------------------------------------------- | ------------ | ------------------------------------------------------ |
+| Icon-only circular action button              | `IconButton` | No visible text label; icon communicates the action.   |
+
+**Known limitations**
+- Accessible name must be provided on icon/image content (e.g. `aria-label`
+  or `alt`) for screen-reader clarity.
+
+---
+
 ### OtpInput
 
 **Import**: `import { OtpInput } from "@lifesg/react-design-system/otp-input"`

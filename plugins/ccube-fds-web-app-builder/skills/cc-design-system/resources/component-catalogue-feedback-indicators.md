@@ -205,6 +205,53 @@ import { NotificationBanner } from "@lifesg/react-design-system/notification-ban
 
 ---
 
+### Pill
+
+**Import**: `import { Pill } from "@lifesg/react-design-system/pill"`
+
+**Category**: Feedback indicators
+
+**Decision rule**
+> Use `Pill` for static, compact status/category chips; use `Tag` when you
+> need interactive/tappable chip behavior.
+
+**When to use**
+- Read-only status labels in timelines, cards, and list metadata.
+- Category markers where a compact, non-interactive visual token is needed.
+
+**When NOT to use**
+| Situation                                         | Use instead                                      |
+| ------------------------------------------------- | ------------------------------------------------ |
+| Chip must be interactive or clickable             | `Tag` from `@lifesg/react-design-system/tag`     |
+
+**Key props**
+| Prop      | Type                                                                                   | Required | Notes                                                         |
+| --------- | -------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------- |
+| type      | `"solid" \| "outline"`                                                               | yes      | Display format for pill style.                                |
+| colorType | `"black" \| "grey" \| "green" \| "yellow" \| "red" \| "blue" \| "primary"` | no       | Color variant; defaults to `"black"`.                       |
+| icon      | `JSX.Element`                                                                          | no       | Optional icon shown with the text content.                    |
+| id        | `string`                                                                               | no       | Unique identifier on the root element (from div attributes).  |
+| className | `string`                                                                               | no       | Custom class selector for styling hooks.                      |
+
+**Canonical usage**
+```tsx
+// Static status pill for metadata display
+import { Pill } from "@lifesg/react-design-system/pill";
+
+<Pill type="outline" colorType="green">Approved</Pill>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                | Map to | Condition                                   |
+| -------------------------------------------- | ------ | ------------------------------------------- |
+| Static status/category pill chip             | `Pill` | Non-interactive compact chip with label.    |
+
+**Known limitations**
+- `Pill` is static by design and does not provide interactive/tappable
+  behavior.
+
+---
+
 ### ProgressIndicator
 
 **Import**: `import { ProgressIndicator } from "@lifesg/react-design-system/progress-indicator"`

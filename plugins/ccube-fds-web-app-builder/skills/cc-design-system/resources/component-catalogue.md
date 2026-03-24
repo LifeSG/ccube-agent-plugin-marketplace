@@ -61,6 +61,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Site footer with logo, link columns, and disclaimer bar        | `Footer`                  | navigation          | Full-width bottom section with directory navigation and legal links            |
 | Fullscreen image carousel / zoomable gallery overlay           | `FullscreenImageCarousel` | content             | Full-screen image viewer with optional thumbnail row and magnifier controls    |
 | Header navigation bar with brand, links, and utility actions   | `Navbar`                  | navigation          | Desktop links collapse into a drawer on mobile/tablet                          |
+| Icon-only circular action button                                | `IconButton`              | selection-input     | Icon-only CTA with accessible icon/alt labelling                               |
 | Pagination controls below a list/table                         | `Pagination`              | navigation          | Numbered page navigation with previous/next movement                           |
 | Pagination with page-size dropdown                             | `Pagination`              | navigation          | Enable `showPageSizeChanger` and optional custom `pageSizeOptions`             |
 | Phone number field with country code selector                  | `Form.PhoneNumberInput`   | form                | Labelled field with code dropdown and value object `{ countryCode, number }`   |
@@ -96,6 +97,7 @@ https://designsystem.life.gov.sg/react/index.html
 | HTML / rich text content block (bold, links, lists)            | `Markup`                  | core                | Use for CMS/HTML-rich content; plain text should use `Typography.*`            |
 | Numbered step list / ordered process                           | `TextList.Ol`             | core                | Ordered counters via `counterType`, `counterSeparator`, and `start`            |
 | Page-dimming backdrop overlay layer                            | `Overlay`                 | overlays            | Dimmed full-page backdrop that blocks background interaction                   |
+| Section-level local navigation menu                            | `LocalNavMenu`            | navigation          | In-page section navigation list; pair with dropdown on smaller screens          |
 | Boxed content section with title and chevron toggle            | `BoxContainer`            | content             | Header controls expand/collapse of body block                                  |
 | Borderless calendar panel                                      | `Calendar`                | selection-input     | Set `styleType="no-border"`                                                    |
 | Borderless downloadable file attachment area                   | `FileDownload`            | selection-input     | Set `styleType="no-border"`                                                    |
@@ -125,7 +127,9 @@ https://designsystem.life.gov.sg/react/index.html
 | Dropdown select (standalone, no label)                         | `InputSelect`             | form                | Use `valueExtractor` + `listExtractor` to map option objects                   |
 | Searchable dropdown / autocomplete select                      | `InputSelect`             | form                | Set `enableSearch={true}` and optionally `searchFunction`                      |
 | Side navigation rail with nested flyout subitems               | `Sidenav`                 | navigation          | Left-side grouped navigation with optional drawer subitems                     |
+| Sensitive text field with reveal/hide eye icon                 | `Form.MaskedInput`        | form                | Masked value display with controlled unmask behavior                           |
 | Singpass login CTA button                                      | `SingpassButton`          | selection-input     | Use official white-filled or red-filled variant only                           |
+| Static status/category pill chip                               | `Pill`                    | feedback-indicators | Non-interactive compact status/category chip                                   |
 | Alert banner (success, error, warning, info)                   | `Alert`                   | feedback-indicators | Set `type` to `"success"`, `"error"`, `"warning"`, or `"info"`                 |
 | Notification count badge on icon/avatar                        | `Badge`                   | feedback-indicators | Number badge with optional anchored offset                                     |
 | Notification dot indicator                                     | `Badge`                   | feedback-indicators | Dot-style attention indicator without text                                     |

@@ -290,6 +290,76 @@ import { Form } from "@lifesg/react-design-system/form";
 
 ---
 
+### Form.MaskedInput
+
+**Import**:
+`import { Form } from "@lifesg/react-design-system/form"` →
+`<Form.MaskedInput />`
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.MaskedInput` when sensitive values must be partially masked and
+> revealable; use `Form.Input` for ordinary plain-text fields.
+
+**When to use**
+- NRIC/ID, card-like identifiers, or other sensitive values requiring masked
+  display.
+- Read-only screens that need controlled mask/unmask behavior, including
+  async unmask loading state.
+
+**When NOT to use**
+| Situation                           | Use instead |
+| ----------------------------------- | ----------- |
+| Plain text input without masking    | `Form.Input` |
+
+**Key props**
+| Prop              | Type                                         | Required | Notes                                                          |
+| ----------------- | -------------------------------------------- | -------- | -------------------------------------------------------------- |
+| label             | `string \| FormLabelProps`                  | no       | Label above field; supports tooltip/popover addons.            |
+| value             | `string`                                     | no       | Controlled input value before masking transformation.           |
+| maskChar          | `string`                                     | no       | Character used for masked output; defaults to `•`.             |
+| maskRange         | `number[]`                                   | no       | Index range to mask in the input value.                        |
+| unmaskRange       | `number[]`                                   | no       | Index range to keep visible while masking remaining characters. |
+| maskRegex         | `RegExp`                                     | no       | Pattern matching characters to mask.                           |
+| maskTransformer   | `(value: string) => string`                  | no       | Custom mask function for advanced masking logic.               |
+| loadState         | `"loading" \| "fail" \| "success"`        | no       | Read-only mode state for async unmask flows.                   |
+| transformInput    | `"uppercase" \| "lowercase"`                | no       | Transforms user input case while typing.                       |
+| errorMessage      | `string \| React.ReactNode`                 | no       | Validation message shown below the field.                      |
+| onMask            | `() => void`                                 | no       | Called when value is masked.                                   |
+| onUnmask          | `() => void`                                 | no       | Called when value is unmasked.                                 |
+| onTryAgain        | `() => void`                                 | no       | Called from retry CTA when `loadState="fail"` in read-only.   |
+
+**Type-specific requirements**
+| Type value  | Extra requirement | Notes                                                     |
+| ----------- | ----------------- | --------------------------------------------------------- |
+| `loadState` | `readOnly`        | Loading/fail/success display applies only in read-only mode. |
+
+**Canonical usage**
+```tsx
+// Masked NRIC-style field with configurable masking range
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.MaskedInput
+  label="Identification number"
+  value={value}
+  maskRange={[2, 5]}
+  errorMessage={errors.idNumber}
+  onChange={(e) => setValue(e.target.value)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                    | Map to             | Condition                                        |
+| ------------------------------------------------ | ------------------ | ------------------------------------------------ |
+| Sensitive text field with reveal/hide eye icon   | `Form.MaskedInput` | Value is masked on blur with controlled unmasking. |
+
+**Composition patterns**
+- Use standalone `MaskedInput` from `masked-input` when form wrapper props
+  (`label`, `errorMessage`) are not needed.
+
+---
+
 ### Form.MultiSelect (InputMultiSelect)
 
 **Import**:
