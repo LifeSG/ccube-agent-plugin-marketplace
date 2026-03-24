@@ -101,6 +101,70 @@ import { Accordion } from "@lifesg/react-design-system/accordion";
 
 ---
 
+### BoxContainer
+
+**Import**:
+`import { BoxContainer } from "@lifesg/react-design-system/box-container"`
+
+**Category**: Content
+
+**Decision rule**
+> Use `BoxContainer` when the frame needs a titled content box that can expand
+> or collapse; if the frame only needs elevation without a header control, use
+> `Card`.
+
+**When to use**
+- Settings or profile sections with a titled header and optional collapse
+  behaviour.
+- Review pages where a warning/error icon beside the section title is needed.
+
+**When NOT to use**
+| Situation                                        | Use instead      |
+| ------------------------------------------------ | ---------------- |
+| Plain elevated surface with no collapse behavior | `Card`           |
+| Multi-item expandable FAQ/list content           | `Accordion`      |
+
+**Key props**
+| Prop                  | Type                                         | Required | Notes                                          |
+| --------------------- | -------------------------------------------- | -------- | ---------------------------------------------- |
+| title                 | `string \| JSX.Element`                      | yes      | Header label shown in the top row.             |
+| children              | `JSX.Element \| JSX.Element[]`               | yes      | Body content rendered inside the container.    |
+| collapsible           | `boolean`                                    | no       | Enables expand/collapse behavior.              |
+| expanded              | `boolean`                                    | no       | Controls opened state when `collapsible` is on. |
+| clickableHeader       | `boolean`                                    | no       | Makes the whole header toggle expand/collapse. |
+| displayState          | `"default" \| "error" \| "warning"`     | no       | Adds no icon, red icon, or orange icon.        |
+| callToActionComponent | `JSX.Element`                                | no       | Renders a custom action element in header.     |
+| subComponentTestIds   | `BoxContainerSubComponentTestIds`            | no       | Sets test ids for title, handle, and icon.     |
+
+**Canonical usage**
+```tsx
+// Collapsible section with a warning display state and edit CTA
+import { BoxContainer } from "@lifesg/react-design-system/box-container";
+
+<BoxContainer
+  title="Contact details"
+  collapsible
+  expanded={true}
+  displayState="warning"
+  callToActionComponent={<button type="button">Edit</button>}
+>
+  <p>Primary email: user@example.gov.sg</p>
+</BoxContainer>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                      | Map to         | Condition                                     |
+| -------------------------------------------------- | -------------- | --------------------------------------------- |
+| Boxed content section with title and chevron toggle | `BoxContainer` | Header controls expand/collapse of body block |
+
+**Composition patterns**
+- Place `Form.*` fields inside `BoxContainer` for collapsible form sections.
+
+**Known limitations**
+- `expanded` only applies when `collapsible={true}`.
+
+---
+
 ### Card
 
 **Import**: `import { Card } from "@lifesg/react-design-system/card"`

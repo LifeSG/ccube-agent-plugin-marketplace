@@ -47,7 +47,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Table                   | `table`                     | ✅      |
 | DataTable               | `data-table`                | ✅      |
 | UneditableSection       | `uneditable-section`        | ✅      |
-| BoxContainer            | `box-container`             | ⬜      |
+| BoxContainer            | `box-container`             | ✅      |
 | FullscreenImageCarousel | `fullscreen-image-carousel` | ⬜      |
 
 ## Navigation
@@ -58,7 +58,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Navbar     | `navbar`     | ✅      |
 | Pagination | `pagination` | ✅      |
 | Footer     | `footer`     | ✅      |
-| Masthead   | `masthead`   | ⬜      |
+| Masthead   | `masthead`   | ✅      |
 | Sidenav    | `sidenav`    | ⬜      |
 | LocalNav   | `local-nav`  | ⬜      |
 | LinkList   | `link-list`  | ⬜      |
@@ -75,7 +75,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Calendar (date picker)             | `calendar`            | ✅      |
 | FileUpload                         | `file-upload`         | ✅      |
 | FileDownload                       | `file-download`       | ✅      |
-| OtpInput                           | `otp-input`           | ⬜      |
+| OtpInput                           | `otp-input`           | ✅      |
 | SingpassButton                     | `singpass-button`     | ⬜      |
 | IconButton                         | `icon-button`         | ⬜      |
 | ButtonWithIcon                     | `button-with-icon`    | ⬜      |
@@ -99,7 +99,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Tag                                                                | `tag`                 | ✅      |
 | Badge                                                              | `badge`               | ✅      |
 | ProgressIndicator                                                  | `progress-indicator`  | ✅      |
-| NotificationBanner                                                 | `notification-banner` | ⬜      |
+| NotificationBanner                                                 | `notification-banner` | ✅      |
 | Timeline                                                           | `timeline`            | ⬜      |
 | Pill                                                               | `pill`                | ⬜      |
 | Animations                                                         | `animations`          | ⬜      |
@@ -116,7 +116,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Menu          | `menu`       | ✅      |
 | Drawer        | `drawer`     | ✅      |
 | PopoverV2     | `popover-v2` | ✅      |
-| PopoverInline | `popover-v2` | ⬜      |
+| PopoverInline | `popover-v2` | ✅      |
 | Overlay       | `overlay`    | ⬜      |
 
 ## Form
@@ -129,7 +129,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Form.Textarea (InputTextarea)                   | `input-textarea`            | ✅      |
 | Form.Label                                      | `form`                      | ✅      |
 | Form.DateInput                                  | `date-input`                | ✅      |
-| Form.MultiSelect (InputMultiSelect)             | `input-multi-select`        | ⬜      |
+| Form.MultiSelect (InputMultiSelect)             | `input-multi-select`        | ✅      |
 | Form.PhoneNumberInput                           | `phone-number-input`        | ⬜      |
 | Form.MaskedInput (MaskedInput)                  | `masked-input`              | ⬜      |
 | InputGroup                                      | `input-group`               | ⬜      |
@@ -187,7 +187,7 @@ https://designsystem.life.gov.sg/react/index.html
 
 ---
 
-**Progress**: 34 / 90 components documented (3 deprecated excluded from count)
+**Progress**: 40 / 90 components documented (3 deprecated excluded from count)
 
 > New sub-components confirmed via Storybook full expansion:
 > `Layout.ColDiv`, `Filter.Addons`, `Animations.Customisable`.

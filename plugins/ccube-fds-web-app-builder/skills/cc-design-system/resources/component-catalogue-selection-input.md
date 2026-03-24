@@ -346,6 +346,64 @@ import { FileDownload } from "@lifesg/react-design-system/file-download";
 
 ---
 
+### OtpInput
+
+**Import**: `import { OtpInput } from "@lifesg/react-design-system/otp-input"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `OtpInput` for one-time-password verification code entry with built-in
+> resend cooldown behavior; use regular text fields for non-OTP input.
+
+**When to use**
+- MFA verification steps where users enter fixed-length OTP codes.
+- Flows that need built-in resend action and cooldown handling.
+
+**When NOT to use**
+| Situation                                      | Use instead   |
+| ---------------------------------------------- | ------------- |
+| Normal text or numeric data entry in forms     | `Form.Input`  |
+| Full verification workflow with channel UI and wrappers | `Form.OtpVerification` |
+
+**Key props**
+| Prop              | Type                                   | Required | Notes                                                  |
+| ----------------- | -------------------------------------- | -------- | ------------------------------------------------------ |
+| numOfInput        | `number`                               | yes      | Number of OTP boxes to render.                         |
+| value             | `string[]`                             | no       | Controlled OTP value as one character per index.       |
+| cooldownDuration  | `number`                               | no       | Cooldown in seconds before resend action is re-enabled. |
+| actionButtonProps | `ButtonProps`                          | no       | Customises the built-in resend/action button.          |
+| otpOnly           | `boolean`                              | no       | Hides built-in action button for external UI control.  |
+| prefix            | `{ value: string; separator: string }` | no       | Shows and strips prefix during paste/autofill handling. |
+| errorMessage      | `string \| React.ReactNode`            | no       | Displays validation feedback below the OTP field.      |
+| data-testid       | `string`                               | no       | Test selector on the component root.                   |
+
+**Canonical usage**
+```tsx
+// OTP field with resend cooldown and validation
+import { OtpInput } from "@lifesg/react-design-system/otp-input";
+
+<OtpInput
+  numOfInput={6}
+  value={otpValue}
+  cooldownDuration={60}
+  errorMessage={otpError}
+  actionButtonProps={{ children: "Resend OTP" }}
+  onChange={(value) => setOtpValue(value)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                | Map to     | Condition                                      |
+| -------------------------------------------- | ---------- | ---------------------------------------------- |
+| One-time-password code input with resend CTA | `OtpInput` | Fixed-length OTP boxes with cooldown action    |
+
+**Known limitations**
+- `otpOnly` removes the built-in button; cooldown UI must then be rendered by
+  the consumer.
+
+---
+
 ### RadioButton
 
 **Import**:

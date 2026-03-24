@@ -153,6 +153,50 @@ import { Footer } from "@lifesg/react-design-system/footer";
 
 ---
 
+### Masthead
+
+**Import**: `import { Masthead } from "@lifesg/react-design-system/masthead"`
+
+**Category**: Navigation
+
+**Decision rule**
+> Use `Masthead` for the mandatory official government banner at the top of
+> `.gov.sg` pages; do not use it as a primary navigation bar.
+
+**When to use**
+- Every `.gov.sg` page that must display the official Singapore Government
+  banner.
+- Layouts that need masthead spacing aligned with FDS `Layout` containers.
+
+**When NOT to use**
+| Situation                                      | Use instead |
+| ---------------------------------------------- | ----------- |
+| Primary site navigation with links and actions | `Navbar`    |
+
+**Key props**
+| Prop      | Type      | Required | Notes                                                      |
+| --------- | --------- | -------- | ---------------------------------------------------------- |
+| stretch   | `boolean` | no       | Stretches masthead full width with fixed horizontal padding. |
+
+**Canonical usage**
+```tsx
+// Mandatory government banner at page top
+import { Masthead } from "@lifesg/react-design-system/masthead";
+
+<Masthead />
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                               | Map to     | Condition                                  |
+| ----------------------------------------------------------- | ---------- | ------------------------------------------ |
+| Official Singapore Government banner at top of page (.gov.sg) | `Masthead` | Mandatory banner above page content header |
+
+**Known limitations**
+- Requires a SGDS masthead script; strict CSP setups must allow the documented
+  script URL.
+
+---
+
 ### Navbar
 
 **Import**: `import { Navbar } from "@lifesg/react-design-system/navbar"`

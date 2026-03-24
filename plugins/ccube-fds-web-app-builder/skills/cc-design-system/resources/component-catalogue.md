@@ -71,6 +71,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Contextual information bubble anchored to a trigger            | `PopoverTrigger`         | overlays            | Click- or hover-activated floating content panel anchored to a UI element      |
 | Hover tooltip anchored to trigger element                      | `PopoverTrigger`         | overlays            | Set `trigger="hover"` for hover-activated popover content                      |
 | Multi-line text area / textarea field                          | `Form.Textarea`          | form                | Any textarea with a visible label above it                                     |
+| Multi-select dropdown field with selected-count label          | `Form.MultiSelect`       | form                | User can select multiple items from one dropdown                               |
 | Multi-step wizard form progress                                | `ProgressIndicator`      | feedback-indicators | Horizontal numbered step chain; set `currentIndex` to the 0-based active step  |
 | Accordion / collapsible section group                          | `Accordion`              | content             | Use `Accordion.Item` for each collapsible row                                  |
 | Single collapsible row (standalone, no group)                  | `Accordion.Item`         | content             | Set `collapsible={true}` for always-visible non-collapsible rows               |
@@ -91,6 +92,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Hyperlink / anchor                                             | `Typography`             | core                | Use `Typography.LinkBL` → `Typography.LinkXS` variants                         |
 | HTML / rich text content block (bold, links, lists)            | `Markup`                 | core                | Use for CMS/HTML-rich content; plain text should use `Typography.*`            |
 | Numbered step list / ordered process                           | `TextList.Ol`            | core                | Ordered counters via `counterType`, `counterSeparator`, and `start`            |
+| Boxed content section with title and chevron toggle            | `BoxContainer`           | content             | Header controls expand/collapse of body block                                  |
 | Borderless calendar panel                                      | `Calendar`               | selection-input     | Set `styleType="no-border"`                                                    |
 | Borderless downloadable file attachment area                   | `FileDownload`           | selection-input     | Set `styleType="no-border"`                                                    |
 | Calendar with blackout / unavailable dates                     | `Calendar`               | selection-input     | Pass `disabledDates`, `minDate`, or `maxDate`                                  |
@@ -103,6 +105,9 @@ https://designsystem.life.gov.sg/react/index.html
 | Icon symbol — filled / solid variant                           | `{Name}FillIcon`         | core                | Append `Fill` before `Icon` in the name; import from `@lifesg/react-icons`     |
 | Icon symbol — outline / stroke variant                         | `{Name}Icon`             | core                | Import from `@lifesg/react-icons/{kebab-name}` for tree-shaking                |
 | Indeterminate / partial select checkbox                        | `Checkbox`               | selection-input     | Set `indeterminate={true}`                                                     |
+| Government banner at page top for .gov.sg services             | `Masthead`               | navigation          | Mandatory official banner above page content                                   |
+| Inline text with contextual info bubble                        | `PopoverInline`          | overlays            | Trigger is embedded directly in sentence flow                                  |
+| Inline OTP code entry with resend cooldown                     | `OtpInput`               | selection-input     | Fixed-length OTP boxes with built-in cooldown behavior                         |
 | Radio button / single-select option circle                     | `RadioButton`            | selection-input     | Use `checked` + `name` to form a mutually exclusive group                      |
 | Read-only data section / pre-filled personal info block        | `UneditableSection`      | content             | Grey-background section with label-value field rows                            |
 | Toggle / switch card (on/off)                                  | `Toggle`                 | selection-input     | Binary immediate-effect control; `type` defaults to `"checkbox"`               |
@@ -126,6 +131,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Date picker / date input field (single date)                   | `Form.DateInput`         | form                | Field has a label and opens a calendar dropdown                                |
 | Description / informational callout box                        | `Alert`                  | feedback-indicators | Set `type="description"`                                                       |
 | Status pop-up with title and description text                  | `Toast`                  | feedback-indicators | Set both `title` and `label` props                                             |
+| Sticky top-of-page announcement banner                         | `NotificationBanner`     | feedback-indicators | Persistent page-level notice above main content                                |
 | Toast / snackbar notification (success, warning, error, info)  | `Toast`                  | feedback-indicators | Floating fixed message; use `type` to set colour scheme                        |
 | Coloured label chip / category tag                             | `Tag`                    | feedback-indicators | Static text label with colour; use `type="outline"` or `type="solid"`          |
 | Interactive filter chip (tappable)                             | `Tag`                    | feedback-indicators | Set `interactive={true}`; larger touch target on mobile                        |

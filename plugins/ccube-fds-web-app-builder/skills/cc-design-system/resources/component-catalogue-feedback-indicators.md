@@ -148,6 +148,63 @@ import { Badge } from "@lifesg/react-design-system/badge";
 
 ---
 
+### NotificationBanner
+
+**Import**:
+`import { NotificationBanner } from "@lifesg/react-design-system/notification-banner"`
+
+**Category**: Feedback indicators
+
+**Decision rule**
+> Use `NotificationBanner` for persistent page-level notices at the top of the
+> viewport; use `Toast` for transient overlays and `Alert` for inline messages.
+
+**When to use**
+- Service-wide announcements that must stay visible across page scroll.
+- Important notices requiring optional dismissal or CTA actions.
+
+**When NOT to use**
+| Situation                                   | Use instead |
+| ------------------------------------------- | ----------- |
+| Temporary message that should auto-dismiss  | `Toast`     |
+| Inline message embedded in page flow        | `Alert`     |
+
+**Key props**
+| Prop               | Type                                           | Required | Notes                                               |
+| ------------------ | ---------------------------------------------- | -------- | --------------------------------------------------- |
+| children           | `string \| JSX.Element \| JSX.Element[]`      | yes      | Banner content, including styled text and links.    |
+| sticky             | `boolean`                                      | no       | Keeps banner fixed at top during scroll.            |
+| dismissible        | `boolean`                                      | no       | Enables close control for user dismissal.           |
+| icon               | `JSX.Element`                                  | no       | Renders a custom icon in the banner.                |
+| actionButton       | `React.ButtonHTMLAttributes<HTMLButtonElement>` | no       | Adds action button below long or actionable content. |
+| maxCollapsedHeight | `number`                                       | no       | Collapses long content and shows expand affordance. |
+| visible            | `boolean`                                      | no       | Controls whether the banner is rendered.            |
+
+**Canonical usage**
+```tsx
+// Sticky, dismissible page-level notice with CTA
+import { NotificationBanner } from "@lifesg/react-design-system/notification-banner";
+
+<NotificationBanner
+  sticky
+  dismissible
+  actionButton={{ children: "View details" }}
+>
+  Service maintenance is scheduled tonight from 11:00 PM to 1:00 AM.
+</NotificationBanner>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern               | Map to               | Condition                                 |
+| ------------------------------------------- | -------------------- | ----------------------------------------- |
+| Sticky top-of-page announcement banner      | `NotificationBanner` | Persistent page-level notice above content |
+
+**Composition patterns**
+- Use `NotificationBanner.Link` for external links that require link icon
+  affordance.
+
+---
+
 ### ProgressIndicator
 
 **Import**: `import { ProgressIndicator } from "@lifesg/react-design-system/progress-indicator"`

@@ -328,6 +328,66 @@ import { Button } from "@lifesg/react-design-system/button";
 
 ---
 
+### PopoverInline
+
+**Import**:
+`import { PopoverInline } from "@lifesg/react-design-system/popover-v2"`
+
+**Category**: Overlays
+
+**Decision rule**
+> Use `PopoverInline` when inline text or icon inside body copy should open a
+> contextual popover; use `PopoverTrigger` for standalone button/icon triggers.
+
+**When to use**
+- Explanatory hints embedded directly inside sentences or labels.
+- Inline terms needing quick contextual clarification without page navigation.
+
+**When NOT to use**
+| Situation                                  | Use instead      |
+| ------------------------------------------ | ---------------- |
+| Trigger is a standalone button or icon     | `PopoverTrigger` |
+| Dropdown-style action list                 | `Menu`           |
+
+**Key props**
+| Prop                | Type                                                                                                                                                                 | Required | Notes                                                  |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------ |
+| content             | `React.ReactNode`                                                                                                                                                    | yes      | Inline trigger content rendered in text flow.          |
+| popoverContent      | `string \| JSX.Element \| ((renderProps: PopoverRenderProps) => React.ReactNode)`                                                                                 | yes      | Floating content shown on trigger interaction.         |
+| trigger             | `"click" \| "hover"`                                                                                                                                                | no       | Chooses interaction model for opening popover.         |
+| position            | `"top" \| "top-start" \| "top-end" \| "bottom" \| "bottom-start" \| "bottom-end" \| "left" \| "left-start" \| "left-end" \| "right" \| "right-start" \| "right-end"` | no       | Places popover relative to inline trigger.             |
+| underlineStyle      | `"default" \| "underline" \| "underline-dashed"`                                                                                                              | no       | Controls resting underline style of inline trigger.    |
+| underlineHoverStyle | `"default" \| "underline" \| "underline-dashed"`                                                                                                              | no       | Controls underline style on hover.                     |
+| icon                | `React.ReactNode`                                                                                                                                                    | no       | Displays an inline icon beside content.                |
+| isModal             | `boolean`                                                                                                                                                            | no       | Traps focus when true; non-modal when false.           |
+
+**Canonical usage**
+```tsx
+// Inline explanatory popover in sentence copy
+import { PopoverInline } from "@lifesg/react-design-system/popover-v2";
+
+<p>
+  Collection is available on
+  <PopoverInline
+    content=" Fridays"
+    popoverContent="Only selected outlets support Friday collection."
+    trigger="hover"
+    underlineStyle="underline"
+  />
+</p>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                      | Map to          | Condition                                      |
+| -------------------------------------------------- | --------------- | ---------------------------------------------- |
+| Inline text with contextual info bubble            | `PopoverInline` | Trigger is embedded in body copy               |
+
+**Known limitations**
+- In mobile viewports, popover behavior is modal-style regardless of
+  `isModal={false}`.
+
+---
+
 ### PopoverV2
 
 **Import**:
