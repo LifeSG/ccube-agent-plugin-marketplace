@@ -29,8 +29,7 @@ single repo. The top-level structure is:
 plugins/
   <plugin-name>/
     README.md                   ← human-readable description of the plugin
-    hooks/
-      hooks.json                ← SessionStart hook declaration
+    hooks.json                  ← SessionStart hook declaration (Copilot format, plugin root)
     scripts/
       session-telemetry.sh      ← telemetry script fired on each session start
     instructions/
@@ -54,7 +53,7 @@ The file types this repo authors and maintains:
 | ---------------------- | -------------------------------------- | --------------------------------------------------------------------------------- |
 | `marketplace.json`     | `.github/plugin/`                      | Registry of all plugins; each entry points to a `plugins/<name>` directory        |
 | `README.md`            | `plugins/<plugin-name>/`               | Human-readable description and skill inventory for the plugin                     |
-| `hooks.json`           | `plugins/<plugin-name>/hooks/`         | SessionStart hook declaration (Claude-format, VS Code auto-detected)              |
+| `hooks.json`           | `plugins/<plugin-name>/`               | SessionStart hook declaration (Copilot-format, VS Code auto-detected at root)     |
 | `session-telemetry.sh` | `plugins/<plugin-name>/scripts/`       | Shell hook fired on session start; shared contract across all plugins             |
 | `.instructions.md`     | `plugins/<plugin-name>/instructions/`  | Always-on coding standards that enforce FDS component usage and React conventions |
 | `.agent.md`            | `plugins/<plugin-name>/agents/`        | Specialized agents that develop web applications within FDS constraints           |
@@ -112,7 +111,7 @@ lowercase, hyphen-separated name that clearly describes the plugin's purpose
 Every plugin MUST include a telemetry hook at:
 
 ```
-plugins/<plugin-name>/hooks/hooks.json
+plugins/<plugin-name>/hooks.json
 plugins/<plugin-name>/scripts/session-telemetry.sh
 ```
 
@@ -235,7 +234,7 @@ Before committing, verify:
 
 1. `plugins/<plugin-name>/` exists with at least one
    `skills/<name>/SKILL.md`.
-2. `plugins/<plugin-name>/hooks/hooks.json` and
+2. `plugins/<plugin-name>/hooks.json` and
    `plugins/<plugin-name>/scripts/session-telemetry.sh` both exist,
    and the script's `PLUGIN_NAME` variable matches the plugin's
    directory name.
@@ -317,6 +316,25 @@ reversible, and consistent with the editor's undo history. Terminal-based file
 reads and writes bypass these safeguards, can silently overwrite work, and may
 fail unpredictably across operating systems (e.g. `cat -A` behaves differently
 on macOS vs Linux).
+
+### Marketplace sync
+
+- You MUST update `.github/plugin/marketplace.json` whenever you add, rename,
+  or remove a skill folder, instructions folder, or agents folder in any
+  plugin.
+- The `"skills"` array in each plugin entry MUST exactly reflect the
+  subdirectories present under `plugins/<plugin-name>/skills/`. An
+  unregistered skill folder will silently fail to load with no error message.
+- When adding or removing an `instructions/` or `agents/` folder, update the
+  corresponding `"instructions"` or `"agents"` field in `marketplace.json`.
+  Omit the field entirely when the folder does not exist.
+- Increment the plugin `"version"` using semantic versioning for every change
+  to `marketplace.json`.
+
+Reasoning: `marketplace.json` is the single source of truth for what each
+plugin exposes. Files that exist on disk but are not registered will load
+silently with no diagnostic — keeping the registry in sync is the only
+reliable way to catch drift.
 
 ### Content boundaries
 
@@ -511,5 +529,9 @@ Before committing a new or updated customization file, verify:
 5. Scope is focused — one file, one concern.
 6. No instructions duplicate what a linter, formatter, or TypeScript already
    enforces.
+7. `.github/plugin/marketplace.json` accurately reflects the current state of
+   the plugin — every skill folder under `plugins/<plugin-name>/skills/` has
+   a corresponding entry in the `"skills"` array, and `"instructions"` /
+   `"agents"` fields are present only if the corresponding folders exist.
 
 <!-- </acceptance-checks> -->
