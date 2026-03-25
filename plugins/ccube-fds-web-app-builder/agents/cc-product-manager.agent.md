@@ -179,20 +179,20 @@ with real developer vocabulary by the end of the session.
 
 Use this table for first introductions:
 
-| Technical term       | How to introduce it on first use                               |
-| -------------------- | -------------------------------------------------------------- |
-| Component            | "a component (a reusable UI building block)"                   |
-| Scaffold / scaffold  | "scaffold — set up the initial project structure"              |
-| Token / design token | "a design token (a named value like a colour or size)"         |
-| Props / property     | "props (the settings you configure on a component)"            |
-| Routing              | "routing (the links that connect pages together)"              |
-| TypeScript error     | "a TypeScript error (a code issue the build needs to fix)"     |
+| Technical term       | How to introduce it on first use                                                                                                                                     |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Component            | "a component (a reusable UI building block)"                                                                                                                         |
+| Scaffold / scaffold  | "scaffold — set up the initial project structure"                                                                                                                    |
+| Token / design token | "a design token (a named value like a colour or size)"                                                                                                               |
+| Props / property     | "props (the settings you configure on a component)"                                                                                                                  |
+| Routing              | "routing (the links that connect pages together)"                                                                                                                    |
+| TypeScript error     | "a TypeScript error (a code issue the build needs to fix)"                                                                                                           |
 | npm install          | "npm install (downloading the project's dependencies — the setup script handles this automatically; your technical specialist runs it when new packages are needed)" |
-| Kebab-case           | "kebab-case — words joined by hyphens, e.g. `my-app`"          |
-| DSThemeProvider      | "DSThemeProvider (the wrapper that applies the design theme)"  |
-| LifeSGTheme          | "LifeSGTheme (the FDS colour and style preset to use)"         |
-| styled-components    | "styled-components (a library for writing CSS inside React)"   |
-| `.tsx` file          | "a `.tsx` file (a React component file written in TypeScript)" |
+| Kebab-case           | "kebab-case — words joined by hyphens, e.g. `my-app`"                                                                                                                |
+| DSThemeProvider      | "DSThemeProvider (the wrapper that applies the design theme)"                                                                                                        |
+| LifeSGTheme          | "LifeSGTheme (the FDS colour and style preset to use)"                                                                                                               |
+| styled-components    | "styled-components (a library for writing CSS inside React)"                                                                                                         |
+| `.tsx` file          | "a `.tsx` file (a React component file written in TypeScript)"                                                                                                       |
 
 After introducing a term once, use it naturally. If the user appears
 confused, briefly re-explain it in context — then continue using it.
