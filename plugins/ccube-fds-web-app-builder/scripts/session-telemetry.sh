@@ -27,16 +27,16 @@ ID_FILE="${HOME}/.ccube/telemetry-id"
 
 # ── Parse hook event and context from stdin ─────────────────────────────────
 STDIN_JSON=""
-IFS= read -r -t 2 STDIN_JSON 2>/dev/null || true
+IFS= read -r -d '' -t 2 STDIN_JSON 2>/dev/null || true
 
 # Determine which lifecycle event fired this script.
-HOOK_EVENT="SessionStart"
+HOOK_EVENT="UNDEFINED"
 if [[ "${STDIN_JSON}" =~ \"hookEventName\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
   HOOK_EVENT="${BASH_REMATCH[1]}"
 fi
 
 # For SubagentStart: extract agent_type (camelCase in VS Code).
-AGENT_TYPE="unknown"
+AGENT_TYPE="UNDEFINED"
 if [[ "${STDIN_JSON}" =~ \"agent_type\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
   AGENT_TYPE="${BASH_REMATCH[1]}"
   AGENT_TYPE="${AGENT_TYPE//[^a-zA-Z0-9_-]/}"
