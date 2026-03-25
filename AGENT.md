@@ -29,6 +29,10 @@ single repo. The top-level structure is:
 plugins/
   <plugin-name>/
     README.md                   ← human-readable description of the plugin
+    hooks/
+      hooks.json                ← SessionStart hook declaration
+    scripts/
+      session-telemetry.sh      ← telemetry script fired on each session start
     instructions/
       *.instructions.md         ← always-on coding standards for this plugin
     agents/
@@ -46,14 +50,16 @@ co-located inside their owning plugin under `plugins/<plugin-name>/skills/`.
 
 The file types this repo authors and maintains:
 
-| File type          | Location                               | Purpose                                                                           |
-| ------------------ | -------------------------------------- | --------------------------------------------------------------------------------- |
-| `marketplace.json` | `.github/plugin/`                      | Registry of all plugins; each entry points to a `plugins/<name>` directory        |
-| `README.md`        | `plugins/<plugin-name>/`               | Human-readable description and skill inventory for the plugin                     |
-| `.instructions.md` | `plugins/<plugin-name>/instructions/`  | Always-on coding standards that enforce FDS component usage and React conventions |
-| `.agent.md`        | `plugins/<plugin-name>/agents/`        | Specialized agents that develop web applications within FDS constraints           |
-| `SKILL.md`         | `plugins/<plugin-name>/skills/<name>/` | Domain-knowledge packages — FDS component catalog, theming, project scaffolding   |
-| `.prompt.md`       | `prompts/`                             | Slash-command workflows (e.g. scaffold a page, set up a project, build a form)    |
+| File type              | Location                               | Purpose                                                                           |
+| ---------------------- | -------------------------------------- | --------------------------------------------------------------------------------- |
+| `marketplace.json`     | `.github/plugin/`                      | Registry of all plugins; each entry points to a `plugins/<name>` directory        |
+| `README.md`            | `plugins/<plugin-name>/`               | Human-readable description and skill inventory for the plugin                     |
+| `hooks.json`           | `plugins/<plugin-name>/hooks/`         | SessionStart hook declaration (Claude-format, VS Code auto-detected)              |
+| `session-telemetry.sh` | `plugins/<plugin-name>/scripts/`       | Shell hook fired on session start; shared contract across all plugins             |
+| `.instructions.md`     | `plugins/<plugin-name>/instructions/`  | Always-on coding standards that enforce FDS component usage and React conventions |
+| `.agent.md`            | `plugins/<plugin-name>/agents/`        | Specialized agents that develop web applications within FDS constraints           |
+| `SKILL.md`             | `plugins/<plugin-name>/skills/<name>/` | Domain-knowledge packages — FDS component catalog, theming, project scaffolding   |
+| `.prompt.md`           | `prompts/`                             | Slash-command workflows (e.g. scaffold a page, set up a project, build a form)    |
 
 <!-- </repo-context> -->
 
@@ -100,6 +106,26 @@ Only after completing all four reads should you proceed to Step 1.
 Create the directory `plugins/<plugin-name>/` at the repo root. Use a
 lowercase, hyphen-separated name that clearly describes the plugin's purpose
 (e.g. `ccube-fds-web-app-builder`).
+
+### Step 1.5 — Add the telemetry hook (MANDATORY)
+
+Every plugin MUST include a telemetry hook at:
+
+```
+plugins/<plugin-name>/hooks/hooks.json
+plugins/<plugin-name>/scripts/session-telemetry.sh
+```
+
+Copy `session-telemetry.sh` verbatim from an existing plugin (e.g.
+`plugins/ccube-fds-web-app-builder/scripts/session-telemetry.sh`).
+Change only the `PLUGIN_NAME` variable at the top to match the new
+plugin's name.
+
+> **IMPORTANT — cross-plugin consistency rule**: `session-telemetry.sh`
+> is a shared contract. Any change to the script's logic, security
+> controls, or behaviour MUST be applied to **every** plugin's copy in
+> the same commit. See the [Telemetry](#telemetry) section for the
+> full update protocol.
 
 ### Step 2 — Add instructions (optional)
 
@@ -207,15 +233,22 @@ Open `.github/plugin/marketplace.json` and append a new entry to the
 
 Before committing, verify:
 
-1. `plugins/<plugin-name>/` exists with at least one `skills/<name>/SKILL.md`.
-2. `plugins/<plugin-name>/README.md` exists and lists all skills (and any
-   instructions or agents).
-3. The plugin entry is present in `.github/plugin/marketplace.json` with
-   correct paths, AND every subdirectory under `plugins/<plugin-name>/skills/`
-   has a corresponding entry in the `"skills"` array. An unregistered skill
-   folder will silently fail to load.
-4. All `SKILL.md` files pass the standard front matter and content checks
-   listed in the [Acceptance Checks](#acceptance-checks-for-new-customization-files)
+1. `plugins/<plugin-name>/` exists with at least one
+   `skills/<name>/SKILL.md`.
+2. `plugins/<plugin-name>/hooks/hooks.json` and
+   `plugins/<plugin-name>/scripts/session-telemetry.sh` both exist,
+   and the script's `PLUGIN_NAME` variable matches the plugin's
+   directory name.
+3. `plugins/<plugin-name>/README.md` exists and lists all skills (and
+   any instructions or agents).
+4. The plugin entry is present in `.github/plugin/marketplace.json`
+   with correct paths, AND every subdirectory under
+   `plugins/<plugin-name>/skills/` has a corresponding entry in the
+   `"skills"` array. An unregistered skill folder will silently fail
+   to load.
+5. All `SKILL.md` files pass the standard front matter and content
+   checks listed in the
+   [Acceptance Checks](#acceptance-checks-for-new-customization-files)
    section below.
 
 <!-- </adding-plugins> -->
@@ -390,6 +423,75 @@ Do not reproduce FDS documentation verbatim inside customization files.
 Instead, link to the relevant Storybook page and provide concise usage notes.
 
 <!-- </fds-reference> -->
+
+<!-- <telemetry> -->
+## Telemetry
+
+Every plugin ships an identical telemetry hook at
+`hooks/scripts/session-telemetry.sh`. The only intentional difference
+between copies is the `PLUGIN_NAME` variable at the top of each file.
+
+The hook is responsible for:
+
+- Firing a `session_start` event to the configured telemetry endpoint
+  when a session begins.
+- Firing a one-time `install` event the first time a plugin is used
+  on a machine.
+- Generating and persisting an anonymous, per-machine installation ID
+  in `~/.ccube/telemetry-id`.
+
+### Cross-plugin update protocol
+
+Because all copies of `session-telemetry.sh` must stay in sync, you
+MUST follow this protocol whenever the script changes:
+
+1. **Identify all copies.** Locate every
+   `plugins/*/hooks/scripts/session-telemetry.sh` file in the repo.
+2. **Apply the change to every copy.** The same logical change MUST
+   appear in all copies in the same commit. Partial updates — where
+   one plugin's copy differs in logic, security controls, or
+   behaviour from another's — are not acceptable.
+3. **Preserve per-plugin identity.** The only value that MUST differ
+   between copies is `PLUGIN_NAME`. Do not change it when syncing.
+4. **Run a quick sanity check.** After editing, compare the files
+   (excluding the `PLUGIN_NAME` line) and confirm they are identical:
+
+   ```bash
+   diff \
+     <(grep -v PLUGIN_NAME \
+         plugins/ccube-fds-web-app-builder/hooks/scripts/session-telemetry.sh) \
+     <(grep -v PLUGIN_NAME \
+         plugins/ccube-software-craft/hooks/scripts/session-telemetry.sh)
+   ```
+
+   The diff MUST produce no output.
+5. **Stage all copies together.** Commit all changed telemetry files
+   as a single atomic commit so the repo is never in an inconsistent
+   state.
+
+### Endpoint and opt-out
+
+- The default endpoint (`CCUBE_TELEMETRY_ENDPOINT`) is set at the top
+  of the script. Replace the placeholder URL with a self-hosted
+  endpoint before shipping to production.
+- Users can opt out by setting `CCUBE_TELEMETRY_DISABLED=1` in their
+  shell profile.
+- All endpoints MUST use HTTPS. The script enforces this and will
+  exit silently if a non-HTTPS URL is supplied.
+
+### Privacy contract
+
+The script collects only:
+
+- A random, anonymous, per-machine installation ID (no PII).
+- The plugin name and agent name (from stdin, sanitised to
+  `[a-zA-Z0-9_-]` before use).
+- A UTC timestamp.
+
+No file contents, workspace paths, user identifiers, or environment
+variables are ever collected or transmitted.
+
+<!-- </telemetry> -->
 
 <!-- <acceptance-checks> -->
 ## Acceptance Checks for New Customization Files
