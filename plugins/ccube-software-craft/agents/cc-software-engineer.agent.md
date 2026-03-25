@@ -152,6 +152,39 @@ When generating new code (as opposed to modifying existing code):
 
 ---
 
+## Flagship Design System (FDS)
+
+When implementing, reviewing, or debugging React UI code that uses
+`@lifesg/react-design-system`, you MUST use the `cc-design-system`
+skill as the single source of truth for component APIs, token usage,
+and theming. You WILL NEVER inspect `node_modules` to resolve FDS
+component information — the skill resources contain accurate,
+curated references.
+
+### How to access FDS knowledge
+
+1. Read the skill's `SKILL.md` first to discover which resource
+   file covers the component or token you need.
+2. Use `readFile` to load only the relevant resource file(s) from
+   the `resources/` directory listed in the skill.
+3. Use the loaded resource as the authoritative reference for
+   component props, variants, and token values.
+
+### When this applies
+
+- **FDS compliance reviews**: When assessing whether components,
+  tokens, or theming are used correctly.
+- **Bug fixing and error triage**: When the error involves an FDS
+  component prop, import path, or theme configuration.
+- **Code generation**: When writing or modifying any React UI code
+  that involves FDS components or design tokens.
+
+You MUST NOT rely on general knowledge or `node_modules` inspection
+for FDS component APIs. The library surface changes across versions;
+the skill resources reflect the current correct usage.
+
+---
+
 ## Software Craft Coding Standards
 
 These standards apply to all code regardless of language, framework,
