@@ -220,18 +220,18 @@ import { NotificationBanner } from "@lifesg/react-design-system/notification-ban
 - Category markers where a compact, non-interactive visual token is needed.
 
 **When NOT to use**
-| Situation                                         | Use instead                                      |
-| ------------------------------------------------- | ------------------------------------------------ |
-| Chip must be interactive or clickable             | `Tag` from `@lifesg/react-design-system/tag`     |
+| Situation                             | Use instead                                  |
+| ------------------------------------- | -------------------------------------------- |
+| Chip must be interactive or clickable | `Tag` from `@lifesg/react-design-system/tag` |
 
 **Key props**
-| Prop      | Type                                                                                   | Required | Notes                                                         |
-| --------- | -------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------- |
-| type      | `"solid" \| "outline"`                                                               | yes      | Display format for pill style.                                |
-| colorType | `"black" \| "grey" \| "green" \| "yellow" \| "red" \| "blue" \| "primary"` | no       | Color variant; defaults to `"black"`.                       |
-| icon      | `JSX.Element`                                                                          | no       | Optional icon shown with the text content.                    |
-| id        | `string`                                                                               | no       | Unique identifier on the root element (from div attributes).  |
-| className | `string`                                                                               | no       | Custom class selector for styling hooks.                      |
+| Prop      | Type                                                                       | Required | Notes                                                        |
+| --------- | -------------------------------------------------------------------------- | -------- | ------------------------------------------------------------ |
+| type      | `"solid" \| "outline"`                                                     | yes      | Display format for pill style.                               |
+| colorType | `"black" \| "grey" \| "green" \| "yellow" \| "red" \| "blue" \| "primary"` | no       | Color variant; defaults to `"black"`.                        |
+| icon      | `JSX.Element`                                                              | no       | Optional icon shown with the text content.                   |
+| id        | `string`                                                                   | no       | Unique identifier on the root element (from div attributes). |
+| className | `string`                                                                   | no       | Custom class selector for styling hooks.                     |
 
 **Canonical usage**
 ```tsx
@@ -242,9 +242,9 @@ import { Pill } from "@lifesg/react-design-system/pill";
 ```
 
 **Figma mapping hints**
-| Figma element / layer pattern                | Map to | Condition                                   |
-| -------------------------------------------- | ------ | ------------------------------------------- |
-| Static status/category pill chip             | `Pill` | Non-interactive compact chip with label.    |
+| Figma element / layer pattern    | Map to | Condition                                |
+| -------------------------------- | ------ | ---------------------------------------- |
+| Static status/category pill chip | `Pill` | Non-interactive compact chip with label. |
 
 **Known limitations**
 - `Pill` is static by design and does not provide interactive/tappable

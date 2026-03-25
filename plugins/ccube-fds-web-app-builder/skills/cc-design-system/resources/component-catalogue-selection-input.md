@@ -363,18 +363,18 @@ import { FileDownload } from "@lifesg/react-design-system/file-download";
   can be provided via `aria-label` or `alt`.
 
 **When NOT to use**
-| Situation                                       | Use instead                                                          |
-| ----------------------------------------------- | -------------------------------------------------------------------- |
-| Action requires visible text label for clarity  | `ButtonWithIcon` from `@lifesg/react-design-system/button-with-icon` |
+| Situation                                      | Use instead                                                          |
+| ---------------------------------------------- | -------------------------------------------------------------------- |
+| Action requires visible text label for clarity | `ButtonWithIcon` from `@lifesg/react-design-system/button-with-icon` |
 
 **Key props**
-| Prop                  | Type                                    | Required | Notes                                                         |
-| --------------------- | --------------------------------------- | -------- | ------------------------------------------------------------- |
-| styleType             | `"primary" \| "secondary" \| "light"` | no       | Visual style; defaults to `"primary"`.                       |
-| sizeType              | `"large" \| "default" \| "small"`      | no       | Size variant; defaults to `"default"`.                       |
-| focusableWhenDisabled | `boolean`                               | no       | Keeps disabled control focusable; defaults to `false`.       |
-| disabled              | `boolean`                               | no       | Disables click behavior (inherited button prop).              |
-| data-testid           | `string`                                | no       | Test selector on the button element.                          |
+| Prop                  | Type                                  | Required | Notes                                                  |
+| --------------------- | ------------------------------------- | -------- | ------------------------------------------------------ |
+| styleType             | `"primary" \| "secondary" \| "light"` | no       | Visual style; defaults to `"primary"`.                 |
+| sizeType              | `"large" \| "default" \| "small"`     | no       | Size variant; defaults to `"default"`.                 |
+| focusableWhenDisabled | `boolean`                             | no       | Keeps disabled control focusable; defaults to `false`. |
+| disabled              | `boolean`                             | no       | Disables click behavior (inherited button prop).       |
+| data-testid           | `string`                              | no       | Test selector on the button element.                   |
 
 **Canonical usage**
 ```tsx
@@ -388,9 +388,9 @@ import { BoxIcon } from "@lifesg/react-icons/box";
 ```
 
 **Figma mapping hints**
-| Figma element / layer pattern                 | Map to       | Condition                                              |
-| --------------------------------------------- | ------------ | ------------------------------------------------------ |
-| Icon-only circular action button              | `IconButton` | No visible text label; icon communicates the action.   |
+| Figma element / layer pattern    | Map to       | Condition                                            |
+| -------------------------------- | ------------ | ---------------------------------------------------- |
+| Icon-only circular action button | `IconButton` | No visible text label; icon communicates the action. |
 
 **Known limitations**
 - Accessible name must be provided on icon/image content (e.g. `aria-label`

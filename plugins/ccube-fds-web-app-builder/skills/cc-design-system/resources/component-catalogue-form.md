@@ -309,30 +309,30 @@ import { Form } from "@lifesg/react-design-system/form";
   async unmask loading state.
 
 **When NOT to use**
-| Situation                           | Use instead |
-| ----------------------------------- | ----------- |
-| Plain text input without masking    | `Form.Input` |
+| Situation                        | Use instead  |
+| -------------------------------- | ------------ |
+| Plain text input without masking | `Form.Input` |
 
 **Key props**
-| Prop              | Type                                         | Required | Notes                                                          |
-| ----------------- | -------------------------------------------- | -------- | -------------------------------------------------------------- |
-| label             | `string \| FormLabelProps`                  | no       | Label above field; supports tooltip/popover addons.            |
-| value             | `string`                                     | no       | Controlled input value before masking transformation.           |
-| maskChar          | `string`                                     | no       | Character used for masked output; defaults to `•`.             |
-| maskRange         | `number[]`                                   | no       | Index range to mask in the input value.                        |
-| unmaskRange       | `number[]`                                   | no       | Index range to keep visible while masking remaining characters. |
-| maskRegex         | `RegExp`                                     | no       | Pattern matching characters to mask.                           |
-| maskTransformer   | `(value: string) => string`                  | no       | Custom mask function for advanced masking logic.               |
-| loadState         | `"loading" \| "fail" \| "success"`        | no       | Read-only mode state for async unmask flows.                   |
-| transformInput    | `"uppercase" \| "lowercase"`                | no       | Transforms user input case while typing.                       |
-| errorMessage      | `string \| React.ReactNode`                 | no       | Validation message shown below the field.                      |
-| onMask            | `() => void`                                 | no       | Called when value is masked.                                   |
-| onUnmask          | `() => void`                                 | no       | Called when value is unmasked.                                 |
-| onTryAgain        | `() => void`                                 | no       | Called from retry CTA when `loadState="fail"` in read-only.   |
+| Prop            | Type                               | Required | Notes                                                           |
+| --------------- | ---------------------------------- | -------- | --------------------------------------------------------------- |
+| label           | `string \| FormLabelProps`         | no       | Label above field; supports tooltip/popover addons.             |
+| value           | `string`                           | no       | Controlled input value before masking transformation.           |
+| maskChar        | `string`                           | no       | Character used for masked output; defaults to `•`.              |
+| maskRange       | `number[]`                         | no       | Index range to mask in the input value.                         |
+| unmaskRange     | `number[]`                         | no       | Index range to keep visible while masking remaining characters. |
+| maskRegex       | `RegExp`                           | no       | Pattern matching characters to mask.                            |
+| maskTransformer | `(value: string) => string`        | no       | Custom mask function for advanced masking logic.                |
+| loadState       | `"loading" \| "fail" \| "success"` | no       | Read-only mode state for async unmask flows.                    |
+| transformInput  | `"uppercase" \| "lowercase"`       | no       | Transforms user input case while typing.                        |
+| errorMessage    | `string \| React.ReactNode`        | no       | Validation message shown below the field.                       |
+| onMask          | `() => void`                       | no       | Called when value is masked.                                    |
+| onUnmask        | `() => void`                       | no       | Called when value is unmasked.                                  |
+| onTryAgain      | `() => void`                       | no       | Called from retry CTA when `loadState="fail"` in read-only.     |
 
 **Type-specific requirements**
-| Type value  | Extra requirement | Notes                                                     |
-| ----------- | ----------------- | --------------------------------------------------------- |
+| Type value  | Extra requirement | Notes                                                        |
+| ----------- | ----------------- | ------------------------------------------------------------ |
 | `loadState` | `readOnly`        | Loading/fail/success display applies only in read-only mode. |
 
 **Canonical usage**
@@ -350,9 +350,9 @@ import { Form } from "@lifesg/react-design-system/form";
 ```
 
 **Figma mapping hints**
-| Figma element / layer pattern                    | Map to             | Condition                                        |
-| ------------------------------------------------ | ------------------ | ------------------------------------------------ |
-| Sensitive text field with reveal/hide eye icon   | `Form.MaskedInput` | Value is masked on blur with controlled unmasking. |
+| Figma element / layer pattern                  | Map to             | Condition                                          |
+| ---------------------------------------------- | ------------------ | -------------------------------------------------- |
+| Sensitive text field with reveal/hide eye icon | `Form.MaskedInput` | Value is masked on blur with controlled unmasking. |
 
 **Composition patterns**
 - Use standalone `MaskedInput` from `masked-input` when form wrapper props

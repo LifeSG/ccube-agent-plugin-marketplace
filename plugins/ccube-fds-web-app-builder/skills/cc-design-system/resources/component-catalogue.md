@@ -61,7 +61,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Site footer with logo, link columns, and disclaimer bar        | `Footer`                  | navigation          | Full-width bottom section with directory navigation and legal links            |
 | Fullscreen image carousel / zoomable gallery overlay           | `FullscreenImageCarousel` | content             | Full-screen image viewer with optional thumbnail row and magnifier controls    |
 | Header navigation bar with brand, links, and utility actions   | `Navbar`                  | navigation          | Desktop links collapse into a drawer on mobile/tablet                          |
-| Icon-only circular action button                                | `IconButton`              | selection-input     | Icon-only CTA with accessible icon/alt labelling                               |
+| Icon-only circular action button                               | `IconButton`              | selection-input     | Icon-only CTA with accessible icon/alt labelling                               |
 | Pagination controls below a list/table                         | `Pagination`              | navigation          | Numbered page navigation with previous/next movement                           |
 | Pagination with page-size dropdown                             | `Pagination`              | navigation          | Enable `showPageSizeChanger` and optional custom `pageSizeOptions`             |
 | Phone number field with country code selector                  | `Form.PhoneNumberInput`   | form                | Labelled field with code dropdown and value object `{ countryCode, number }`   |
@@ -97,7 +97,7 @@ https://designsystem.life.gov.sg/react/index.html
 | HTML / rich text content block (bold, links, lists)            | `Markup`                  | core                | Use for CMS/HTML-rich content; plain text should use `Typography.*`            |
 | Numbered step list / ordered process                           | `TextList.Ol`             | core                | Ordered counters via `counterType`, `counterSeparator`, and `start`            |
 | Page-dimming backdrop overlay layer                            | `Overlay`                 | overlays            | Dimmed full-page backdrop that blocks background interaction                   |
-| Section-level local navigation menu                            | `LocalNavMenu`            | navigation          | In-page section navigation list; pair with dropdown on smaller screens          |
+| Section-level local navigation menu                            | `LocalNavMenu`            | navigation          | In-page section navigation list; pair with dropdown on smaller screens         |
 | Boxed content section with title and chevron toggle            | `BoxContainer`            | content             | Header controls expand/collapse of body block                                  |
 | Borderless calendar panel                                      | `Calendar`                | selection-input     | Set `styleType="no-border"`                                                    |
 | Borderless downloadable file attachment area                   | `FileDownload`            | selection-input     | Set `styleType="no-border"`                                                    |

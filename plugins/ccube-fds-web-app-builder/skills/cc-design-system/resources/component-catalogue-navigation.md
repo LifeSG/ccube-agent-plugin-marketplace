@@ -171,20 +171,20 @@ import { Footer } from "@lifesg/react-design-system/footer";
   a sticky dropdown on smaller screens.
 
 **When NOT to use**
-| Situation                                | Use instead  |
-| ---------------------------------------- | ------------ |
-| Global app navigation across routes/pages | `Navbar`     |
+| Situation                                 | Use instead |
+| ----------------------------------------- | ----------- |
+| Global app navigation across routes/pages | `Navbar`    |
 
 **Key props**
-| Prop              | Type                                                                                     | Required | Notes                                                     |
-| ----------------- | ---------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------- |
-| items             | `LocalNavItemProps[]`                                                                    | yes      | Local section entries rendered in menu/dropdown.          |
-| selectedItemIndex | `number`                                                                                 | no       | Sets current active section index.                        |
-| onNavItemSelect   | `(e: React.MouseEvent \| React.KeyboardEvent, item: LocalNavItemProps, index: number) => void` | no       | Called when user selects a local nav item.                |
-| renderItem        | `(item: LocalNavItemProps, renderProps: { selected: boolean; stickied: boolean }) => React.ReactNode` | no       | Custom renderer for nav item display.                     |
-| id                | `string`                                                                                 | no       | Unique identifier on menu/dropdown root.                  |
-| className         | `string`                                                                                 | no       | Custom class selector for styling hooks.                  |
-| data-testid       | `string`                                                                                 | no       | Test selector for root element.                           |
+| Prop              | Type                                                                                                  | Required | Notes                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------ |
+| items             | `LocalNavItemProps[]`                                                                                 | yes      | Local section entries rendered in menu/dropdown. |
+| selectedItemIndex | `number`                                                                                              | no       | Sets current active section index.               |
+| onNavItemSelect   | `(e: React.MouseEvent \| React.KeyboardEvent, item: LocalNavItemProps, index: number) => void`        | no       | Called when user selects a local nav item.       |
+| renderItem        | `(item: LocalNavItemProps, renderProps: { selected: boolean; stickied: boolean }) => React.ReactNode` | no       | Custom renderer for nav item display.            |
+| id                | `string`                                                                                              | no       | Unique identifier on menu/dropdown root.         |
+| className         | `string`                                                                                              | no       | Custom class selector for styling hooks.         |
+| data-testid       | `string`                                                                                              | no       | Test selector for root element.                  |
 
 **Canonical usage**
 ```tsx
@@ -208,10 +208,10 @@ const items = [
 ```
 
 **Figma mapping hints**
-| Figma element / layer pattern                    | Map to              | Condition                                            |
-| ------------------------------------------------ | ------------------- | ---------------------------------------------------- |
-| Section-level local navigation menu              | `LocalNavMenu`      | Vertical in-page section navigation list.            |
-| Sticky local section dropdown on smaller screens | `LocalNavDropdown`  | Compact sticky selector for the same local nav items. |
+| Figma element / layer pattern                    | Map to             | Condition                                             |
+| ------------------------------------------------ | ------------------ | ----------------------------------------------------- |
+| Section-level local navigation menu              | `LocalNavMenu`     | Vertical in-page section navigation list.             |
+| Sticky local section dropdown on smaller screens | `LocalNavDropdown` | Compact sticky selector for the same local nav items. |
 
 **Composition patterns**
 - Pair `LocalNavMenu` (desktop) with `LocalNavDropdown` (mobile/tablet) using
