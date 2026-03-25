@@ -214,14 +214,18 @@ approval flow; they MUST always be delegated to the
 
 Before beginning Phase 1, you MUST delegate to the `Prompt Refiner`
 subagent. Using `readFile`, read the `Prompt Refiner` subagent's
-configuration at `agents/prompt-refiner.sub.agent.md` (relative to this
-plugin's agents folder) to find: (1) the canonical invocation gate, which
-defines the exceptions that bypass refinement, and (2) the caller
-presentation contract, which defines the exact UI format for presenting
-refined and original prompt options to the user. Follow both exactly. You
-MUST NOT proceed to Phase 1 until the user confirms which prompt to use.
+configuration to find: (1) the canonical invocation gate, which defines
+the exceptions that bypass refinement, and (2) the caller presentation
+contract, which defines the exact UI format for presenting refined and
+original prompt options to the user. Follow both exactly. You MUST NOT
+proceed to Phase 1 until the user confirms which prompt to use.
 This invocation applies once at session start only — do NOT invoke Prompt
 Refiner again for phase transitions within an active session.
+
+To locate the file: take the `cc-design-system` skill path from the
+skills index, replace `skills/cc-design-system/SKILL.md` with
+`agents/prompt-refiner.sub.agent.md`. Do NOT use `file_search` — the
+file is in the installed plugin directory, which is outside the workspace.
 
 ### Phase 1: Understand — Gather Requirements
 
