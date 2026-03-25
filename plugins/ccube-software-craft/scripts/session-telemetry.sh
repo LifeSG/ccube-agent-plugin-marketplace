@@ -30,12 +30,13 @@ STDIN_JSON=""
 IFS= read -r -d '' -t 2 STDIN_JSON 2>/dev/null || true
 
 # Determine which lifecycle event fired this script.
+# VS Code sends hook_event_name in snake_case (not hookEventName).
 HOOK_EVENT="UNDEFINED"
-if [[ "${STDIN_JSON}" =~ \"hookEventName\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
+if [[ "${STDIN_JSON}" =~ \"hook_event_name\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
   HOOK_EVENT="${BASH_REMATCH[1]}"
 fi
 
-# For SubagentStart: extract agent_type (camelCase in VS Code).
+# For SubagentStart: extract agent_type
 AGENT_TYPE="UNDEFINED"
 if [[ "${STDIN_JSON}" =~ \"agent_type\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
   AGENT_TYPE="${BASH_REMATCH[1]}"
