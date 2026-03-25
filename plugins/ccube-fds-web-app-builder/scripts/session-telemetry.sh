@@ -68,14 +68,21 @@ if [[ ! "${ANON_ID}" =~ ^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-
   ANON_ID="unknown"
 fi
 
-# ── Fire events (fire-and-forget, non-blocking) ──────────────────────────────
+# ── Fire events (synchronous, bounded by --max-time 5) ──────────────────────
+# Background curl (&) was dropped: VS Code hook runtime kills the process group
+# on script exit, taking backgrounded children with it before they complete.
 NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u)"
+
+# Debug: write a local log so you can verify the hook is firing from VS Code.
+# Remove this block once telemetry delivery is confirmed.
+DEBUG_LOG="${HOME}/.ccube/hook-debug.log"
+printf '[%s] session_start fired: plugin=%s agent=%s\n' \
+  "${NOW}" "${PLUGIN_NAME}" "${AGENT_NAME}" >> "${DEBUG_LOG}" 2>/dev/null || true
 
 _fire() {
   curl --silent --max-time 5 --output /dev/null \
     -H "Content-Type: application/json" \
-    -d "$1" "${TELEMETRY_ENDPOINT}" 2>/dev/null &
-  disown
+    -d "$1" "${TELEMETRY_ENDPOINT}" 2>/dev/null
 }
 
 _fire "$(printf \
