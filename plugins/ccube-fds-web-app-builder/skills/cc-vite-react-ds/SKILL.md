@@ -79,15 +79,11 @@ before proceeding.
 > `✅ Project created successfully!`. Do NOT run it as a foreground
 > command — it will be killed before completion.
 
-**Finding the script**:
-1. Use `file_search` with pattern `init-vite-react-project.sh` — this
-   is the primary and most reliable discovery method across environments.
-2. If `file_search` returns no results, the skill is not installed in
-   this environment. Fall back to the Manual Setup steps below.
-3. Known hint paths (verify with `file_search` first — paths may
-   differ per environment):
-   - Plugin install (macOS): `~/Library/Application Support/Code/agentPlugins/<marketplace-org-path>/plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh`
-   - Workspace source: `<workspace-root>/plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh`
+**Finding the script**: The script is co-located with this skill.
+Replace `SKILL.md` at the end of this skill's path (from the skills
+index) with `scripts/init-vite-react-project.sh` to get the absolute
+script path. If the resulting path does not exist, fall back to the
+Manual Setup steps below.
 
 **Usage** (background — required):
 ```bash
@@ -96,10 +92,9 @@ bash "<absolute-path-to-script>" "<project-name>" "<target-directory>"
 Launch with `isBackground: true`. Then poll `get_terminal_output` until
 you see `✅ Project created successfully!`.
 
-**Example** (path shown is illustrative — use `file_search` to obtain
-your actual path):
+**Example** (derive your actual path as described above):
 ```bash
-bash "~/Library/Application Support/Code/agentPlugins/<marketplace-org-path>/plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh" "my-chatbot-app" "/Users/username/projects"
+bash "<absolute-path-to-skill-dir>/scripts/init-vite-react-project.sh" "my-chatbot-app" "/Users/username/projects"
 ```
 
 **What the script does automatically**:
@@ -278,9 +273,9 @@ After project creation, verify:
 - **Solution**: Navigate to the project folder and complete remaining
   steps manually from Step 2 onward
 
-**Error: Script not found (`file_search` returns no results)**
+**Error: Script not found (path does not exist after derivation)**
 - **Cause**: The skill is not installed in this environment, or the
-  workspace structure does not match expected paths
+  derived path does not match the actual install location
 - **Solution**: Use the Manual Setup steps below — they replicate every
   step the script performs
 
@@ -361,8 +356,9 @@ After successful execution, report:
 
 Handles the slow, non-deterministic operations: `npm create vite`,
 `npm install`, and `mkdir`. Does NOT generate ThemeProvider or app
-files — those are created by Copilot in the File Setup step. Use
-`file_search` to locate the absolute path before running. Usage:
+files — those are created by Copilot in the File Setup step. Derive
+the absolute path by replacing `SKILL.md` in this skill's path with
+`scripts/init-vite-react-project.sh`. Usage:
 ```bash
 bash "<absolute-path-to-script>" "<project-name>" "<target-directory>"
 ```
