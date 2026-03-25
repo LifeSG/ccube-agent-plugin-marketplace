@@ -16,7 +16,7 @@
       "skills": ["./skills/cc-design-system", "./skills/cc-vite-react-ds"],
       "instructions": "./instructions",
       "agents": "./agents",
-      "hooks": "./hooks.json"
+      "hooks": "./hooks/hooks.json"
     },
     {
       "name": "ccube-software-craft",
@@ -25,7 +25,7 @@
       "version": "1.1.0",
       "skills": ["./skills/cc-git-commit", "./skills/cc-markdown-standards"],
       "agents": "./agents",
-      "hooks": "./hooks.json"
+      "hooks": "./hooks/hooks.json"
     }
   ]
 }

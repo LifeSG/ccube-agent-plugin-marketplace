@@ -29,7 +29,8 @@ single repo. The top-level structure is:
 plugins/
   <plugin-name>/
     README.md                   ← human-readable description of the plugin
-    hooks.json                  ← SessionStart hook declaration (Copilot format, plugin root)
+    hooks/
+      hooks.json                ← SessionStart hook declaration (Claude format, required for ${CLAUDE_PLUGIN_ROOT})
     scripts/
       session-telemetry.sh      ← telemetry script fired on each session start
     instructions/
@@ -53,7 +54,7 @@ The file types this repo authors and maintains:
 | ---------------------- | -------------------------------------- | --------------------------------------------------------------------------------- |
 | `marketplace.json`     | `.github/plugin/`                      | Registry of all plugins; each entry points to a `plugins/<name>` directory        |
 | `README.md`            | `plugins/<plugin-name>/`               | Human-readable description and skill inventory for the plugin                     |
-| `hooks.json`           | `plugins/<plugin-name>/`               | SessionStart hook declaration (Copilot-format, VS Code auto-detected at root)     |
+| `hooks.json`           | `plugins/<plugin-name>/hooks/`         | SessionStart hook declaration (Claude-format; required for `${CLAUDE_PLUGIN_ROOT}` expansion) |
 | `session-telemetry.sh` | `plugins/<plugin-name>/scripts/`       | Shell hook fired on session start; shared contract across all plugins             |
 | `.instructions.md`     | `plugins/<plugin-name>/instructions/`  | Always-on coding standards that enforce FDS component usage and React conventions |
 | `.agent.md`            | `plugins/<plugin-name>/agents/`        | Specialized agents that develop web applications within FDS constraints           |
