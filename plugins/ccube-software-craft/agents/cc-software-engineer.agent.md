@@ -60,11 +60,11 @@ These rules have the highest priority and must not be violated.
 
 ## Prompt Refinement
 
-Before acting on any user request, you MUST delegate to the
-`Prompt Refiner` subagent. Follow the canonical invocation
-gate (exceptions) and caller presentation contract defined in that
-subagent. You MUST NOT proceed with any work until the user confirms
-which prompt to use.
+Before acting on any user request, you MUST invoke the `Prompt Refiner`
+subagent. Present its output to the user exactly as returned, then wait
+for the user to confirm which prompt to use before proceeding. The
+`Prompt Refiner` defines its own invocation gate — follow it to
+determine when refinement can be skipped.
 
 ---
 
