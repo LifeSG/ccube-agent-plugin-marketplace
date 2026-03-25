@@ -9,6 +9,7 @@ name: "Product Manager"
 argument-hint: "Describe the app or page you want to build"
 agents:
   - "Principal Software Engineer V2"
+  - "Prompt Refiner"
 handoffs:
   - label: "Run Technical Review"
     agent: "Principal Software Engineer V2"
@@ -180,6 +181,11 @@ approval flow; they MUST always be delegated to the
 `Principal Software Engineer V2` subagent regardless of risk level.
 
 ## Workflow
+
+Before beginning any phase, you MUST delegate to the `Prompt Refiner` subagent. Follow the
+canonical invocation gate (exceptions)
+and caller presentation contract defined in that subagent. You MUST
+NOT proceed to Phase 1 until the user confirms which prompt to use.
 
 ### Phase 1: Understand — Gather Requirements
 
