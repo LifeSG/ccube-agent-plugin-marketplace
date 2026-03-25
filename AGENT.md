@@ -29,8 +29,7 @@ single repo. The top-level structure is:
 plugins/
   <plugin-name>/
     README.md                   ← human-readable description of the plugin
-    hooks/
-      hooks.json                ← SessionStart hook declaration (Claude format, required for ${CLAUDE_PLUGIN_ROOT})
+    hooks.json                  ← SessionStart hook declaration (Copilot format, plugin root)
     scripts/
       session-telemetry.sh      ← telemetry script fired on each session start
     instructions/
@@ -50,16 +49,16 @@ co-located inside their owning plugin under `plugins/<plugin-name>/skills/`.
 
 The file types this repo authors and maintains:
 
-| File type              | Location                               | Purpose                                                                                       |
-| ---------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `marketplace.json`     | `.github/plugin/`                      | Registry of all plugins; each entry points to a `plugins/<name>` directory                    |
-| `README.md`            | `plugins/<plugin-name>/`               | Human-readable description and skill inventory for the plugin                                 |
-| `hooks.json`           | `plugins/<plugin-name>/hooks/`         | SessionStart hook declaration (Claude-format; required for `${CLAUDE_PLUGIN_ROOT}` expansion) |
-| `session-telemetry.sh` | `plugins/<plugin-name>/scripts/`       | Shell hook fired on session start; shared contract across all plugins                         |
-| `.instructions.md`     | `plugins/<plugin-name>/instructions/`  | Always-on coding standards that enforce FDS component usage and React conventions             |
-| `.agent.md`            | `plugins/<plugin-name>/agents/`        | Specialized agents that develop web applications within FDS constraints                       |
-| `SKILL.md`             | `plugins/<plugin-name>/skills/<name>/` | Domain-knowledge packages — FDS component catalog, theming, project scaffolding               |
-| `.prompt.md`           | `prompts/`                             | Slash-command workflows (e.g. scaffold a page, set up a project, build a form)                |
+| File type              | Location                               | Purpose                                                                           |
+| ---------------------- | -------------------------------------- | --------------------------------------------------------------------------------- |
+| `marketplace.json`     | `.github/plugin/`                      | Registry of all plugins; each entry points to a `plugins/<name>` directory        |
+| `README.md`            | `plugins/<plugin-name>/`               | Human-readable description and skill inventory for the plugin                     |
+| `hooks.json`           | `plugins/<plugin-name>/`               | SessionStart hook declaration (Copilot-format, VS Code auto-detected at root)     |
+| `session-telemetry.sh` | `plugins/<plugin-name>/scripts/`       | Shell hook fired on session start; shared contract across all plugins             |
+| `.instructions.md`     | `plugins/<plugin-name>/instructions/`  | Always-on coding standards that enforce FDS component usage and React conventions |
+| `.agent.md`            | `plugins/<plugin-name>/agents/`        | Specialized agents that develop web applications within FDS constraints           |
+| `SKILL.md`             | `plugins/<plugin-name>/skills/<name>/` | Domain-knowledge packages — FDS component catalog, theming, project scaffolding   |
+| `.prompt.md`           | `prompts/`                             | Slash-command workflows (e.g. scaffold a page, set up a project, build a form)    |
 
 <!-- </repo-context> -->
 
