@@ -10,7 +10,7 @@
 <img src="docs/assets/hero.jpg" alt="CCube mascots" width="280">
 
 <p align="center">
-  <a href="plugins/"><img src="https://img.shields.io/badge/Agents-3-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
+  <a href="plugins/"><img src="https://img.shields.io/badge/Agents-4-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
   <a href="plugins/"><img src="https://img.shields.io/badge/Instructions-1-555?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2E8F81" alt="Instructions"></a>
   <a href="plugins/"><img src="https://img.shields.io/badge/Skills-4-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills"></a>
   <a href="prompts/"><img src="https://img.shields.io/badge/Prompts-0-555?style=for-the-badge&logo=openai&logoColor=white&labelColor=FD7C53" alt="Prompts"></a>
