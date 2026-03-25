@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ccube plugin telemetry — session start event
+# ccube plugin telemetry — session start and subagent start events
 # Plugin: ccube-software-craft
 #
 # Privacy: collects only anonymous, aggregated usage counts.
@@ -25,16 +25,21 @@ ID_FILE="${HOME}/.ccube/telemetry-id"
 # Reject any non-HTTPS endpoint to prevent plaintext transmission of the ID.
 [[ "${TELEMETRY_ENDPOINT}" != https://* ]] && exit 0
 
-# ── Parse agent name from stdin (non-blocking, best-effort) ─────────────────
+# ── Parse hook event and context from stdin ─────────────────────────────────
 STDIN_JSON=""
-IFS= read -r -t 1 STDIN_JSON 2>/dev/null || true
+IFS= read -r -t 2 STDIN_JSON 2>/dev/null || true
 
-AGENT_NAME="unknown"
-if [[ "${STDIN_JSON}" =~ \"agent\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
-  AGENT_NAME="${BASH_REMATCH[1]}"
-  # Strip all characters not safe for JSON string embedding (backslashes,
-  # control characters, and other JSON-significant sequences).
-  AGENT_NAME="${AGENT_NAME//[^a-zA-Z0-9_-]/}"
+# Determine which lifecycle event fired this script.
+HOOK_EVENT="SessionStart"
+if [[ "${STDIN_JSON}" =~ \"hookEventName\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
+  HOOK_EVENT="${BASH_REMATCH[1]}"
+fi
+
+# For SubagentStart: extract agent_type (camelCase in VS Code).
+AGENT_TYPE="unknown"
+if [[ "${STDIN_JSON}" =~ \"agent_type\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
+  AGENT_TYPE="${BASH_REMATCH[1]}"
+  AGENT_TYPE="${AGENT_TYPE//[^a-zA-Z0-9_-]/}"
 fi
 
 # ── Create or load anonymous installation ID ─────────────────────────────────
@@ -76,8 +81,8 @@ NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u)"
 # Debug: write a local log so you can verify the hook is firing from VS Code.
 # Remove this block once telemetry delivery is confirmed.
 DEBUG_LOG="${HOME}/.ccube/hook-debug.log"
-printf '[%s] session_start fired: plugin=%s agent=%s\n' \
-  "${NOW}" "${PLUGIN_NAME}" "${AGENT_NAME}" >> "${DEBUG_LOG}" 2>/dev/null || true
+printf '[%s] %s fired: plugin=%s agent_type=%s\n' \
+  "${NOW}" "${HOOK_EVENT}" "${PLUGIN_NAME}" "${AGENT_TYPE}" >> "${DEBUG_LOG}" 2>/dev/null || true
 
 _fire() {
   curl --silent --max-time 5 --output /dev/null \
@@ -85,15 +90,22 @@ _fire() {
     -d "$1" "${TELEMETRY_ENDPOINT}" 2>/dev/null
 }
 
-_fire "$(printf \
-  '{"event":"session_start","anonymousId":"%s","plugin":"%s","agent":"%s","ts":"%s"}' \
-  "${ANON_ID}" "${PLUGIN_NAME}" "${AGENT_NAME}" "${NOW}")"
-
-# Fire install event on the very first session for this plugin
-if [[ "${IS_NEW_INSTALL}" == "true" ]]; then
+if [[ "${HOOK_EVENT}" == "SubagentStart" ]]; then
   _fire "$(printf \
-    '{"event":"install","anonymousId":"%s","plugin":"%s","ts":"%s"}' \
+    '{"event":"subagent_start","anonymousId":"%s","plugin":"%s","agentType":"%s","ts":"%s"}' \
+    "${ANON_ID}" "${PLUGIN_NAME}" "${AGENT_TYPE}" "${NOW}")"
+else
+  # SessionStart behaviour
+  _fire "$(printf \
+    '{"event":"session_start","anonymousId":"%s","plugin":"%s","ts":"%s"}' \
     "${ANON_ID}" "${PLUGIN_NAME}" "${NOW}")"
+
+  # Fire install event on the very first session for this plugin
+  if [[ "${IS_NEW_INSTALL}" == "true" ]]; then
+    _fire "$(printf \
+      '{"event":"install","anonymousId":"%s","plugin":"%s","ts":"%s"}' \
+      "${ANON_ID}" "${PLUGIN_NAME}" "${NOW}")"
+  fi
 fi
 
 exit 0
