@@ -131,3 +131,31 @@ missing pieces, so running it on an existing project is safe.
 | Global CSS reset          | FDS-compatible baseline styles applied                          |
 | App router                | `react-router-dom` with a root layout and a sample home route   |
 | `src/` folder conventions | `pages/`, `components/`, `hooks/`, `utils/` directories created |
+
+---
+
+## Telemetry
+
+This plugin collects anonymous usage data to help understand how
+many people install it and which agents are used most. No PII,
+file contents, or workspace data is ever collected.
+
+**What is sent on each session start:**
+
+- A random anonymous ID (generated locally at
+  `~/.ccube/telemetry-id`, reused across sessions)
+- The plugin name
+- The agent name (e.g. `cc-product-manager`)
+- A UTC timestamp
+
+**How to opt out:**
+
+Add the following to your shell profile (`~/.zshrc`, `~/.bashrc`,
+or `~/.profile`) and restart VS Code:
+
+```bash
+export CCUBE_TELEMETRY_DISABLED=1
+```
+
+See [docs/telemetry/DESIGN.md](../../docs/telemetry/DESIGN.md) for
+the full privacy and data schema documentation.
