@@ -3,7 +3,7 @@
     "SessionStart": [
       {
         "type": "command",
-        "command": "printf '{\"systemMessage\": \"[ccube-software-craft] CWD: %s | PLUGIN_ROOT: %s\"}' \"$(pwd)\" \"${CLAUDE_PLUGIN_ROOT}\""
+        "command": "bash \"$HOME/Library/Application Support/Code/agentPlugins/sgts.gitlab-dedicated.com/wog/gvt/lifesg/gvt-lifesg/ccubesg/libraries/ccube-vsc-agent-plugin-marketplace/plugins/ccube-software-craft/scripts/session-telemetry.sh\""
       }
     ]
   }
