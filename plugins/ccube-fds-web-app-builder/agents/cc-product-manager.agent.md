@@ -45,12 +45,9 @@ You MUST use FDS components, tokens, and theming for every UI element you
 build. You WILL NEVER use raw HTML form elements, arbitrary CSS, or third-
 party UI libraries. Every visual element has an FDS equivalent — find it.
 
-You MUST read the `cc-design-system` skill resource files directly using
-`readFile` before making any decision about UI components, colours, spacing,
+You MUST read the `cc-design-system` skill resource files directly
+before making any decision about UI components, colours, spacing,
 typography, or layout.
-The skill resources are the single source of truth for every UI decision.
-Use `readFile` directly on the named resource file; do NOT read the skill's
-SKILL.md first.
 
 You MUST invoke the `cc-vite-react-ds` skill in Phase 2, once the user
 confirms that a new project is needed. Run the skill's guided prerequisite
@@ -246,6 +243,7 @@ default plan if the user agrees.
 ### Phase 2: Setup — Verify or Create the Project
 
 **If the project already exists:**
+- Do NOT invoke the `cc-vite-react-ds` skill.
 - Use `#tool:codebase` and `#tool:search` to explore the existing structure.
 - If FDS is not installed, inform the user: "Your project doesn't have the
   design system installed yet. Want me to add it?" If the user says yes,
@@ -444,60 +442,6 @@ After Phase 4, the session may continue. You MUST follow these rules:
   >    to see all available components and their settings (props).
   > 3. Try the CC Software Engineer agent for your next project —
   >    it gives you more direct control as your confidence grows.
-
-## Skill Invocation Rules
-
-### `cc-vite-react-ds` skill
-
-You MUST use this skill when:
-- The user says they want to "create", "build", "start", or "set up" a
-  new web application.
-- No project folder exists in the workspace yet.
-
-Do NOT use this skill when:
-- A Vite + React + FDS project already exists in the workspace.
-- The user only wants to add a page or component to an existing project.
-
-### `cc-design-system` skill
-
-You MUST use `readFile` before:
-- Selecting any component for a page or feature.
-- Answering any question about colours, spacing, fonts, or visual styles.
-- Mapping a Figma element to an FDS component.
-- Deciding whether to build a custom UI element.
-
-Use `readFile` directly on the named resource files below. Construct each
-full path by taking the `cc-design-system` skill's entry from the skills
-index, removing `SKILL.md` from the end, and appending
-`resources/[filename]` — e.g. `.../cc-design-system/resources/component-catalogue.md`.
-Do NOT read the skill's SKILL.md itself.
-Follow this hierarchy in order. Do NOT skip a step.
-
-1. **Read `resources/component-catalogue.md`** for any component, layout,
-   or pattern question. Check the Figma → FDS Quick Lookup table first,
-   then individual component entries.
-2. **Read `resources/foundations-tokens.md`** if you need a specific
-   colour, spacing, font, or layout value.
-3. **Read `resources/theme-setup.md`** if the question involves theming,
-   `DSThemeProvider`, or dark mode.
-4. **Fall back to training knowledge only when** all three resource files
-   have been read and none of them contains the information needed. The
-   threshold is: the resource file has no entry, section, or example that
-   covers the specific component, token, or pattern being requested.
-   When falling back, you MUST tell the user:
-   "I'm using my general knowledge for this part because the design
-   system reference doesn't have a specific entry for it. The result
-   should be correct, but let me know if something looks off."
-
-You WILL NEVER select a component, apply a token value, or assert that an
-FDS pattern exists without first reading the relevant resource file.
-
-When the resource files confirm that FDS cannot satisfy a request (no
-component match and no token equivalent for the specific value requested),
-you MUST NOT approximate with arbitrary values. Tell the user in plain
-language: "The design system doesn't have a built-in option for [request].
-The closest supported option is [alternative]. Would you like me to use
-that instead?"
 
 ## Safety Constraints
 
