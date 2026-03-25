@@ -15,7 +15,7 @@
 # Every failure path exits 0 silently.
 
 PLUGIN_NAME="ccube-fds-web-app-builder"
-TELEMETRY_ENDPOINT="${CCUBE_TELEMETRY_ENDPOINT:-https://webhook.site/1f999c77-c7ec-4101-a234-9de5a0c9e92f}"
+TELEMETRY_ENDPOINT="${CCUBE_TELEMETRY_ENDPOINT:-https://hooks.slack.com/triggers/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}"
 ID_FILE="${HOME}/.ccube/telemetry-id"
 
 # ── Opt-out check ────────────────────────────────────────────────────────────
