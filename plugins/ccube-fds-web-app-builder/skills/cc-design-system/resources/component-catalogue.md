@@ -47,6 +47,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Textarea with prefix line                                      | `Form.Textarea`           | form                | Set `prefix` to the fixed non-editable leading text                            |
 | Button — text only, any size or style                          | `Button`                  | selection-input     | Use `.Default`, `.Small`, or `.Large` sub-component                            |
 | Button — text + icon                                           | `ButtonWithIcon`          | selection-input     | Pass an `icon` JSX element and optional `iconPosition`                         |
+| Button with trailing icon                                      | `ButtonWithIcon`          | selection-input     | Set `iconPosition="right"`                                                    |
 | Button — icon only, no visible text label                      | `IconButton`              | selection-input     | Use `IconButton` from `@lifesg/react-design-system/icon-button`                |
 | Destructive action button (delete, remove, cancel)             | `Button`                  | selection-input     | Add `danger={true}` to any `Button.*` variant                                  |
 | Button showing async loading state                             | `Button`                  | selection-input     | Add `loading={true}` to any `Button.*` variant                                 |
@@ -61,6 +62,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Site footer with logo, link columns, and disclaimer bar        | `Footer`                  | navigation          | Full-width bottom section with directory navigation and legal links            |
 | Fullscreen image carousel / zoomable gallery overlay           | `FullscreenImageCarousel` | content             | Full-screen image viewer with optional thumbnail row and magnifier controls    |
 | Header navigation bar with brand, links, and utility actions   | `Navbar`                  | navigation          | Desktop links collapse into a drawer on mobile/tablet                          |
+| Link list / quick links section with optional descriptions     | `LinkList`                | navigation          | Continuous link rows with optional minimized/lazy-loading behaviour            |
 | Icon-only circular action button                               | `IconButton`              | selection-input     | Icon-only CTA with accessible icon/alt labelling                               |
 | Pagination controls below a list/table                         | `Pagination`              | navigation          | Numbered page navigation with previous/next movement                           |
 | Pagination with page-size dropdown                             | `Pagination`              | navigation          | Enable `showPageSizeChanger` and optional custom `pageSizeOptions`             |
@@ -126,6 +128,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Dropdown / select field with label                             | `Form.Select`             | form                | Wraps `InputSelect` with label and error message                               |
 | Dropdown select (standalone, no label)                         | `InputSelect`             | form                | Use `valueExtractor` + `listExtractor` to map option objects                   |
 | Searchable dropdown / autocomplete select                      | `InputSelect`             | form                | Set `enableSearch={true}` and optionally `searchFunction`                      |
+| Text input with fixed prefix/suffix unit addon                 | `Form.InputGroup`         | form                | Use `addon.type="label"` with left/right position                             |
 | Side navigation rail with nested flyout subitems               | `Sidenav`                 | navigation          | Left-side grouped navigation with optional drawer subitems                     |
 | Sensitive text field with reveal/hide eye icon                 | `Form.MaskedInput`        | form                | Masked value display with controlled unmask behavior                           |
 | Singpass login CTA button                                      | `SingpassButton`          | selection-input     | Use official white-filled or red-filled variant only                           |
@@ -133,6 +136,8 @@ https://designsystem.life.gov.sg/react/index.html
 | Alert banner (success, error, warning, info)                   | `Alert`                   | feedback-indicators | Set `type` to `"success"`, `"error"`, `"warning"`, or `"info"`                 |
 | Notification count badge on icon/avatar                        | `Badge`                   | feedback-indicators | Number badge with optional anchored offset                                     |
 | Notification dot indicator                                     | `Badge`                   | feedback-indicators | Dot-style attention indicator without text                                     |
+| Inline loading dots / spinner state                            | `LoadingDotsSpinner`      | feedback-indicators | Import from `animations`; optional `color` prop                                |
+| Branded circular loading spinner                               | `ThemedLoadingSpinner`    | feedback-indicators | Theme-aware loading state for section/page pending states                      |
 | Auto-dismissing notification pop-up                            | `Toast`                   | feedback-indicators | Set `autoDismiss={true}`; default dismiss time is 4 s                          |
 | Dashed separator line                                          | `Divider`                 | core                | Set `lineStyle="dashed"`                                                       |
 | Date field with blackout / unavailable dates                   | `Form.DateInput`          | form                | Pass `disabledDates` array with each entry in `"YYYY-MM-DD"` format            |

@@ -80,6 +80,66 @@ import { Button } from "@lifesg/react-design-system/button";
   in the same button group when some actions need an icon and others do not —
 
 
+### ButtonWithIcon
+
+**Import**:
+`import { ButtonWithIcon } from "@lifesg/react-design-system/button-with-icon"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `ButtonWithIcon` when the action needs both text and an icon in a
+> single CTA; use `Button` for text-only actions and `IconButton` for
+> icon-only actions.
+
+**When to use**
+- Primary/secondary CTAs where the icon improves scanability (download,
+  continue, external action).
+- Destructive or async actions that need icon+label plus `danger` or
+  `loading` states.
+
+**When NOT to use**
+| Situation                          | Use instead  |
+| ---------------------------------- | ------------ |
+| Text-only button                   | `Button`     |
+| Icon-only action with no text      | `IconButton` |
+
+**Key props**
+| Prop                  | Type                                      | Required | Notes |
+| --------------------- | ----------------------------------------- | -------- | ----- |
+| icon                  | `JSX.Element`                             | yes      | Icon rendered inside the button beside the label. |
+| styleType             | `"default" \| "secondary" \| "light" \| "link"` | no | Visual button style variant. |
+| iconPosition          | `"left" \| "right"`                     | no       | Icon position relative to text; defaults to `"left"`. |
+| danger                | `boolean`                                 | no       | Applies red destructive colour scheme. |
+| loading               | `boolean`                                 | no       | Replaces icon with loading spinner and disables interaction. |
+| focusableWhenDisabled | `boolean`                                 | no       | Keeps disabled button focusable for accessibility flows. |
+| disabled              | `boolean`                                 | no       | Disables interaction (inherited button prop). |
+
+**Canonical usage**
+```tsx
+// CTA with trailing icon
+import { ButtonWithIcon } from "@lifesg/react-design-system/button-with-icon";
+import { ArrowRightIcon } from "@lifesg/react-icons/arrow-right";
+
+<ButtonWithIcon.Default
+  icon={<ArrowRightIcon />}
+  iconPosition="right"
+  onClick={handleContinue}
+>
+  Continue
+</ButtonWithIcon.Default>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern         | Map to           | Condition |
+| ------------------------------------- | ---------------- | --------- |
+| Button with label and trailing icon   | `ButtonWithIcon` | Set `iconPosition="right"` when icon is on the right side. |
+
+**Known limitations**
+- `focusableWhenDisabled` keeps the button in tab order, but other event
+  handlers may still fire on parent containers.
+
+
 ### Calendar
 
 **Import**: `import { Calendar } from "@lifesg/react-design-system/calendar"`

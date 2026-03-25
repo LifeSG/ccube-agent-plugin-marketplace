@@ -61,7 +61,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Masthead   | `masthead`   | ✅      |
 | Sidenav    | `sidenav`    | ✅      |
 | LocalNav   | `local-nav`  | ✅      |
-| LinkList   | `link-list`  | ⬜      |
+| LinkList   | `link-list`  | ✅      |
 | Avatar     | `avatar`     | ⬜      |
 
 ## Selection and input
@@ -78,7 +78,7 @@ https://designsystem.life.gov.sg/react/index.html
 | OtpInput                           | `otp-input`           | ✅      |
 | SingpassButton                     | `singpass-button`     | ✅      |
 | IconButton                         | `icon-button`         | ✅      |
-| ButtonWithIcon                     | `button-with-icon`    | ⬜      |
+| ButtonWithIcon                     | `button-with-icon`    | ✅      |
 | Filter                             | `filter`              | ⬜      |
 | Filter.Addons (FilterItemCheckbox) | `filter/addons`       | ⬜      |
 | FeedbackRating                     | `feedback-rating`     | ⬜      |
@@ -102,7 +102,7 @@ https://designsystem.life.gov.sg/react/index.html
 | NotificationBanner                                                 | `notification-banner` | ✅      |
 | Timeline                                                           | `timeline`            | ✅      |
 | Pill                                                               | `pill`                | ✅      |
-| Animations                                                         | `animations`          | ⬜      |
+| Animations                                                         | `animations`          | ✅      |
 | Animations.Customisable (LoadingDotsSpinner, ThemedLoadingSpinner) | `animations`          | ⬜      |
 | CountdownTimer                                                     | `countdown-timer`     | ⬜      |
 | SmartAppBanner                                                     | `smart-app-banner`    | ⬜      |
@@ -132,7 +132,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Form.MultiSelect (InputMultiSelect)             | `input-multi-select`        | ✅      |
 | Form.PhoneNumberInput                           | `phone-number-input`        | ✅      |
 | Form.MaskedInput (MaskedInput)                  | `masked-input`              | ✅      |
-| InputGroup                                      | `input-group`               | ⬜      |
+| InputGroup                                      | `input-group`               | ✅      |
 | Form.DateRangeInput                             | `date-range-input`          | ⬜      |
 | Form.Timepicker                                 | `timepicker`                | ⬜      |
 | Form.OtpVerification                            | `otp-verification`          | ⬜      |
@@ -187,7 +187,7 @@ https://designsystem.life.gov.sg/react/index.html
 
 ---
 
-**Progress**: 50 / 90 components documented (3 deprecated excluded from count)
+**Progress**: 54 / 90 components documented (3 deprecated excluded from count)
 
 > New sub-components confirmed via Storybook full expansion:
 > `Layout.ColDiv`, `Filter.Addons`, `Animations.Customisable`.

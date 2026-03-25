@@ -78,6 +78,76 @@ import { Input } from "@lifesg/react-design-system/input";
 
 ---
 
+### InputGroup
+
+**Import**:
+`import { InputGroup } from "@lifesg/react-design-system/input-group"`
+
+**Category**: Form
+
+**Decision rule**
+> Use `InputGroup` when a single-line field requires an attached addon (label,
+> list selector, or custom element) as part of the same input control; use
+> `Form.Input` when no addon is needed.
+
+**When to use**
+- Monetary, unit, or prefixed value fields (e.g. `$`, `kg`) where addon and
+  input must behave as one control.
+- Form fields requiring a dropdown selector addon (e.g. country code,
+  category selector) next to free text entry.
+
+**When NOT to use**
+| Situation                             | Use instead  |
+| ------------------------------------- | ------------ |
+| Plain labelled text input             | `Form.Input` |
+| Multi-line free text                  | `Form.Textarea` |
+
+**Key props**
+| Prop              | Type                                 | Required | Notes |
+| ----------------- | ------------------------------------ | -------- | ----- |
+| addon             | `AddonProps<T, V>`                   | no       | Configures addon `type` (`label`, `list`, `custom`) and `position`. |
+| noBorder          | `boolean`                            | no       | Removes border wrapper around combined control. |
+| allowClear        | `boolean`                            | no       | Inherited from `Input`; shows clear action in text field. |
+| options           | `T[]`                                | no       | List addon only; options shown in addon selector. |
+| selectedOption    | `T`                                  | no       | List addon only; currently selected addon option. |
+| onSelectOption    | `(option: T, extractedValue: T \| V) => void` | no | List addon selection callback. |
+| enableSearch      | `boolean`                            | no       | List addon only; enables text search in selector list. |
+| dropdownZIndex    | `number`                             | no       | Overrides addon dropdown z-index in complex overlays. |
+| dropdownRootNode  | `RefObject<HTMLElement>`             | no       | Changes dropdown mount root for shared scroll contexts. |
+
+**Type-specific requirements**
+| Type value | Extra requirement               | Notes |
+| ---------- | ------------------------------- | ----- |
+| `list`     | `options` + `onSelectOption`   | Required to render and handle addon list interactions. |
+
+**Canonical usage**
+```tsx
+// Label addon for amount input
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.InputGroup
+  label="Amount"
+  addon={{
+    type: "label",
+    position: "left",
+    attributes: { value: "$" },
+  }}
+  placeholder="Enter amount"
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                    | Map to            | Condition |
+| ------------------------------------------------ | ----------------- | --------- |
+| Text input with fixed prefix/suffix unit addon  | `Form.InputGroup` | Use `addon.type="label"` with `position="left"` or `"right"`. |
+| Text input with dropdown selector addon          | `Form.InputGroup` | Use `addon.type="list"` with addon options and extractor callbacks. |
+
+**Composition patterns**
+- Use standalone `InputGroup` for unlabelled widget composition; use
+  `Form.InputGroup` when field label and error handling are needed.
+
+---
+
 ### Form.DateInput
 
 **Import**:

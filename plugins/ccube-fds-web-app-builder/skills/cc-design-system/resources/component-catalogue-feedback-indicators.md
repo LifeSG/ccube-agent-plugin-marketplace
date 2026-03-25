@@ -91,6 +91,57 @@ import { Alert } from "@lifesg/react-design-system/alert";
 
 ---
 
+### Animations
+
+**Import**:
+`import { LoadingDots, LoadingDotsSpinner, LoadingSpinner, ThemedLoadingSpinner } from "@lifesg/react-design-system/animations"`
+
+**Category**: Feedback indicators
+
+**Decision rule**
+> Use `animations` exports when the interface needs a visual loading state
+> without introducing a step model; use `ProgressIndicator` when users need
+> explicit multi-step progress.
+
+**When to use**
+- Inline loading placeholders while asynchronous content is being fetched.
+- Branded or themed spinner states where the loading indicator must match the
+  active FDS theme.
+
+**When NOT to use**
+| Situation                                   | Use instead          |
+| ------------------------------------------- | -------------------- |
+| User needs to track current step in a flow  | `ProgressIndicator`  |
+| Toast-like success/error message state      | `Toast`              |
+
+**Key props**
+| Prop        | Type     | Required | Notes |
+| ----------- | -------- | -------- | ----- |
+| id          | `string` | no       | Optional element id for animation root. |
+| className   | `string` | no       | CSS hook for custom spacing or layout integration. |
+| data-testid | `string` | no       | Test selector on animation element. |
+| color       | `string` | no       | Only for `LoadingDotsSpinner`; customises spinner colour. |
+
+**Canonical usage**
+```tsx
+// Themed loading spinner in a pending state section
+import { ThemedLoadingSpinner } from "@lifesg/react-design-system/animations";
+
+<ThemedLoadingSpinner data-testid="loading-state" />
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern        | Map to                 | Condition |
+| ------------------------------------ | ---------------------- | --------- |
+| Inline loading dots / spinner state  | `LoadingDotsSpinner`   | Use when a compact in-context loading indicator is needed. |
+| Branded circular loading indicator   | `ThemedLoadingSpinner` | Use theme-aware spinner for full-section loading states. |
+
+**Known limitations**
+- API surface is intentionally minimal (`BaseAnimationProps`); size and
+  advanced motion customisation should be handled via container CSS.
+
+---
+
 ### Badge
 
 **Import**: `import { Badge } from "@lifesg/react-design-system/badge"`

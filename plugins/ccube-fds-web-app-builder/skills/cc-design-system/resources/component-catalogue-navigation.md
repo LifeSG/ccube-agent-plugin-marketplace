@@ -153,6 +153,71 @@ import { Footer } from "@lifesg/react-design-system/footer";
 
 ---
 
+### LinkList
+
+**Import**: `import { LinkList } from "@lifesg/react-design-system/link-list"`
+
+**Category**: Navigation
+
+**Decision rule**
+> Use `LinkList` when the UI needs a continuous vertical list of text links
+> with optional descriptions and optional "View more" behaviour; use `Navbar`
+> or `Sidenav` for full app-level navigation structures.
+
+**When to use**
+- A page section that presents related destinations as a compact list of
+  links with optional helper descriptions.
+- Progressive disclosure of long link sets using `maxShown` (eager) or
+  `loadMode="lazy"` with `onLoadMore`.
+
+**When NOT to use**
+| Situation                                       | Use instead  |
+| ----------------------------------------------- | ------------ |
+| Global top navigation with branding/actions     | `Navbar`     |
+| Persistent section hierarchy in a left side rail | `Sidenav`    |
+
+**Key props**
+| Prop         | Type                                            | Required | Notes |
+| ------------ | ----------------------------------------------- | -------- | ----- |
+| items        | `LinkListItemProps<T>[]`                        | yes      | Link items with `title` and optional descriptions. |
+| loadMode     | `"eager" \| "lazy"`                           | no       | `"eager"` supports `maxShown`; `"lazy"` requires `loadMore` + `onLoadMore`. |
+| maxShown     | `number`                                        | no       | Maximum items shown before minimizing (eager mode only). |
+| loadMore     | `boolean`                                       | no       | Required in lazy mode to control whether "View more" is shown. |
+| onLoadMore   | `() => void \| Promise<void>`                  | no       | Lazy-mode callback to append more items. |
+| onItemClick  | `(item: LinkListItemProps<T>, event: React.MouseEvent<HTMLAnchorElement>) => void` | no | Component-level click handler for all items. |
+| customLabels | `{ viewMore?: string; viewLess?: string }`      | no       | Override default labels for minimized/lazy controls. |
+| style        | `"default" \| "small"`                       | no       | Text size style for link rows. |
+
+**Canonical usage**
+```tsx
+// Minimized eager list for related links
+import { LinkList } from "@lifesg/react-design-system/link-list";
+
+<LinkList
+  items={[
+    { title: "Check eligibility", href: "/eligibility" },
+    {
+      title: "Prepare documents",
+      href: "/documents",
+      description: "Identity and supporting files",
+    },
+    { title: "Submit application", href: "/apply" },
+  ]}
+  maxShown={2}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                       | Map to     | Condition |
+| --------------------------------------------------- | ---------- | --------- |
+| Link list / quick links section with optional notes | `LinkList` | Vertical list of link rows, optionally minimized or lazy-loaded. |
+
+**Known limitations**
+- Lazy mode requires consumer-managed pagination state (`items`, `loadMore`,
+  and `onLoadMore`).
+
+---
+
 ### LocalNav
 
 **Import**:
