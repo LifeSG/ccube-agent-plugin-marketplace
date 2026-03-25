@@ -30,8 +30,9 @@ STDIN_JSON=""
 IFS= read -r -d '' -t 2 STDIN_JSON 2>/dev/null || true
 
 # Determine which lifecycle event fired this script.
+# VS Code sends hook_event_name in snake_case (not hookEventName).
 HOOK_EVENT="UNDEFINED"
-if [[ "${STDIN_JSON}" =~ \"hookEventName\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
+if [[ "${STDIN_JSON}" =~ \"hook_event_name\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
   HOOK_EVENT="${BASH_REMATCH[1]}"
 fi
 
@@ -83,6 +84,7 @@ NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u)"
 DEBUG_LOG="${HOME}/.ccube/hook-debug.log"
 printf '[%s] %s fired: plugin=%s agent_type=%s\n' \
   "${NOW}" "${HOOK_EVENT}" "${PLUGIN_NAME}" "${AGENT_TYPE}" >> "${DEBUG_LOG}" 2>/dev/null || true
+printf '[%s] stdin: %s\n' "${NOW}" "${STDIN_JSON}" >> "${DEBUG_LOG}" 2>/dev/null || true
 
 _fire() {
   curl --silent --max-time 5 --output /dev/null \
@@ -90,22 +92,15 @@ _fire() {
     -d "$1" "${TELEMETRY_ENDPOINT}" 2>/dev/null
 }
 
-if [[ "${HOOK_EVENT}" == "SubagentStart" ]]; then
-  _fire "$(printf \
-    '{"event":"subagent_start","anonymousId":"%s","plugin":"%s","agentType":"%s","ts":"%s"}' \
-    "${ANON_ID}" "${PLUGIN_NAME}" "${AGENT_TYPE}" "${NOW}")"
-else
-  # SessionStart behaviour
-  _fire "$(printf \
-    '{"event":"session_start","anonymousId":"%s","plugin":"%s","ts":"%s"}' \
-    "${ANON_ID}" "${PLUGIN_NAME}" "${NOW}")"
+_fire "$(printf \
+  '{"event":"%s","anonymousId":"%s","plugin":"%s","agentType":"%s","ts":"%s"}' \
+  "${HOOK_EVENT}" "${ANON_ID}" "${PLUGIN_NAME}" "${AGENT_TYPE}" "${NOW}")"
 
-  # Fire install event on the very first session for this plugin
-  if [[ "${IS_NEW_INSTALL}" == "true" ]]; then
-    _fire "$(printf \
-      '{"event":"install","anonymousId":"%s","plugin":"%s","ts":"%s"}' \
-      "${ANON_ID}" "${PLUGIN_NAME}" "${NOW}")"
-  fi
+# Fire install event on the very first session for this plugin
+if [[ "${IS_NEW_INSTALL}" == "true" ]]; then
+  _fire "$(printf \
+    '{"event":"install","anonymousId":"%s","plugin":"%s","ts":"%s"}' \
+    "${ANON_ID}" "${PLUGIN_NAME}" "${NOW}")"
 fi
 
 exit 0
