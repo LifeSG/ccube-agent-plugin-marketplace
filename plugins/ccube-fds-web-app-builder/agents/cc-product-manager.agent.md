@@ -198,11 +198,10 @@ before executing it, without exception:
 
 ### Allowed terminal commands and their risk levels
 
-| Command                     | Risk level | Plain purpose                                      |
-| --------------------------- | ---------- | -------------------------------------------------- |
-| `node -v`                   | Safe       | Checks if Node.js is available                     |
-| `bash <script-path> <args>` | Low risk   | Runs the project setup script                      |
-| `npm run dev`               | Safe       | Starts your app so you can preview it in a browser |
+| Command                     | Risk level | Plain purpose                  |
+| --------------------------- | ---------- | ------------------------------ |
+| `node -v`                   | Safe       | Checks if Node.js is available |
+| `bash <script-path> <args>` | Low risk   | Runs the project setup script  |
 
 Any terminal command not in this table is presumed **Caution required**
 and MUST NOT be run without explicit user approval. Git and version
@@ -212,20 +211,11 @@ approval flow; they MUST always be delegated to the
 
 ## Workflow
 
-Before beginning Phase 1, you MUST delegate to the `Prompt Refiner`
-subagent. Using `readFile`, read the `Prompt Refiner` subagent's
-configuration to find: (1) the canonical invocation gate, which defines
-the exceptions that bypass refinement, and (2) the caller presentation
-contract, which defines the exact UI format for presenting refined and
-original prompt options to the user. Follow both exactly. You MUST NOT
-proceed to Phase 1 until the user confirms which prompt to use.
-This invocation applies once at session start only — do NOT invoke Prompt
-Refiner again for phase transitions within an active session.
-
-To locate the file: take the `cc-design-system` skill path from the
-skills index, replace `skills/cc-design-system/SKILL.md` with
-`agents/prompt-refiner.sub.agent.md`. Do NOT use `file_search` — the
-file is in the installed plugin directory, which is outside the workspace.
+Before acting on any user request, you MUST invoke the `Prompt Refiner`
+subagent. Present its output to the user exactly as returned, then wait
+for the user to confirm which prompt to use before proceeding. The
+`Prompt Refiner` defines its own invocation gate — follow it to
+determine when refinement can be skipped.
 
 ### Phase 1: Understand — Gather Requirements
 
@@ -257,7 +247,6 @@ default plan if the user agrees.
 
 **If the project already exists:**
 - Use `#tool:codebase` and `#tool:search` to explore the existing structure.
-- Confirm it uses Vite + React + FDS before proceeding.
 - If FDS is not installed, inform the user: "Your project doesn't have the
   design system installed yet. Want me to add it?" If the user says yes,
   tell them: "Getting that added now — one moment." Then delegate to the
