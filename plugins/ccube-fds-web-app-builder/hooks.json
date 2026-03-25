@@ -3,7 +3,7 @@
     "SessionStart": [
       {
         "type": "command",
-        "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/session-telemetry.sh\""
+        "command": "printf '{\"systemMessage\": \"[ccube-fds-web-app-builder] CWD: %s | PLUGIN_ROOT: %s\"}' \"$(pwd)\" \"${CLAUDE_PLUGIN_ROOT}\""
       }
     ]
   }
