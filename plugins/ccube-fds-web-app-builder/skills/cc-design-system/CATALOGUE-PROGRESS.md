@@ -84,11 +84,11 @@ https://designsystem.life.gov.sg/react/index.html
 | FeedbackRating                     | `feedback-rating`     | ✅      |
 | DateNavigator                      | `date-navigator`      | ✅      |
 | ImageButton                        | `image-button`        | ✅      |
-| Schedule                           | `schedule`            | ⬜      |
-| TimeSlotBar                        | `time-slot-bar`       | ⬜      |
-| TimeSlotBarWeek                    | `time-slot-bar-week`  | ⬜      |
-| TimeSlotWeekView                   | `time-slot-week-view` | ⬜      |
-| TimeTable                          | `timetable`           | ⬜      |
+| Schedule                           | `schedule`            | ✅      |
+| TimeSlotBar                        | `time-slot-bar`       | ✅      |
+| TimeSlotBarWeek                    | `time-slot-bar-week`  | ✅      |
+| TimeSlotWeekView                   | `time-slot-week-view` | ✅      |
+| TimeTable                          | `timetable`           | ✅      |
 
 ## Feedback indicators
 
@@ -138,16 +138,16 @@ https://designsystem.life.gov.sg/react/index.html
 | Form.OtpVerification                            | `otp-verification`          | ✅      |
 | Form.UnitNumberInput                            | `unit-number`               | ✅      |
 | Form.PredictiveTextInput                        | `predictive-text-input`     | ✅      |
-| Form.TimeRangePicker                            | `time-range-picker`         | ⬜      |
-| Form.Slider (InputSlider)                       | `input-slider`              | ⬜      |
-| Form.RangeSlider (InputRangeSlider)             | `input-range-slider`        | ⬜      |
-| Form.NestedSelect (InputNestedSelect)           | `input-nested-select`       | ⬜      |
-| Form.NestedMultiSelect (InputNestedMultiSelect) | `input-nested-multi-select` | ⬜      |
-| Form.RangeSelect (InputRangeSelect)             | `input-range-select`        | ⬜      |
-| Form.CustomField                                | `form`                      | ⬜      |
-| Form.SelectHistogram                            | `select-histogram`          | ⬜      |
-| Form.HistogramSlider                            | `histogram-slider`          | ⬜      |
-| Form.ESignature                                 | `e-signature`               | ⬜      |
+| Form.TimeRangePicker                            | `time-range-picker`         | ✅      |
+| Form.Slider (InputSlider)                       | `input-slider`              | ✅      |
+| Form.RangeSlider (InputRangeSlider)             | `input-range-slider`        | ✅      |
+| Form.NestedSelect (InputNestedSelect)           | `input-nested-select`       | ✅      |
+| Form.NestedMultiSelect (InputNestedMultiSelect) | `input-nested-multi-select` | ✅      |
+| Form.RangeSelect (InputRangeSelect)             | `input-range-select`        | ✅      |
+| Form.CustomField                                | `form`                      | ✅      |
+| Form.SelectHistogram                            | `select-histogram`          | ✅      |
+| Form.HistogramSlider                            | `histogram-slider`          | ✅      |
+| Form.ESignature                                 | `e-signature`               | ✅      |
 
 ## Deprecated
 
@@ -182,13 +182,12 @@ https://designsystem.life.gov.sg/react/index.html
 | Shadow                       | `foundations-tokens.md`          | ✅                                    |
 | Border                       | `foundations-tokens.md`          | ✅                                    |
 | Border Radius                | `foundations-tokens.md`          | ✅                                    |
-| Z-index                      | `foundations-tokens.md`          | ⬜                                    |
 | Motion                       | `foundations-tokens.md`          | ✅                                    |
 | Layout Composition Patterns  | `layout-composition-patterns.md` | ✅                                    |
 
 ---
 
-**Progress**: 68 / 90 components documented (3 deprecated excluded from count)
+**Progress**: 83 / 90 components documented (3 deprecated excluded from count)
 
 > New sub-components confirmed via Storybook full expansion:
 > `Layout.ColDiv`, `Filter.Addons`, `Animations.Customisable`.

@@ -180,6 +180,32 @@ https://designsystem.life.gov.sg/react/index.html
 | Grid column span cell (responsive)                             | `Layout.ColDiv`            | core                | Direct child of `type="grid"` container; set col props per breakpoint          |
 | Page content area (max-width 1440px)                           | `Layout.Container`         | core                | Default `type="flex"` for centred constrained-width content                    |
 | Page grid layout (12-column responsive)                        | `Layout.Container`         | core                | Set `type="grid"` for responsive 12/8-column layout                            |
+| Appointment calendar with resource columns and time grid       | `Schedule`                 | selection-input     | Day or week view with named resource/staff rows                                |
+| Booking slot grid with colour-coded availability status        | `Schedule`                 | selection-input     | Set slot `status` to `"available"`, `"booked"`, `"blocked"`, or `"pending"`    |
+| Horizontal strip of coloured time blocks for one resource/day  | `TimeSlotBar`              | selection-input     | Single-day horizontal scrollable slot display                                  |
+| Compact / dense time-slot row                                  | `TimeSlotBar`              | selection-input     | Set `variant="minified"`                                                       |
+| Week strip with time slots across 7 day columns                | `TimeSlotBarWeek`          | selection-input     | Standard week-view booking calendar                                            |
+| Week time-slot calendar without navigation header              | `TimeSlotBarWeek`          | selection-input     | Set `showNavigationHeader={false}`                                             |
+| Week column layout with labelled time-block chips per day      | `TimeSlotWeekView`         | selection-input     | Slots rendered as text labels, not a continuous grid                           |
+| Day-view timetable grid with named rows and 15-min cell slots  | `TimeTable`                | selection-input     | Fixed 15-minute slot resolution across a single day                            |
+| Timetable with colour-coded status cells (filled/blocked)      | `TimeTable`                | selection-input     | Set `status` on each `TimeTableRowCellData`                                    |
+| Range slider with two draggable handles                        | `Form.RangeSlider`         | form                | Default `numOfThumbs=2`; use `minRange` to enforce gap between thumbs          |
+| Price / distance range filter with label                       | `Form.RangeSlider`         | form                | Set `sliderLabelPrefix` or `sliderLabelSuffix` for units                       |
+| Single-thumb draggable track with label                        | `Form.Slider`              | form                | Standard labelled single-value control                                         |
+| Slider showing current value above thumb                       | `Form.Slider`              | form                | Set `showIndicatorLabel={true}`                                                |
+| Start time + end time field pair with label                    | `Form.TimeRangePicker`     | form                | Two time inputs collected as one labelled control                              |
+| Time range with dropdown selection list                        | `Form.TimeRangePicker`     | form                | Set `variant="combobox"` for dropdown + text-entry mode                        |
+| Two side-by-side dropdowns labelled "From" and "To"            | `Form.RangeSelect`         | form                | Options are categorical or non-numeric                                         |
+| Hierarchical dropdown with multi-tick selection                | `Form.NestedMultiSelect`   | form                | Multiple options selectable across tree levels                                 |
+| Category → subcategory drill-down picker (single select)       | `Form.NestedSelect`        | form                | Only one leaf option selectable                                                |
+| Hierarchical search-enabled dropdown (single-select)           | `Form.NestedSelect`        | form                | Set `enableSearch={true}`; ≥3 chars to trigger                                 |
+| Custom input element wrapped with FDS label + error handler    | `Form.CustomField`         | form                | Wraps bespoke or third-party inputs to gain standard label, error, and a11y    |
+| Drawing pad for handwritten signature capture                  | `Form.ESignature`          | form                | Stores result as PNG base64 string                                             |
+| Signature pad with upload progress indicator                   | `Form.ESignature`          | form                | Set `loadingProgress` (0–1) + `loadingLabel`                                   |
+| Always-visible inline histogram with two-thumb range slider    | `Form.HistogramSlider`     | form                | Set `bins` + `interval` from API distribution data                             |
+| Price / distance distribution filter with bar chart            | `Form.HistogramSlider`     | form                | Pair `rangeLabelPrefix`/`rangeLabelSuffix` with `showRangeLabels`              |
+| Dropdown field opening a histogram for numeric range selection | `Form.SelectHistogram`     | form                | Histogram hidden until user opens the dropdown                                 |
+| Compact range filter showing distribution data on demand       | `Form.SelectHistogram`     | form                | Use over `Form.HistogramSlider` when vertical space is limited                 |
 
 ---
 

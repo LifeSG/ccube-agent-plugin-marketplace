@@ -897,6 +897,85 @@ import { RadioButton } from "@lifesg/react-design-system/radio-button";
 
 ---
 
+### Schedule
+
+**Import**: `import { Schedule } from "@lifesg/react-design-system/schedule"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `Schedule` when the Figma frame shows a **day or week calendar with named resource rows and a time-slot grid** — use `TimeSlotBarWeek` for a lighter week view without resource rows.
+
+**When to use**
+- Appointment management screens where multiple services or staff resources are listed as columns, each with bookable time slots across a day.
+- Admin booking interfaces that need slot status colouring (`available`, `booked`, `blocked`, `pending`), booking counts, and per-slot click handlers.
+
+**When NOT to use**
+| Situation                                                         | Use instead                                                             |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Single horizontal time-slot bar for one resource on one day       | `TimeSlotBar` from `@lifesg/react-design-system/time-slot-bar`          |
+| Week view showing time slots across days without resource columns | `TimeSlotBarWeek` from `@lifesg/react-design-system/time-slot-bar-week` |
+| User needs to pick a date only, no time slot grid                 | `Calendar` from `@lifesg/react-design-system/calendar`                  |
+
+**Key props**
+| Prop                 | Type                                                     | Required | Notes                                                             |
+| -------------------- | -------------------------------------------------------- | -------- | ----------------------------------------------------------------- |
+| date                 | `string`                                                 | yes      | Currently displayed date in `YYYY-MM-DD` format.                  |
+| serviceData          | `ScheduleEntityProps[]`                                  | yes      | One entry per resource/service; each carries a `slots` array.     |
+| view                 | `"day" \| "week"`                                        | no       | Display mode. Defaults to `"day"`.                                |
+| minTime              | `string`                                                 | no       | Earliest time displayed in `HH:mm`. Defaults to `"00:00"`.        |
+| maxTime              | `string`                                                 | no       | Latest time displayed in `HH:mm`. Defaults to `"23:59"`.          |
+| initialScrollTime    | `string`                                                 | no       | Initial vertical scroll offset in `HH:mm`; defaults to `minTime`. |
+| loading              | `boolean`                                                | no       | Shows loading animation over the grid.                            |
+| blockedMessage       | `string`                                                 | no       | Override label on blocked slots. Defaults to `"Unavailable"`.     |
+| minDate              | `string`                                                 | no       | Earliest navigable date, inclusive (`YYYY-MM-DD`).                |
+| maxDate              | `string`                                                 | no       | Latest navigable date, inclusive (`YYYY-MM-DD`).                  |
+| onNextDayClick       | `(date: string) => void`                                 | yes      | Fires when the forward-navigation arrow is clicked.               |
+| onPreviousDayClick   | `(date: string) => void`                                 | yes      | Fires when the backward-navigation arrow is clicked.              |
+| onSlotClick          | `(data: ScheduleSlotProps, e: React.MouseEvent) => void` | no       | Fires when a time-slot cell is clicked.                           |
+| onTodayClick         | `() => void`                                             | no       | Fires when the Today button is clicked.                           |
+| onCalendarDateSelect | `(date: string) => void`                                 | no       | Fires when a date is chosen from the dropdown calendar.           |
+
+**Canonical usage**
+```tsx
+// Day-view schedule with two resources
+import { Schedule } from "@lifesg/react-design-system/schedule";
+
+<Schedule
+  date="2026-03-26"
+  view="day"
+  minTime="08:00"
+  maxTime="18:00"
+  initialScrollTime="08:00"
+  serviceData={[
+    {
+      name: "Dr Lee",
+      slots: [
+        { id: "s1", date: "2026-03-26", startTime: "09:00", endTime: "09:30", status: "available" },
+        { id: "s2", date: "2026-03-26", startTime: "10:00", endTime: "10:30", status: "booked", booked: 1, capacity: 1 },
+      ],
+    },
+  ]}
+  onNextDayClick={(d) => setDate(d)}
+  onPreviousDayClick={(d) => setDate(d)}
+  onTodayClick={() => setDate(today)}
+  onSlotClick={(slot) => openBookingModal(slot)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                            | Map to     | Condition                                                                   |
+| -------------------------------------------------------- | ---------- | --------------------------------------------------------------------------- |
+| Appointment calendar with resource columns and time grid | `Schedule` | Day or week view with named resource/staff rows                             |
+| Booking slot grid with colour-coded availability         | `Schedule` | Set slot `status` to `"available"`, `"booked"`, `"blocked"`, or `"pending"` |
+| Week calendar with per-resource time slots               | `Schedule` | Set `view="week"`                                                           |
+
+**Known limitations**
+- On mobile/tablet, only day view is rendered regardless of the `view` prop; the Today button is also hidden.
+- Hidden-slot overflow in week view (+N button) requires `onClickHiddenSlots` to be handled by the consumer.
+
+---
+
 ### SingpassButton
 
 **Import**: `import { SingpassButton } from "@lifesg/react-design-system/singpass-button"`
@@ -944,6 +1023,300 @@ import { SingpassButton } from "@lifesg/react-design-system/singpass-button";
 
 **Known limitations**
 - Intended only for Singpass-auth actions; do not repurpose as a generic CTA.
+
+---
+
+### TimeSlotBar
+
+**Import**: `import { TimeSlotBar } from "@lifesg/react-design-system/time-slot-bar"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `TimeSlotBar` for a **single horizontal strip showing bookable time slots across a day range** — use `TimeSlotBarWeek` when you need the full interactive week-calendar view.
+
+**When to use**
+- Displaying a resource's available and booked slots for a single day as a horizontally scrollable strip.
+- Compact booking UIs where multiple `TimeSlotBar` rows are stacked to show multiple resources side by side.
+
+**When NOT to use**
+| Situation                                            | Use instead                                                             |
+| ---------------------------------------------------- | ----------------------------------------------------------------------- |
+| Full calendar grid with resource rows and navigation | `Schedule` from `@lifesg/react-design-system/schedule`                  |
+| Week-spanning time-slot view with date navigation    | `TimeSlotBarWeek` from `@lifesg/react-design-system/time-slot-bar-week` |
+
+**Key props**
+| Prop                   | Type                           | Required | Notes                                                                          |
+| ---------------------- | ------------------------------ | -------- | ------------------------------------------------------------------------------ |
+| startTime              | `string`                       | yes      | Bar start in `HH:mm` (minutes must be 00, 15, 30, or 45).                      |
+| endTime                | `string`                       | yes      | Bar end in `HH:mm` (same 15-min-block constraint).                             |
+| slots                  | `TimeSlot[]`                   | yes      | Time slot definitions with status colours and click behaviour.                 |
+| variant                | `"default" \| "minified"`      | no       | `"minified"` reduces cell height for dense display. Defaults to `"default"`.   |
+| initialScrollTime      | `string`                       | no       | Horizontal scroll offset on mount (`HH:mm`).                                   |
+| roundInitialScrollTime | `boolean`                      | no       | Rounds `initialScrollTime` to the nearest 30-min interval. Defaults to `true`. |
+| styleAttributes        | `TimeSlotBarStyleAttributes`   | no       | Default colours applied when no slot is defined for a time period.             |
+| onSlotClick            | `(timeSlot: TimeSlot) => void` | yes      | Fires when a slot cell is clicked.                                             |
+| onClick                | `() => void`                   | no       | Fires when clicking the bar outside any specific slot.                         |
+
+**Canonical usage**
+```tsx
+// Horizontal time-slot bar for a single resource
+import { TimeSlotBar } from "@lifesg/react-design-system/time-slot-bar";
+
+<TimeSlotBar
+  startTime="08:00"
+  endTime="18:00"
+  initialScrollTime="09:00"
+  slots={[
+    { id: "s1", startTime: "09:00", endTime: "09:30", clickable: true, label: "Available",
+      styleAttributes: { backgroundColor: "#4CAF50" } },
+    { id: "s2", startTime: "10:00", endTime: "10:30", clickable: false,
+      styleAttributes: { backgroundColor: "#E53935" } },
+  ]}
+  onSlotClick={(slot) => handleSlotSelect(slot)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                             | Map to        | Condition                                                        |
+| --------------------------------------------------------- | ------------- | ---------------------------------------------------------------- |
+| Horizontal strip of coloured time blocks for one resource | `TimeSlotBar` | Standard single-day display                                      |
+| Compact / dense time-slot row                             | `TimeSlotBar` | Set `variant="minified"`                                         |
+| Time block with diagonal stripe pattern                   | `TimeSlotBar` | Set `styleAttributes.styleType="stripes"` and `backgroundColor2` |
+
+**Known limitations**
+- Slot boundaries must align to 15-minute intervals; arbitrary minute values will not render correctly.
+
+---
+
+### TimeSlotBarWeek
+
+**Import**: `import { TimeSlotBarWeek } from "@lifesg/react-design-system/time-slot-bar-week"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `TimeSlotBarWeek` when the Figma design shows a **week calendar with time slots and date navigation** — use `Schedule` when named resource rows are required alongside the time grid.
+
+**When to use**
+- Week-view booking interfaces where users browse available time slots across days and click to select one.
+- Appointment picker flows where a combined week-strip replaces a two-step (calendar + timepicker) flow.
+
+**When NOT to use**
+| Situation                                           | Use instead                                                    |
+| --------------------------------------------------- | -------------------------------------------------------------- |
+| Named resource/staff columns alongside a time grid  | `Schedule` from `@lifesg/react-design-system/schedule`         |
+| Single-day horizontal slot strip without navigation | `TimeSlotBar` from `@lifesg/react-design-system/time-slot-bar` |
+| Plain date-only selection without time slots        | `Calendar` from `@lifesg/react-design-system/calendar`         |
+
+**Key props**
+| Prop                 | Type                                         | Required | Notes                                                                                       |
+| -------------------- | -------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| slots                | `{ [date: string]: TimeSlot[] }`             | yes      | Object keyed by `YYYY-MM-DD`; absent dates fall back to disabled slot pattern.              |
+| value                | `string`                                     | no       | Selected date in `YYYY-MM-DD` format.                                                       |
+| currentCalendarDate  | `string`                                     | no       | Initial visible week's anchor date (`YYYY-MM-DD`).                                          |
+| variant              | `"flexible" \| "fixed"`                      | no       | `"fixed"` locks the grid height; `"flexible"` expands to content. Defaults to `"flexible"`. |
+| interval             | `number`                                     | no       | Minutes each cell represents. Defaults to `30`.                                             |
+| startTime            | `string`                                     | no       | Minimum time shown (`HH:mm`, full hours only). Auto-derived from slots if omitted.          |
+| endTime              | `string`                                     | no       | Maximum time shown (`HH:mm`, full hours only). Auto-derived from slots if omitted.          |
+| minDate              | `string`                                     | no       | Earliest selectable date, inclusive (`YYYY-MM-DD`).                                         |
+| maxDate              | `string`                                     | no       | Latest selectable date, inclusive (`YYYY-MM-DD`).                                           |
+| disabledDates        | `string[]`                                   | no       | Dates not available for selection in `YYYY-MM-DD` format.                                   |
+| enableSelection      | `boolean`                                    | no       | Allows date selection. Defaults to `true`.                                                  |
+| showNavigationHeader | `boolean`                                    | no       | Shows month/year dropdown and arrow navigation. Defaults to `true`.                         |
+| maxVisibleCellHeight | `number`                                     | no       | Pixel height cap before cells are truncated.                                                |
+| onChange             | `(value: string) => void`                    | no       | Fires with the selected date (`YYYY-MM-DD`) when a day is chosen.                           |
+| onSlotClick          | `(date: string, timeSlot: TimeSlot) => void` | no       | Fires with the date and slot when a time slot is clicked.                                   |
+| onWeekDisplayChange  | `(value: YearMonthWeekDisplay) => void`      | no       | Fires when the visible week changes.                                                        |
+
+**Canonical usage**
+```tsx
+// Weekly time-slot picker with navigation
+import { TimeSlotBarWeek } from "@lifesg/react-design-system/time-slot-bar-week";
+
+<TimeSlotBarWeek
+  slots={{
+    "2026-03-26": [
+      { id: "s1", startTime: "09:00", endTime: "09:30", clickable: true,
+        styleAttributes: { backgroundColor: "#4CAF50" } },
+    ],
+    "2026-03-27": [],
+  }}
+  startTime="08:00"
+  endTime="18:00"
+  minDate="2026-03-24"
+  maxDate="2026-03-28"
+  value={selectedDate}
+  onChange={(date) => setSelectedDate(date)}
+  onSlotClick={(date, slot) => openBookingModal(date, slot)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                         | Map to            | Condition                             |
+| ----------------------------------------------------- | ----------------- | ------------------------------------- |
+| Week strip with time slots across 7 day columns       | `TimeSlotBarWeek` | Standard week-view booking calendar   |
+| Week time-slot view with month/year navigation header | `TimeSlotBarWeek` | Default `showNavigationHeader={true}` |
+| Week calendar without navigation header               | `TimeSlotBarWeek` | Set `showNavigationHeader={false}`    |
+| Fixed-height week slot grid                           | `TimeSlotBarWeek` | Set `variant="fixed"`                 |
+
+**Known limitations**
+- `startTime` and `endTime` must be full hours (e.g. `"08:00"`, `"18:00"`); minute precision is not supported.
+
+---
+
+### TimeSlotWeekView
+
+**Import**: `import { TimeSlotWeekView } from "@lifesg/react-design-system/time-slot-week-view"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `TimeSlotWeekView` when the Figma design shows a **week calendar where time slots are displayed as discrete labelled blocks per day** — use `TimeSlotBarWeek` when slots are shown as a continuous colour-coded grid with a time axis.
+
+**When to use**
+- Week-view booking UIs where each day column lists available slot entries as readable time-range labels (e.g. "9:00am–9:30am").
+- Appointment pickers that need date selection alongside slot-level click handling without a time-axis grid.
+
+**When NOT to use**
+| Situation                                                        | Use instead                                                             |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Continuous horizontal time-grid across the week with a time axis | `TimeSlotBarWeek` from `@lifesg/react-design-system/time-slot-bar-week` |
+| Single-day timetable with multiple resource rows                 | `TimeTable` from `@lifesg/react-design-system/timetable`                |
+| Always-visible calendar without time slots                       | `Calendar` from `@lifesg/react-design-system/calendar`                  |
+
+**Key props**
+| Prop                 | Type                                         | Required | Notes                                                                          |
+| -------------------- | -------------------------------------------- | -------- | ------------------------------------------------------------------------------ |
+| slots                | `{ [date: string]: TimeSlot[] }`             | yes      | Object keyed by `YYYY-MM-DD`; absent dates fall back to disabled slot pattern. |
+| value                | `string`                                     | no       | Selected date in `YYYY-MM-DD` format.                                          |
+| currentCalendarDate  | `string`                                     | no       | Initial visible week anchor date (`YYYY-MM-DD`).                               |
+| minDate              | `string`                                     | no       | Earliest selectable date, inclusive (`YYYY-MM-DD`).                            |
+| maxDate              | `string`                                     | no       | Latest selectable date, inclusive (`YYYY-MM-DD`).                              |
+| disabledDates        | `string[]`                                   | no       | Dates unavailable for selection (`YYYY-MM-DD` each).                           |
+| enableSelection      | `boolean`                                    | no       | Allows date selection. Defaults to `true`.                                     |
+| showNavigationHeader | `boolean`                                    | no       | Shows month/year dropdown and navigation arrows. Defaults to `true`.           |
+| onChange             | `(value: string) => void`                    | no       | Fires with the selected date when a day is clicked.                            |
+| onSlotClick          | `(date: string, timeSlot: TimeSlot) => void` | no       | Fires when a labelled time-slot block is clicked.                              |
+| onWeekDisplayChange  | `(value: YearMonthWeekDisplay) => void`      | no       | Fires when the visible week changes.                                           |
+
+**Canonical usage**
+```tsx
+// Week view with labelled time-slot blocks per day
+import { TimeSlotWeekView } from "@lifesg/react-design-system/time-slot-week-view";
+
+<TimeSlotWeekView
+  slots={{
+    "2026-03-26": [
+      { id: "s1", startTime: "09:00", endTime: "09:30", clickable: true,
+        styleAttributes: { color: "#4CAF50" } },
+      { id: "s2", startTime: "13:00", endTime: "14:30", clickable: true,
+        styleAttributes: { color: "#2196F3" } },
+    ],
+  }}
+  minDate="2026-03-22"
+  maxDate="2026-03-28"
+  value={selectedDate}
+  onChange={(date) => setSelectedDate(date)}
+  onSlotClick={(date, slot) => openBookingPanel(date, slot)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                             | Map to             | Condition                                            |
+| --------------------------------------------------------- | ------------------ | ---------------------------------------------------- |
+| Week column layout with labelled time-block chips per day | `TimeSlotWeekView` | Slots rendered as text labels, not a continuous grid |
+| Week view with navigation header and month/year picker    | `TimeSlotWeekView` | Default `showNavigationHeader={true}`                |
+| Week calendar without navigation header                   | `TimeSlotWeekView` | Set `showNavigationHeader={false}`                   |
+
+**Known limitations**
+- Slot `styleAttributes.color` field name differs from `TimeSlotBarWeek` which uses `backgroundColor` — ensure correct attribute when migrating between the two.
+
+---
+
+### TimeTable
+
+**Import**: `import { TimeTable } from "@lifesg/react-design-system/timetable"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `TimeTable` when the Figma design shows a **single-day timetable with multiple named resource rows and a 15-minute-interval time grid** — use `Schedule` for a richer calendar with day/week navigation and slot booking counts.
+
+**When to use**
+- Admin or viewer dashboards showing a full day's schedule across multiple resources (e.g. classrooms, staff, facilities).
+- Time grids where slots have `filled`, `blocked`, `pending`, `disabled`, or `default` statuses and custom per-cell colours.
+
+**When NOT to use**
+| Situation                                                 | Use instead                                                               |
+| --------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Multi-day or week view with date navigation               | `Schedule` from `@lifesg/react-design-system/schedule`                    |
+| Single horizontal slot strip for one resource             | `TimeSlotBar` from `@lifesg/react-design-system/time-slot-bar`            |
+| Week view showing slot labels per day without a time axis | `TimeSlotWeekView` from `@lifesg/react-design-system/time-slot-week-view` |
+
+**Key props**
+| Prop                   | Type                     | Required | Notes                                                                      |
+| ---------------------- | ------------------------ | -------- | -------------------------------------------------------------------------- |
+| date                   | `string`                 | yes      | Currently displayed date in `YYYY-MM-DD` format.                           |
+| rowData                | `TimeTableRowData[]`     | yes      | One entry per resource row; each carries a `rowCells` array.               |
+| loading                | `boolean`                | yes      | Shows loading animation when `true`.                                       |
+| minTime                | `string`                 | no       | Earliest time displayed (`HH:mm`). Defaults to `"00:00"`.                  |
+| maxTime                | `string`                 | no       | Latest time displayed (`HH:mm`). Defaults to `"23:00"`.                    |
+| initialScrollTime      | `string`                 | no       | Initial horizontal scroll offset (`HH:mm`).                                |
+| roundInitialScrollTime | `boolean`                | no       | Rounds `initialScrollTime` to nearest 15-min interval. Defaults to `true`. |
+| totalRecords           | `number`                 | no       | Shows total record count; enables lazy-loading indication when provided.   |
+| emptyContentMessage    | `string`                 | no       | Empty-state message shown when `totalRecords === 0` or `rowData` is empty. |
+| minDate                | `string`                 | no       | Earliest navigable date, inclusive (`YYYY-MM-DD`).                         |
+| maxDate                | `string`                 | no       | Latest navigable date, inclusive (`YYYY-MM-DD`).                           |
+| onNextDayClick         | `(date: string) => void` | yes      | Fires when the forward-navigation arrow is clicked.                        |
+| onPreviousDayClick     | `(date: string) => void` | yes      | Fires when the backward-navigation arrow is clicked.                       |
+| onCalendarDateSelect   | `(date: string) => void` | yes      | Fires when a date is chosen from the dropdown calendar.                    |
+| onPage                 | `() => void`             | no       | Fires on pagination — provide alongside `totalRecords` for lazy loading.   |
+| onRefresh              | `() => void`             | no       | Shows a refresh button when provided; fires when it is clicked.            |
+
+**Canonical usage**
+```tsx
+// Single-day timetable with two resource rows
+import { TimeTable } from "@lifesg/react-design-system/timetable";
+
+<TimeTable
+  date="2026-03-26"
+  loading={false}
+  minTime="08:00"
+  maxTime="18:00"
+  rowData={[
+    {
+      name: "Room A",
+      rowCells: [
+        { id: "c1", startTime: "09:00", endTime: "10:00", status: "filled", title: "Meeting" },
+        { id: "c2", startTime: "11:00", endTime: "12:00", status: "default" },
+      ],
+    },
+    {
+      name: "Room B",
+      rowCells: [],
+    },
+  ]}
+  onNextDayClick={(d) => setDate(d)}
+  onPreviousDayClick={(d) => setDate(d)}
+  onCalendarDateSelect={(d) => setDate(d)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                                          | Map to      | Condition                                         |
+| ---------------------------------------------------------------------- | ----------- | ------------------------------------------------- |
+| Day-view timetable grid with named resource rows and 15-min cell slots | `TimeTable` | Fixed 15-minute slot resolution across the day    |
+| Timetable with colour-coded status cells (filled/blocked/pending)      | `TimeTable` | Set `status` on each `TimeTableRowCellData`       |
+| Timetable with lazy-loaded rows and total count display                | `TimeTable` | Provide `totalRecords`, `onPage`, and `onRefresh` |
+
+**Composition patterns**
+- Set `rowMinTime` / `rowMaxTime` on individual `TimeTableRowData` entries to auto-fill blocked cells outside a resource's operating window.
+- Use `customPopover` on `TimeTableRowCellData` and `rowHeaderPopover` on `TimeTableRowData` for context popovers, but avoid `trigger="click"` if you also use `onClick` to prevent event conflicts.
+
+**Known limitations**
+- Cell durations must be multiples of 15 minutes; non-standard intervals will not render correctly.
+- Auto-generated disabled cells (gaps between row cells) cannot have custom popovers.
 
 ---
 

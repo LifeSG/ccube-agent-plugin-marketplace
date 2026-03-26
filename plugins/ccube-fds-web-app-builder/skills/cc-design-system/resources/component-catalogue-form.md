@@ -148,6 +148,50 @@ import { Form } from "@lifesg/react-design-system/form";
 
 ---
 
+### Form.CustomField
+
+**Import**: `import { Form } from "@lifesg/react-design-system/form"` →
+`<Form.CustomField />`
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.CustomField` when you have a custom input element (not a standard
+> FDS input) that still needs the FDS label, error message, and accessibility
+> wrapper infrastructure.
+
+**When to use**
+- A third-party or bespoke input widget that lacks its own label/error
+  handling.
+- Any case where a Figma frame shows a labelled form field whose inner control
+  is not covered by another `Form.*` component.
+
+**When NOT to use**
+| Situation                               | Use instead       | Reason                               |
+| --------------------------------------- | ----------------- | ------------------------------------ |
+| Standard single-line text input         | `Form.Input`      | Purpose-built with all required a11y |
+| Date, select, checkbox, or radio inputs | Matching `Form.*` | Native wrappers already exist        |
+
+**Key props**
+| Prop           | Type                           | Notes                                                              |
+| -------------- | ------------------------------ | ------------------------------------------------------------------ |
+| `children`     | `JSX.Element \| JSX.Element[]` | Required. The custom input element(s) to wrap.                     |
+| `id`           | `string`                       | Applied to the wrapper; also passed to child via `aria-labelledby` |
+| `disabled`     | `boolean`                      | Disables the child element and dims label                          |
+| `label`        | `FormLabelProps \| string`     | Field label configuration                                          |
+| `errorMessage` | `string \| React.ReactNode`    | Triggers error display and injects `aria-invalid` into child       |
+
+**Accessibility**
+- Automatically injects `aria-describedby`, `aria-invalid`, and
+  `aria-labelledby` into the wrapped child element.
+
+**Composition patterns**
+- Wrap any custom input in `Form.CustomField` to gain consistent label
+  alignment, error display, and accessibility attributes without extra
+  boilerplate.
+
+---
+
 ### Form.DateInput
 
 **Import**:
@@ -298,6 +342,97 @@ import { Form } from "@lifesg/react-design-system/form";
 
 **Known limitations**
 - `value` and `valueEnd` must be managed together for controlled range state.
+
+---
+
+### Form.ESignature
+
+**Import**: `import { Form } from "@lifesg/react-design-system/form"` →
+`<Form.ESignature />`
+*(or standalone:
+`import { ESignature } from "@lifesg/react-design-system/e-signature"`)*
+
+**Category**: Form
+
+**Storybook**: `form-e-signature--docs`
+
+**Decision rule**
+> Use `Form.ESignature` whenever the Figma frame shows a drawing pad or
+> signature capture area that saves a handwritten signature as an image.
+
+**When to use**
+- Legal or consent forms that require a captured signature.
+- Any flow where the user must draw or handwrite their acceptance.
+
+**When NOT to use**
+| Situation                         | Use instead       | Reason                         |
+| --------------------------------- | ----------------- | ------------------------------ |
+| Typed name as signature           | `Form.Input`      | Text-only, no drawing required |
+| Uploading an image of a signature | File upload input | User uploads existing image    |
+
+**Key props**
+| Prop              | Type                        | Default          | Notes                                           |
+| ----------------- | --------------------------- | ---------------- | ----------------------------------------------- |
+| `value`           | `string`                    | —                | PNG base64 string of the captured signature     |
+| `description`     | `string`                    | —                | Instruction text shown above the drawing pad    |
+| `disabled`        | `boolean`                   | `false`          | Prevents interaction with the pad               |
+| `loadingLabel`    | `string`                    | `"Uploading..."` | Label shown during upload progress              |
+| `loadingProgress` | `number`                    | —                | Upload progress (0–1); shows progress indicator |
+| `label`           | `FormLabelProps \| string`  | —                | Field label configuration                       |
+| `errorMessage`    | `string \| React.ReactNode` | —                | Error display below the pad                     |
+
+**Composition patterns**
+- Use `loadingProgress` (0–1) together with `loadingLabel` to show upload
+  feedback after signature is captured.
+- Use standalone `ESignature` import when the label/error wrapper is not
+  needed.
+
+---
+
+### Form.HistogramSlider
+
+**Import**: `import { Form } from "@lifesg/react-design-system/form"` →
+`<Form.HistogramSlider />`
+*(or standalone:
+`import { HistogramSlider } from "@lifesg/react-design-system/histogram-slider"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.HistogramSlider` when the Figma design shows an **always-visible**
+> inline histogram chart with a two-thumb draggable range slider — the
+> histogram and slider stay on the page, not inside a dropdown.
+
+**When to use**
+- Filter panels showing result distribution with a draggable range (e.g.,
+  price filter with bar chart).
+- Any inline numeric range picker paired with a frequency/count visualisation.
+
+**When NOT to use**
+| Situation                                       | Use instead            | Reason                                  |
+| ----------------------------------------------- | ---------------------- | --------------------------------------- |
+| Histogram hidden behind a dropdown trigger      | `Form.SelectHistogram` | Dropdown-based histogram range picker   |
+| Range selection with no histogram visualisation | `Form.RangeSlider`     | Two-thumb slider without chart overhead |
+
+**Key props**
+| Prop               | Type                  | Notes                                                                 |
+| ------------------ | --------------------- | --------------------------------------------------------------------- |
+| `bins`             | `HistogramBinProps[]` | Required. Array of `{ count: number; minValue: number }` data points. |
+| `interval`         | `number`              | Required. Width of each bin (e.g., `10` for bins 0–9, 10–19, …).      |
+| `value`            | `[number, number]`    | Controlled selected range `[min, max]`                                |
+| `disabled`         | `boolean`             | Disables both thumb interactions                                      |
+| `readOnly`         | `boolean`             | Displays current value without allowing changes                       |
+| `showRangeLabels`  | `boolean`             | Shows min/max range labels below the slider                           |
+| `rangeLabelPrefix` | `string`              | Prepended to each range label (e.g., `"$"`)                           |
+| `rangeLabelSuffix` | `string`              | Appended to each range label (e.g., `" km"`)                          |
+| `renderRangeLabel` | `function`            | Custom render function for range label display                        |
+| `ariaLabels`       | `[string, string]`    | Accessible labels for the two thumbs                                  |
+
+**Composition patterns**
+- Provide `bins` from your API's distribution data and set `interval` to match
+  the bin width used server-side.
+- Pair `rangeLabelPrefix`/`rangeLabelSuffix` with `showRangeLabels` for
+  currency or unit display.
 
 ---
 
@@ -570,6 +705,160 @@ import { Form } from "@lifesg/react-design-system/form";
 
 ---
 
+### Form.NestedMultiSelect (InputNestedMultiSelect)
+
+**Import**: `import { Form } from "@lifesg/react-design-system/form"` *(or standalone: `import { InputNestedMultiSelect } from "@lifesg/react-design-system/input-nested-multi-select"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.NestedMultiSelect` when the Figma design shows a **labelled hierarchical dropdown where multiple options across levels can be selected** — use `Form.NestedSelect` for single-selection.
+
+**When to use**
+- Category and subcategory multi-selection (e.g. choosing several topic areas from a taxonomy).
+- Any hierarchical multi-option picker that needs a visible label, error message, and Select-All / Clear-All affordances.
+
+**When NOT to use**
+| Situation                                        | Use instead                                                                |
+| ------------------------------------------------ | -------------------------------------------------------------------------- |
+| Only one item can be selected from the hierarchy | `Form.NestedSelect` from `@lifesg/react-design-system/input-nested-select` |
+| Flat (non-hierarchical) multi-selection          | `Form.MultiSelect` from `@lifesg/react-design-system/form`                 |
+
+**Key props**
+| Prop                  | Type                                                            | Required | Notes                                                                                     |
+| --------------------- | --------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------- |
+| options               | `L1OptionProps<V1, V2, V3>[]`                                   | yes      | Hierarchical option tree; each `L1OptionProps` may nest `L2` and `L3` entries.            |
+| selectedKeyPaths      | `string[][]`                                                    | no       | Array of key-path arrays indicating each currently selected option.                       |
+| mode                  | `"default" \| "expand" \| "collapse"`                           | no       | Controls initial expand/collapse state. `"default"` expands the already-selected subtree. |
+| enableSearch          | `boolean`                                                       | no       | Enables in-dropdown text search. Defaults to `false`.                                     |
+| optionTruncationType  | `"end" \| "middle"`                                             | no       | Truncation type for long option labels. Defaults to `"end"`.                              |
+| optionsLoadState      | `"success" \| "loading" \| "failed"`                            | no       | Async load state indicator. Defaults to `"success"`.                                      |
+| variant               | `"default" \| "small"`                                          | no       | `"small"` reduces the component height. Defaults to `"default"`.                          |
+| disabled              | `boolean`                                                       | no       | Disables all interaction.                                                                 |
+| readOnly              | `boolean`                                                       | no       | Shows selections without allowing changes.                                                |
+| placeholder           | `string`                                                        | no       | Placeholder text when nothing is selected. Defaults to `"Select"`.                        |
+| customLabels          | `DropdownCustomLabelProps`                                      | no       | Overrides default UI strings (e.g. `multiSelectedLabel`, `clearAllButtonLabel`).          |
+| dropdownZIndex        | `number`                                                        | no       | Custom z-index for the dropdown. Defaults to `50`.                                        |
+| valueToStringFunction | `(value: V1 \| V2 \| V3) => string`                             | no       | Converts a value to a display string.                                                     |
+| onSelectOptions       | `(keyPaths: string[][], values: Array<V1 \| V2 \| V3>) => void` | no       | Fires when selection changes.                                                             |
+
+**Canonical usage**
+```tsx
+// Hierarchical multi-select for topic categories
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.NestedMultiSelect
+  label="Topics"
+  options={[
+    {
+      label: "Science",
+      key: "science",
+      subItems: [
+        { label: "Biology", key: "biology", value: "biology" },
+        { label: "Physics", key: "physics", value: "physics" },
+      ],
+    },
+  ]}
+  selectedKeyPaths={selectedKeyPaths}
+  enableSearch
+  onSelectOptions={(keyPaths, values) => setSelectedKeyPaths(keyPaths)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                        | Map to                   | Condition                                      |
+| ---------------------------------------------------- | ------------------------ | ---------------------------------------------- |
+| Hierarchical dropdown with multi-tick selection      | `Form.NestedMultiSelect` | Multiple options selectable across tree levels |
+| Category picker with Select All / Clear All controls | `Form.NestedMultiSelect` | Default label controls rendered automatically  |
+| Hierarchical search-enabled multi-select dropdown    | `Form.NestedMultiSelect` | Set `enableSearch={true}`                      |
+
+**Composition patterns**
+- Use `customLabels.multiSelectedLabel` to replace the default "N selected" label with context-specific wording.
+- Use standalone `InputNestedMultiSelect` import when building a layout without the `Form` wrapper.
+
+---
+
+### Form.NestedSelect (InputNestedSelect)
+
+**Import**: `import { Form } from "@lifesg/react-design-system/form"` *(or standalone: `import { InputNestedSelect } from "@lifesg/react-design-system/input-nested-select"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.NestedSelect` when the Figma design shows a **labelled hierarchical dropdown where exactly one leaf option can be selected** — use `Form.NestedMultiSelect` for multiple selections.
+
+**When to use**
+- Category → subcategory drill-down pickers (e.g. selecting a single service type from a two or three-level taxonomy).
+- Any single-selection hierarchical field with a visible label and error state in a form.
+
+**When NOT to use**
+| Situation                                         | Use instead                                                                           |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Multiple options can be selected                  | `Form.NestedMultiSelect` from `@lifesg/react-design-system/input-nested-multi-select` |
+| Flat (non-hierarchical) single-selection dropdown | `Form.Select` from `@lifesg/react-design-system/input-select`                         |
+
+**Key props**
+| Prop                  | Type                                                 | Required | Notes                                                                                       |
+| --------------------- | ---------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| options               | `L1OptionProps<V1, V2, V3>[]`                        | yes      | Hierarchical option tree; each level may nest deeper entries.                               |
+| selectedKeyPath       | `string[]`                                           | no       | Key path of the currently selected option (e.g. `["science", "biology"]`).                  |
+| mode                  | `"default" \| "expand" \| "collapse"`                | no       | Controls initial expand/collapse state. Defaults to `"default"` (expands selected subtree). |
+| selectableCategory    | `boolean`                                            | no       | Allows intermediate category nodes (not just leaf nodes) to be selected.                    |
+| enableSearch          | `boolean`                                            | no       | Enables in-dropdown text search; requires at least 3 characters to trigger.                 |
+| optionTruncationType  | `"end" \| "middle"`                                  | no       | Truncation style for long option labels. Defaults to `"end"`.                               |
+| optionsLoadState      | `"success" \| "loading" \| "failed"`                 | no       | Async load state. Defaults to `"success"`.                                                  |
+| variant               | `"default" \| "small"`                               | no       | `"small"` reduces the component height. Defaults to `"default"`.                            |
+| disabled              | `boolean`                                            | no       | Disables all interaction.                                                                   |
+| readOnly              | `boolean`                                            | no       | Shows selection without allowing changes.                                                   |
+| placeholder           | `string`                                             | no       | Placeholder text when nothing is selected. Defaults to `"Select"`.                          |
+| dropdownZIndex        | `number`                                             | no       | Custom z-index for the dropdown. Defaults to `50`.                                          |
+| valueToStringFunction | `(value: V1 \| V2 \| V3) => string`                  | no       | Converts the selected value to a display string.                                            |
+| onSelectOption        | `(keyPath: string[], value: V1 \| V2 \| V3) => void` | no       | Fires when an option is selected.                                                           |
+
+**Canonical usage**
+```tsx
+// Hierarchical single-select for service type
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.NestedSelect
+  label="Service type"
+  options={[
+    {
+      label: "Healthcare",
+      key: "healthcare",
+      subItems: [
+        { label: "Dental", key: "dental", value: "dental" },
+        { label: "General Practice", key: "gp", value: "gp" },
+      ],
+    },
+  ]}
+  selectedKeyPath={selectedKeyPath}
+  enableSearch
+  onSelectOption={(keyPath, value) => setSelectedKeyPath(keyPath)}
+/>
+
+// With selectable intermediate categories
+<Form.NestedSelect
+  label="Department"
+  options={departmentOptions}
+  selectableCategory
+  onSelectOption={(keyPath, value) => setDepartment(keyPath)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                    | Map to              | Condition                            |
+| ------------------------------------------------ | ------------------- | ------------------------------------ |
+| Hierarchical dropdown with single-tick selection | `Form.NestedSelect` | Only one leaf option selectable      |
+| Category → subcategory drill-down picker         | `Form.NestedSelect` | Multiple levels with expand/collapse |
+| Searchable nested dropdown (≥3 chars to search)  | `Form.NestedSelect` | Set `enableSearch={true}`            |
+
+**Composition patterns**
+- Use standalone `InputNestedSelect` import when building a layout without the `Form` label wrapper.
+- Set `selectableCategory={true}` when the Figma design allows selecting a parent category node directly.
+
+---
+
 ### Form.OtpVerification
 
 **Import**:
@@ -794,6 +1083,144 @@ import { Form } from "@lifesg/react-design-system/form";
 
 ---
 
+### Form.RangeSelect (InputRangeSelect)
+
+**Import**: `import { Form } from "@lifesg/react-design-system/form"` *(or standalone: `import { InputRangeSelect } from "@lifesg/react-design-system/input-range-select"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.RangeSelect` when the Figma design shows a **labelled pair of dropdown selects for a From / To range** — use `Form.RangeSlider` when the range is numeric and draggable.
+
+**When to use**
+- Category-based range pickers (e.g. alphabetical range "A" to "M", or year "2020" to "2025").
+- Any from-and-to selection pair where each side draws from a separate or shared options list.
+
+**When NOT to use**
+| Situation                                    | Use instead                                                    |
+| -------------------------------------------- | -------------------------------------------------------------- |
+| Numeric range with a draggable slider        | `Form.RangeSlider` from `@lifesg/react-design-system/form`     |
+| Single dropdown (not a range pair)           | `Form.Select` from `@lifesg/react-design-system/input-select`  |
+| Time-range selection (start time + end time) | `Form.TimeRangePicker` from `@lifesg/react-design-system/form` |
+
+**Key props**
+| Prop                       | Type                                                 | Required | Notes                                                                               |
+| -------------------------- | ---------------------------------------------------- | -------- | ----------------------------------------------------------------------------------- |
+| options                    | `{ from: T[], to: T[] }`                             | yes      | Separate option arrays for the From and To selectors.                               |
+| selectedOption             | `{ from: T, to: T }`                                 | no       | Currently selected option objects for both selectors.                               |
+| placeholders               | `{ from: string, to: string }`                       | no       | Placeholder text for each selector. Defaults to `{ from: "Select", to: "Select" }`. |
+| listExtractor              | `(option: T) => string`                              | no       | Derives the display label for each dropdown list item.                              |
+| valueExtractor             | `(option: T) => V`                                   | no       | Derives the underlying value from an option object.                                 |
+| displayValueExtractor      | `(option: T) => string`                              | no       | Derives the display value shown in the selector when an option is selected.         |
+| enableSearch               | `boolean`                                            | no       | Enables in-dropdown text search. Defaults to `false`.                               |
+| optionTruncationType       | `"end" \| "middle"`                                  | no       | Truncation style for long option labels. Defaults to `"middle"`.                    |
+| optionsLoadState           | `{ from: T, to: T }`                                 | no       | Async load state per selector (`"success"`, `"loading"`, `"failed"`).               |
+| disabled                   | `boolean`                                            | no       | Disables both selectors.                                                            |
+| readOnly                   | `boolean`                                            | no       | Renders both selectors as read-only.                                                |
+| dropdownZIndex             | `number`                                             | no       | Custom z-index for both dropdowns. Defaults to `50`.                                |
+| renderListItem             | `(item: T, args: ListItemRenderArgs) => JSX.Element` | no       | Custom renderer for dropdown list items.                                            |
+| renderCustomSelectedOption | `(option: T) => JSX.Element`                         | no       | Custom renderer for the selected value display in the selector.                     |
+| onSelectOption             | `(option: T, extractedValue: T \| V) => void`        | no       | Fires when an option is selected in either selector.                                |
+
+**Canonical usage**
+```tsx
+// Alphabetical range selector: A – Z
+import { Form } from "@lifesg/react-design-system/form";
+
+const alphaOptions = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((c) => ({ label: c, value: c }));
+
+<Form.RangeSelect
+  label="Alphabetical range"
+  options={{ from: alphaOptions, to: alphaOptions }}
+  selectedOption={selectedRange}
+  listExtractor={(o) => o.label}
+  valueExtractor={(o) => o.value}
+  onSelectOption={(option) => updateRange(option)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                       | Map to             | Condition                                                   |
+| --------------------------------------------------- | ------------------ | ----------------------------------------------------------- |
+| Two side-by-side dropdowns labelled "From" and "To" | `Form.RangeSelect` | Options are categorical or non-numeric                      |
+| Alphabetical / year range picker pair               | `Form.RangeSelect` | Each selector draws from the same or a related options list |
+| Range dropdowns with searchable items               | `Form.RangeSelect` | Set `enableSearch={true}`                                   |
+
+**Composition patterns**
+- Use `renderListItem` to display rich option rows (e.g. with description text) and `renderCustomSelectedOption` for a custom selected-value display.
+- Use standalone `InputRangeSelect` import when building a custom form layout without the `Form` wrapper.
+
+---
+
+### Form.RangeSlider (InputRangeSlider)
+
+**Import**: `import { Form } from "@lifesg/react-design-system/form"` *(or standalone: `import { InputRangeSlider } from "@lifesg/react-design-system/input-range-slider"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.RangeSlider` when the Figma design shows a **labelled numeric range control with two or more thumbs** — use `Form.Slider` for a single-value slider.
+
+**When to use**
+- Price range / distance filters where users set a minimum and maximum value.
+- Any bounded numeric range input that needs a label and error messaging.
+
+**When NOT to use**
+| Situation                       | Use instead                                           |
+| ------------------------------- | ----------------------------------------------------- |
+| Single-value slider (one thumb) | `Form.Slider` from `@lifesg/react-design-system/form` |
+| Text-based numeric entry        | `Form.Input` from `@lifesg/react-design-system/form`  |
+
+**Key props**
+| Prop               | Type                                                 | Required | Notes                                                                |
+| ------------------ | ---------------------------------------------------- | -------- | -------------------------------------------------------------------- |
+| value              | `number[]`                                           | no       | Current thumb values; length must equal `numOfThumbs`.               |
+| numOfThumbs        | `number`                                             | no       | Number of thumb controls. Defaults to `2`.                           |
+| min                | `number`                                             | no       | Start of the range. Defaults to `0`.                                 |
+| max                | `number`                                             | no       | End of the range. Defaults to `100`.                                 |
+| step               | `number`                                             | no       | Interval between values. Defaults to `1`.                            |
+| minRange           | `number`                                             | no       | Minimum allowed difference between adjacent thumb values.            |
+| disabled           | `boolean`                                            | no       | Disables all interaction.                                            |
+| readOnly           | `boolean`                                            | no       | Renders in read-only state.                                          |
+| colors             | `(string \| ((props: ThemeStyleProps) => string))[]` | no       | Track segment colours; length must equal `numOfThumbs + 1`.          |
+| showSliderLabels   | `boolean`                                            | no       | Shows min and max value labels at the track ends.                    |
+| sliderLabelPrefix  | `string`                                             | no       | Text prepended to the min/max labels (e.g. `"$"`).                   |
+| sliderLabelSuffix  | `string`                                             | no       | Text appended to the min/max labels (e.g. `" km"`).                  |
+| showIndicatorLabel | `boolean`                                            | no       | Shows a label above each thumb indicating the current selection.     |
+| ariaLabels         | `string[]`                                           | no       | Screen-reader label for each thumb; length must equal `numOfThumbs`. |
+| onChange           | `(value: number[]) => void`                          | no       | Fires on every thumb move.                                           |
+| onChangeEnd        | `(value: number[]) => void`                          | no       | Fires when a thumb is released.                                      |
+
+**Canonical usage**
+```tsx
+// Price range filter with labelled min/max
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.RangeSlider
+  label="Price range"
+  min={0}
+  max={1000}
+  step={10}
+  value={[priceMin, priceMax]}
+  showSliderLabels
+  sliderLabelPrefix="$"
+  showIndicatorLabel
+  onChange={([min, max]) => setPriceRange([min, max])}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern            | Map to             | Condition                                      |
+| ---------------------------------------- | ------------------ | ---------------------------------------------- |
+| Range slider with two draggable handles  | `Form.RangeSlider` | Default `numOfThumbs=2`                        |
+| Range slider with three handles          | `Form.RangeSlider` | Set `numOfThumbs=3`                            |
+| Price / distance range filter with label | `Form.RangeSlider` | Set `sliderLabelPrefix` or `sliderLabelSuffix` |
+
+**Composition patterns**
+- Use standalone `InputRangeSlider` (`@lifesg/react-design-system/input-range-slider`) when building a custom form layout without the `Form` wrapper.
+
+---
+
 ### Form.Select (InputSelect)
 
 **Import**:
@@ -891,6 +1318,122 @@ const options = [
 
 ---
 
+### Form.SelectHistogram
+
+**Import**: `import { Form } from "@lifesg/react-design-system/form"` →
+`<Form.SelectHistogram />`
+*(or standalone:
+`import { SelectHistogram } from "@lifesg/react-design-system/select-histogram"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.SelectHistogram` when the Figma design shows a **dropdown field**
+> where the user opens a panel to see a histogram and select a numeric range —
+> the histogram is hidden until the user interacts with the trigger.
+
+**When to use**
+- Compact filter areas where the histogram should only appear on demand.
+- Dropdown-style range picker that shows distribution data inside the panel.
+
+**When NOT to use**
+| Situation                                       | Use instead            | Reason                            |
+| ----------------------------------------------- | ---------------------- | --------------------------------- |
+| Histogram is always visible on the page         | `Form.HistogramSlider` | Inline histogram without dropdown |
+| Range selection with no histogram visualisation | `Form.RangeSlider`     | Simpler two-thumb slider          |
+
+**Key props**
+| Prop               | Type                         | Notes                                                                        |
+| ------------------ | ---------------------------- | ---------------------------------------------------------------------------- |
+| `histogramSlider`  | `SelectHistogramSliderProps` | Required. Contains `bins` (`HistogramBinProps[]`) and `interval` (`number`). |
+| `value`            | `[number, number]`           | Controlled selected range                                                    |
+| `placeholder`      | `string`                     | Trigger display text when no value is selected                               |
+| `rangeLabelPrefix` | `string`                     | Prepended to range display in the trigger                                    |
+| `rangeLabelSuffix` | `string`                     | Appended to range display in the trigger                                     |
+| `renderRangeLabel` | `function`                   | Custom render function for the selected range label                          |
+| `disabled`         | `boolean`                    | Disables the dropdown trigger                                                |
+| `readOnly`         | `boolean`                    | Shows current value without allowing change                                  |
+| `error`            | `boolean`                    | Applies error styling to the trigger                                         |
+| `alignment`        | `"left" \| "right"`          | Alignment of the dropdown panel relative to the trigger                      |
+| `dropdownZIndex`   | `number`                     | Z-index for the dropdown panel (for stacking context control)                |
+
+**Composition patterns**
+- Pass `histogramSlider.bins` from server-side distribution data and
+  `histogramSlider.interval` matching the bin width used in the query.
+- Use `renderEmptyView` inside `histogramSlider` to handle zero-data states.
+
+---
+
+### Form.Slider (InputSlider)
+
+**Import**: `import { Form } from "@lifesg/react-design-system/form"` *(or standalone: `import { InputSlider } from "@lifesg/react-design-system/input-slider"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.Slider` for a labelled **single-value numeric slider** — use `Form.RangeSlider` when two or more values (a range) are needed.
+
+**When to use**
+- Any single numeric value that maps naturally to a drag gesture (volume, zoom level, item count).
+- Cases where a designer shows a single-thumb draggable track alongside a form label and error state.
+
+**When NOT to use**
+| Situation                              | Use instead                                                |
+| -------------------------------------- | ---------------------------------------------------------- |
+| Two-thumb range selection              | `Form.RangeSlider` from `@lifesg/react-design-system/form` |
+| Text entry for a precise numeric value | `Form.Input` from `@lifesg/react-design-system/form`       |
+
+**Key props**
+| Prop                 | Type                                                 | Required | Notes                                                       |
+| -------------------- | ---------------------------------------------------- | -------- | ----------------------------------------------------------- |
+| value                | `number`                                             | no       | Current slider value.                                       |
+| min                  | `number`                                             | no       | Start of the range. Defaults to `0`.                        |
+| max                  | `number`                                             | no       | End of the range. Defaults to `100`.                        |
+| step                 | `number`                                             | no       | Interval between values. Defaults to `1`.                   |
+| disabled             | `boolean`                                            | no       | Disables all interaction.                                   |
+| readOnly             | `boolean`                                            | no       | Renders in read-only state.                                 |
+| colors               | `(string \| ((props: ThemeStyleProps) => string))[]` | no       | Track colours as `[leftTrack, rightTrack]`.                 |
+| showSliderLabels     | `boolean`                                            | no       | Shows min and max labels at the track ends.                 |
+| sliderLabelPrefix    | `string`                                             | no       | Text prepended to the min/max labels.                       |
+| sliderLabelSuffix    | `string`                                             | no       | Text appended to the min/max labels.                        |
+| showIndicatorLabel   | `boolean`                                            | no       | Shows a label above the thumb indicating the current value. |
+| indicatorLabelPrefix | `string`                                             | no       | Prefix for the indicator label.                             |
+| indicatorLabelSuffix | `string`                                             | no       | Suffix for the indicator label.                             |
+| renderSliderLabel    | `(value: number) => React.ReactNode`                 | no       | Custom renderer for the min/max labels.                     |
+| ariaLabel            | `string`                                             | no       | Screen-reader label for the thumb.                          |
+| onChange             | `(value: number) => void`                            | no       | Fires on every thumb move.                                  |
+| onChangeEnd          | `(value: number) => void`                            | no       | Fires when the thumb is released.                           |
+
+**Canonical usage**
+```tsx
+// Photo count picker with unit suffix
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.Slider
+  label="Max photos"
+  min={1}
+  max={10}
+  step={1}
+  value={photoCount}
+  showSliderLabels
+  sliderLabelSuffix=" photos"
+  showIndicatorLabel
+  onChange={(val) => setPhotoCount(val)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern              | Map to        | Condition                                           |
+| ------------------------------------------ | ------------- | --------------------------------------------------- |
+| Single-thumb draggable track with label    | `Form.Slider` | Standard labelled single-value control              |
+| Slider with custom coloured track segments | `Form.Slider` | Set `colors` as `[leftTrackColor, rightTrackColor]` |
+| Slider showing current value above thumb   | `Form.Slider` | Set `showIndicatorLabel={true}`                     |
+
+**Composition patterns**
+- Use standalone `InputSlider` (`@lifesg/react-design-system/input-slider`) when rendering without the `Form` label wrapper.
+
+---
+
 ### Form.Timepicker
 
 **Import**:
@@ -952,6 +1495,82 @@ import { Form } from "@lifesg/react-design-system/form";
 **Composition patterns**
 - Use `dropdownRootNode`/`dropdownZIndex` when rendered inside modal/overlay
   containers with competing stacking contexts.
+
+---
+
+### Form.TimeRangePicker
+
+**Import**: `import { Form } from "@lifesg/react-design-system/form"` *(or standalone: `import { TimeRangePicker } from "@lifesg/react-design-system/time-range-picker"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.TimeRangePicker` when the Figma design shows a **labelled start-time + end-time pair** — use `Form.Timepicker` for a single time value.
+
+**When to use**
+- Booking forms where users define a meeting, appointment, or shift with a start and end time.
+- Search/filter panels collecting an operating-hours window.
+
+**When NOT to use**
+| Situation                           | Use instead                                                     |
+| ----------------------------------- | --------------------------------------------------------------- |
+| Single time value only              | `Form.Timepicker` from `@lifesg/react-design-system/timepicker` |
+| Date + time in one combined control | Pair `Form.DateInput` with `Form.Timepicker`                    |
+
+**Key props**
+| Prop             | Type                           | Required | Notes                                                                                             |
+| ---------------- | ------------------------------ | -------- | ------------------------------------------------------------------------------------------------- |
+| value            | `TimeRangePickerValue`         | no       | Object with `start` and `end` time strings; format depends on `format` and `variant`.             |
+| variant          | `"dial" \| "combobox"`         | no       | `"dial"` uses a clock picker; `"combobox"` uses a dropdown with text entry. Defaults to `"dial"`. |
+| format           | `"12hr" \| "24hr"`             | no       | Time display format. Defaults to `"24hr"`.                                                        |
+| disabled         | `boolean`                      | no       | Disables all input.                                                                               |
+| readOnly         | `boolean`                      | no       | Renders a read-only display.                                                                      |
+| error            | `boolean`                      | no       | Applies error state styling (use when `errorMessage` is not needed).                              |
+| alignment        | `"left" \| "right"`            | no       | Aligns the dropdown popover to the field. Defaults to `"left"`.                                   |
+| dropdownZIndex   | `number`                       | no       | Custom z-index for the dropdown. Defaults to `50`; increase inside a modal.                       |
+| dropdownRootNode | `React.RefObject<HTMLElement>` | no       | Portal root for the dropdown — use when parent has a higher z-index than the popover.             |
+
+**Type-specific requirements**
+| Variant      | Extra prop   | Notes                                                   |
+| ------------ | ------------ | ------------------------------------------------------- |
+| `"combobox"` | `startLimit` | Sets the earliest time shown in the dropdown list.      |
+| `"combobox"` | `endLimit`   | Sets the latest time shown in the dropdown list.        |
+| `"combobox"` | `interval`   | Minutes between each dropdown option. Defaults to `15`. |
+
+**Canonical usage**
+```tsx
+// 24hr dial time range picker
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.TimeRangePicker
+  label="Meeting time"
+  format="24hr"
+  value={{ start: "09:00", end: "10:00" }}
+  onChange={(val) => setTimeRange(val)}
+/>
+
+// Combobox variant with 30-min intervals and limits
+<Form.TimeRangePicker
+  label="Operating hours"
+  variant="combobox"
+  format="24hr"
+  interval={30}
+  startLimit="08:00"
+  endLimit="20:00"
+  value={operatingHours}
+  onChange={(val) => setOperatingHours(val)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern               | Map to                 | Condition                                |
+| ------------------------------------------- | ---------------------- | ---------------------------------------- |
+| Start time + end time field pair with label | `Form.TimeRangePicker` | Two time inputs collected as one control |
+| Time range with dropdown selection list     | `Form.TimeRangePicker` | Set `variant="combobox"`                 |
+| Time range in 12-hour format                | `Form.TimeRangePicker` | Set `format="12hr"`                      |
+
+**Composition patterns**
+- Use `dropdownRootNode`/`dropdownZIndex` when rendered inside `ModalV2` or `Drawer` to avoid z-index clipping.
 
 ---
 
