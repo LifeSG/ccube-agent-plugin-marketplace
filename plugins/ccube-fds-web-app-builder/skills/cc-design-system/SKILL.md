@@ -9,6 +9,28 @@ user-invokable: false
 
 This skill provides structured knowledge about the LifeSG Flagship Design System (FDS) for use during Figma-to-code translation and frontend implementation.
 
+## Version Context
+
+This skill targets **`@lifesg/react-design-system` v3.x** (current stable).
+
+| Version                        | npm tag                | Storybook                                            |
+| ------------------------------ | ---------------------- | ---------------------------------------------------- |
+| **v3 (stable, this skill)**    | `^3`                   | https://designsystem.life.gov.sg/react/index.html    |
+| v4 (alpha — not yet supported) | `latest` as of 2026-03 | https://designsystem.life.gov.sg/react/v4/index.html |
+
+**Before using this skill, determine the installed FDS version:**
+
+1. Read `package.json` in the project root.
+2. If the installed version is `^3.x` (or no version specifier on an older
+   project) → use `resources/` (this skill's default folder) and the
+   v3 Storybook URL above.
+3. If the installed version is `^4.x` → the `resources-v4/` folder is not
+   yet populated. Inform the user, then refer directly to the v4 Storybook
+   at https://designsystem.life.gov.sg/react/v4/index.html for component
+   API details. Do NOT use v3 resources for v4 projects — the
+   `ThemeProvider` API, CSS import steps, and `styled-components` peer
+   dependency have all changed.
+
 ## Package
 
 ```
