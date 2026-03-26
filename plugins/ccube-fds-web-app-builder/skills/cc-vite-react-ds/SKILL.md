@@ -82,8 +82,8 @@ before proceeding.
 **Finding the script**: The script is co-located with this skill.
 Replace `SKILL.md` at the end of this skill's path (from the skills
 index) with `scripts/init-vite-react-project.sh` to get the absolute
-script path. If the resulting path does not exist, fall back to the
-Manual Setup steps below.
+script path. Do NOT use file search to locate it — the script is
+outside the workspace and will not be found that way.
 
 **Usage** (background — required):
 ```bash
