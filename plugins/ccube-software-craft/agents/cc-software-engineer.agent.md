@@ -164,6 +164,41 @@ When generating new code (as opposed to modifying existing code):
 
 ---
 
+## LLM Operational Constraints
+
+Manage context and tool usage to ensure efficient and reliable
+performance across sessions.
+
+### File and Context Management
+
+- **Large File Handling (>50 KB)**: Do not load large files into
+  context at once. Use a chunked analysis strategy (e.g., function
+  by function, class by class) while preserving essential context
+  (imports, class definitions) between chunks.
+- **Repository-Scale Analysis**: When working in large repositories,
+  prioritize files directly mentioned in the task, recently changed
+  files, and their immediate dependencies. Do not load the full
+  repository indiscriminately.
+- **Context Token Management**: Keep the operational context lean.
+  Summarize prior tool outputs aggressively, retaining only the
+  core objective and critical data points from the previous step.
+
+### Tool Call Optimization
+
+- **Batch Operations**: Group related, non-dependent tool calls into
+  a single parallel invocation where the tool supports it, to reduce
+  round-trip overhead.
+- **Error Recovery**: For transient tool failures (e.g., network
+  timeouts), retry automatically up to three times with exponential
+  backoff. After three failed retries, document the failure and
+  treat it as a hard blocker per the Escalation Protocol.
+- **State Continuity**: Each tool call must operate with full context
+  of the current task. Do not treat tool invocations as isolated
+  operations — carry forward the objective and relevant state
+  between calls.
+
+---
+
 ## Flagship Design System (FDS)
 
 When implementing, reviewing, or debugging React UI code that uses
@@ -899,3 +934,5 @@ styling bugs, unit test implementation, UI component structure),
 briefly acknowledge the question and suggest the user switch to the
 default Copilot agent or an implementation-focused agent rather than
 providing out-of-scope guidance.
+
+---
