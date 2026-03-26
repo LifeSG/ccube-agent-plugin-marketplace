@@ -724,6 +724,76 @@ import { Form } from "@lifesg/react-design-system/form";
 
 ---
 
+### Form.PredictiveTextInput
+
+**Import**:
+`import { Form } from "@lifesg/react-design-system/form"` *(or standalone:
+`import { PredictiveTextInput } from "@lifesg/react-design-system/predictive-text-input"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.PredictiveTextInput` when the field must fetch and suggest options
+> dynamically from user-typed input.
+
+**When to use**
+- Typeahead inputs that query remote option sources after a minimum character
+  threshold.
+- Forms where users pick a canonical option object instead of free text.
+
+**When NOT to use**
+| Situation                                   | Use instead   |
+| ------------------------------------------- | ------------- |
+| Fixed local option list with no async fetch | `Form.Select` |
+| Free-text entry with no suggested options   | `Form.Input`  |
+
+**Key props**
+| Prop                  | Type                                          | Required | Notes                                                        |
+| --------------------- | --------------------------------------------- | -------- | ------------------------------------------------------------ |
+| fetchOptions          | `(input: string) => Promise<T[]>`             | yes      | Async callback that returns candidate options.               |
+| minimumCharacters     | `number`                                      | no       | Minimum input length before options are shown (default `3`). |
+| selectedOption        | `T`                                           | no       | Controlled selected option object.                           |
+| displayValueExtractor | `(option: T) => string`                       | no       | Derives value shown in input after selection.                |
+| listExtractor         | `(option: T) => string`                       | no       | Derives primary text shown in options list.                  |
+| valueExtractor        | `(option: T) => V`                            | no       | Derives machine value passed to selection callback.          |
+| onSelectOption        | `(option: T, extractedValue: T \| V) => void` | no       | Called when a suggested option is selected.                  |
+| placeholder           | `string`                                      | no       | Placeholder text (default `Enter here...`).                  |
+| disabled              | `boolean`                                     | no       | Disables typing and selection.                               |
+| readOnly              | `boolean`                                     | no       | Displays value without allowing selection changes.           |
+
+**Canonical usage**
+```tsx
+// Async predictive selector for address search
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.PredictiveTextInput
+  label="Postal address"
+  fetchOptions={fetchAddressOptions}
+  minimumCharacters={3}
+  selectedOption={selectedAddress}
+  listExtractor={(option) => option.label}
+  valueExtractor={(option) => option.id}
+  displayValueExtractor={(option) => option.label}
+  onSelectOption={(option) => setSelectedAddress(option)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                     | Map to                     | Condition                                         |
+| ------------------------------------------------- | -------------------------- | ------------------------------------------------- |
+| Search field with predictive dropdown suggestions | `Form.PredictiveTextInput` | Use when options are fetched from typed input.    |
+| Typeahead field with primary and secondary labels | `Form.PredictiveTextInput` | Configure extractors for richer option rendering. |
+
+**Composition patterns**
+- Use standalone `PredictiveTextInput` import when label/error wrapper behavior
+  is not needed.
+
+**Known limitations**
+- Option loading and request cancellation are consumer-managed within
+  `fetchOptions`.
+
+---
+
 ### Form.Select (InputSelect)
 
 **Import**:
@@ -882,6 +952,73 @@ import { Form } from "@lifesg/react-design-system/form";
 **Composition patterns**
 - Use `dropdownRootNode`/`dropdownZIndex` when rendered inside modal/overlay
   containers with competing stacking contexts.
+
+---
+
+### Form.UnitNumberInput
+
+**Import**:
+`import { Form } from "@lifesg/react-design-system/form"` *(or standalone:
+`import { UnitNumberInput } from "@lifesg/react-design-system/unit-number"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.UnitNumberInput` when users enter Singapore-style unit values in
+> floor-unit format with built-in formatting behavior.
+
+**When to use**
+- Address forms requiring unit capture in `floor-unit` format (for example
+  `12-345`).
+- Inputs where formatted and raw floor/unit values are both needed.
+
+**When NOT to use**
+| Situation                                      | Use instead   |
+| ---------------------------------------------- | ------------- |
+| Generic free-text address line input           | `Form.Input`  |
+| Structured address from authoritative picklist | `Form.Select` |
+
+**Key props**
+| Prop        | Type                        | Required | Notes                                                      |
+| ----------- | --------------------------- | -------- | ---------------------------------------------------------- |
+| value       | `string`                    | no       | Unit value in string format (e.g. `00-8888`).              |
+| placeholder | `string`                    | no       | Placeholder format hint; recommended `00-8888`.            |
+| disabled    | `boolean`                   | no       | Disables entry.                                            |
+| readOnly    | `boolean`                   | no       | Shows value without allowing entry changes.                |
+| error       | `boolean`                   | no       | Applies error state when `errorMessage` is not provided.   |
+| onChange    | `(value: string) => void`   | no       | Returns formatted value string during input.               |
+| onChangeRaw | `(value: string[]) => void` | no       | Returns raw `[floor, unit]` values regardless of validity. |
+| onBlur      | `(value: string) => void`   | no       | Returns normalized format on defocus.                      |
+| onBlurRaw   | `(value: string[]) => void` | no       | Returns raw `[floor, unit]` values on defocus.             |
+
+**Canonical usage**
+```tsx
+// Unit number field for address forms
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.UnitNumberInput
+  label="Unit number"
+  value={unitNumber}
+  placeholder="00-8888"
+  onChange={setUnitNumber}
+  onChangeRaw={setUnitSegments}
+  errorMessage={errors.unitNumber}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern              | Map to                 | Condition                                    |
+| ------------------------------------------ | ---------------------- | -------------------------------------------- |
+| Address unit input split by hash and dash  | `Form.UnitNumberInput` | Use for floor-unit formatted entry patterns. |
+| Unit field with readonly formatted display | `Form.UnitNumberInput` | Use `readOnly` with prefilled value.         |
+
+**Composition patterns**
+- Use standalone `UnitNumberInput` import when label/error wrapper props are
+  not required.
+
+**Known limitations**
+- Storybook explicitly notes this field does not fully validate semantic unit
+  number correctness.
 
 ---
 

@@ -291,6 +291,68 @@ import { Checkbox } from "@lifesg/react-design-system/checkbox";
 
 ---
 
+### DateNavigator
+
+**Import**:
+`import { DateNavigator } from "@lifesg/react-design-system/date-navigator"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `DateNavigator` when users need arrow-based day/week navigation around a
+> current date with optional calendar jump.
+
+**When to use**
+- Date browsing controls above schedules, slots, or date-filtered lists.
+- Week strip navigation with bounded `minDate` / `maxDate` constraints.
+
+**When NOT to use**
+| Situation                                         | Use instead      |
+| ------------------------------------------------- | ---------------- |
+| User needs to pick and edit a form date field     | `Form.DateInput` |
+| User needs always-visible month calendar browsing | `Calendar`       |
+
+**Key props**
+| Prop                   | Type                            | Required | Notes                                                |
+| ---------------------- | ------------------------------- | -------- | ---------------------------------------------------- |
+| selectedDate           | `string`                        | yes      | Current displayed date in `YYYY-MM-DD` format.       |
+| onLeftArrowClick       | `(currentDate: string) => void` | yes      | Called when user navigates backward.                 |
+| onRightArrowClick      | `(currentDate: string) => void` | yes      | Called when user navigates forward.                  |
+| onCalendarDateSelect   | `(currentDate: string) => void` | no       | Enables calendar dropdown date selection.            |
+| view                   | `"day" \| "week"`               | no       | Display mode for single day or week range.           |
+| minDate                | `string`                        | no       | Inclusive lower date bound for arrows/calendar.      |
+| maxDate                | `string`                        | no       | Inclusive upper date bound for arrows/calendar.      |
+| loading                | `boolean`                       | no       | Disables navigation while async updates are running. |
+| showDateAsShortForm    | `boolean`                       | no       | Displays date in short form (e.g. `26 Mar 2026`).    |
+| showCurrentDateAsToday | `boolean`                       | no       | Shows system today label as `Today`.                 |
+
+**Canonical usage**
+```tsx
+// Date header navigation with calendar jump
+import { DateNavigator } from "@lifesg/react-design-system/date-navigator";
+
+<DateNavigator
+  selectedDate={selectedDate}
+  onLeftArrowClick={handlePrevDate}
+  onRightArrowClick={handleNextDate}
+  onCalendarDateSelect={setSelectedDate}
+  minDate="2026-01-01"
+  maxDate="2026-12-31"
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern        | Map to          | Condition                                              |
+| ------------------------------------ | --------------- | ------------------------------------------------------ |
+| Date header with left/right chevrons | `DateNavigator` | Use for day-by-day navigation around a selected date.  |
+| Week range navigator strip           | `DateNavigator` | Set `view="week"` for week-range display and movement. |
+
+**Known limitations**
+- Date selection/formatting logic is consumer-managed through callbacks and
+  external state.
+
+---
+
 ### FileDownload
 
 **Import**: `import { FileDownload } from "@lifesg/react-design-system/file-download"`
@@ -647,6 +709,63 @@ import { BoxIcon } from "@lifesg/react-icons/box";
 **Known limitations**
 - Accessible name must be provided on icon/image content (e.g. `aria-label`
   or `alt`) for screen-reader clarity.
+
+---
+
+### ImageButton
+
+**Import**:
+`import { ImageButton } from "@lifesg/react-design-system/image-button"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `ImageButton` when the CTA is represented by an image tile plus label
+> and needs selectable/pressed states.
+
+**When to use**
+- Option pickers where each choice is a visual tile (room type, category, etc.).
+- Selectable image actions that need `selected`, `error`, or disabled states.
+
+**When NOT to use**
+| Situation                               | Use instead                 |
+| --------------------------------------- | --------------------------- |
+| Action is icon-only with no image tile  | `IconButton`                |
+| Action is text-only or text+icon button | `Button` / `ButtonWithIcon` |
+
+**Key props**
+| Prop                  | Type      | Required | Notes                                                     |
+| --------------------- | --------- | -------- | --------------------------------------------------------- |
+| imgSrc                | `string`  | yes      | Source image rendered above/beside label content.         |
+| selected              | `boolean` | no       | Shows active/selected state styling.                      |
+| error                 | `boolean` | no       | Shows error visual styling.                               |
+| disabled              | `boolean` | no       | Disables interaction and default focusability.            |
+| focusableWhenDisabled | `boolean` | no       | Keeps disabled control focusable for accessibility modes. |
+
+**Canonical usage**
+```tsx
+// Selectable image tile option
+import { ImageButton } from "@lifesg/react-design-system/image-button";
+
+<ImageButton
+  imgSrc="https://cdn-icons-png.flaticon.com/512/4401/4401459.png"
+  selected={isSelected}
+  aria-pressed={isSelected}
+  onClick={toggleSelection}
+>
+  Office Equipment
+</ImageButton>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                | Map to        | Condition                                              |
+| -------------------------------------------- | ------------- | ------------------------------------------------------ |
+| Image tile CTA with label and selected state | `ImageButton` | Use when option card is image-led and toggleable.      |
+| Disabled image choice tile                   | `ImageButton` | Use `disabled` and optionally `focusableWhenDisabled`. |
+
+**Known limitations**
+- `onClick` does not fire when disabled, but other handlers on ancestors may
+  still receive bubbled events.
 
 ---
 
