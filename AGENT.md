@@ -442,6 +442,97 @@ Instead, link to the relevant Storybook page and provide concise usage notes.
 
 <!-- </fds-reference> -->
 
+<!-- <fds-v4-migration> -->
+## FDS v4 Migration Checklist
+
+> **Status (as of 2026-03)**: `@lifesg/react-design-system` v4 is in alpha
+> (`4.0.0-alpha.1` is the current `latest` npm tag). All skills and scripts
+> are intentionally pinned to `^3` until v4 reaches a stable release.
+
+When v4 reaches stable, a maintainer MUST complete all steps below before
+removing the version pins. Do not partially migrate — the skill and script
+pins must be updated atomically with the `resources-v4/` folder population.
+
+### v4 breaking changes (known at time of pin)
+
+| Area               | v3                                          | v4                                                |
+| ------------------ | ------------------------------------------- | ------------------------------------------------- |
+| Peer dependency    | `styled-components` required                | `styled-components` removed — no peer dep needed  |
+| Theme provider API | `<ThemeProvider>` accepts a theme object    | `<ThemeProvider theme="lifesg">` accepts a string |
+| CSS import         | `main.css` loaded from package root         | Import `theme/styles/lifesg.css` from the package |
+| Available at       | `designsystem.life.gov.sg/react/index.html` | `designsystem.life.gov.sg/react/v4/index.html`    |
+
+### Migration steps
+
+#### Step 1 — Populate `resources-v4/` in the `cc-design-system` skill
+
+1. Create the folder
+   `plugins/ccube-fds-web-app-builder/skills/cc-design-system/resources-v4/`.
+2. Re-source and write `resources-v4/theme-setup.md` from the v4 Storybook
+   installation page at
+   <https://designsystem.life.gov.sg/react/v4/index.html?path=/docs/getting-started-installation--docs>.
+   Document the new `<ThemeProvider theme="lifesg">` API and the new CSS
+   import path.
+3. Populate additional catalogue files under `resources-v4/` as needed,
+   following the same naming convention as `resources/`.
+
+#### Step 2 — Update the Version Context routing rule in `cc-design-system/SKILL.md`
+
+In `plugins/ccube-fds-web-app-builder/skills/cc-design-system/SKILL.md`,
+update the Version Context section so that `^4.x` projects are routed to
+`resources-v4/` rather than showing a "not yet populated" warning:
+
+```markdown
+2. If the installed version is `^3.x` → use `resources/` and the v3
+   Storybook URL.
+3. If the installed version is `^4.x` → use `resources-v4/` and the v4
+   Storybook at https://designsystem.life.gov.sg/react/v4/index.html.
+   Do NOT use v3 resources for v4 projects.
+```
+
+Also update the version table to reflect v4's stable status.
+
+#### Step 3 — Remove the `@^3` pin from `cc-vite-react-ds/SKILL.md`
+
+In `plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/SKILL.md`,
+update the Manual Setup Step 2 install command:
+
+```bash
+# Remove the @^3 pin — v4 is now stable.
+npm install @lifesg/react-design-system @lifesg/react-icons
+# styled-components is no longer a peer dependency in v4.
+```
+
+Remove the comment block that explained the v4 alpha rationale.
+
+#### Step 4 — Remove the `@^3` pin from `init-vite-react-project.sh`
+
+In `plugins/ccube-fds-web-app-builder/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh`,
+update the install line that pins to `@^3` and remove the explanatory comment.
+
+#### Step 5 — Update `theme-setup.md` in `resources/` (v3 resource)
+
+No change needed — the existing `resources/theme-setup.md` remains the
+authoritative reference for v3 projects. Do NOT modify it during v4 migration.
+
+#### Step 6 — Verify and commit
+
+Before committing:
+
+1. Run the `init-vite-react-project.sh` script against a temp directory and
+   confirm it installs the expected v4 stable version.
+2. Confirm `npm ls @lifesg/react-design-system` in the created project shows
+   a `4.x` version.
+3. Confirm the dev server starts cleanly (`npm run dev`) with no
+   `styled-components` or `ThemeProvider` errors.
+4. Confirm both `cc-design-system/SKILL.md` version tables no longer describe
+   v4 as alpha.
+
+Commit all changed files atomically. Increment all affected plugin versions
+in `.github/plugin/marketplace.json`.
+
+<!-- </fds-v4-migration> -->
+
 <!-- <telemetry> -->
 ## Telemetry
 
