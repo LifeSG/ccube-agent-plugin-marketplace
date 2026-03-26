@@ -656,12 +656,6 @@ const customTheme: ThemeSpec = {
 
 ---
 
-## Z-index Tokens
-
-> ⬜ Not yet documented — run `Add DS Foundation to Catalogue` with topic `ZIndex` to add this section.
-
----
-
 ## Motion Tokens
 
 > Use `Motion` tokens to control animation duration and easing in CSS
