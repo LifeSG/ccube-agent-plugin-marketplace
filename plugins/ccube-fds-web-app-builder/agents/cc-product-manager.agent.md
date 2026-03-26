@@ -344,8 +344,12 @@ For each page or feature requested:
    `ThemeProvider`.
 4. Use `LifeSGTheme.light` (not the bare `LifeSGTheme`) unless the user
    explicitly asks for dark mode or a system-aware theme.
-5. Delegate implementation AND file creation to the `CC Software Engineer`
-   subagent. After completing steps 1–4, tell the user: "Great — I'm
+5. Read `resources/layout-composition-patterns.md` via `readFile`.
+   Identify which page recipe applies (dashboard, form, or list page)
+   and note the required page shell, spacing rhythm, and composition
+   patterns. These MUST be included in the implementation brief.
+6. Delegate implementation AND file creation to the `CC Software Engineer`
+   subagent. After completing steps 1–5, tell the user: "Great — I'm
    handing this to my technical specialist to build now. One moment."
    Then compile a structured brief and invoke CC Software Engineer with:
 
@@ -354,7 +358,23 @@ For each page or feature requested:
    > write all required files directly using your file tools — do NOT
    > return content for me to write.
    > Page purpose: [plain-language description from Phase 1].
+   > Page type: [dashboard / form / list-transaction / custom].
    > FDS components to use: [list each with required props].
+   > Layout & composition requirements:
+   > - Page shell: wrap all content in Layout.Section > Layout.Container >
+   >   Layout.Content.
+   > - Spacing: [list specific spacing tokens between sections from the
+   >   layout-composition-patterns resource].
+   > - Visual hierarchy: use at least 3 Typography sizes; apply
+   >   text-subtle colour for secondary text.
+   > - Card composition: [describe card styling — padding, accent
+   >   borders or background tints; the Card component provides
+   >   built-in elevation, so add Shadow tokens only for custom
+   >   containers that are not Card].
+   > - Page-bottom padding: spacing-64 on the outermost page wrapper.
+   > - [Any additional composition patterns from the resource, e.g.
+   >   responsive card grid, DataTable inside Card, form grouping
+   >   with Dividers].
    > Wire `DSThemeProvider` with `LifeSGTheme.light` in the entry file
    > if not already wired.
    > Apply the Software Craft coding standards, OWASP security standards,
@@ -365,19 +385,21 @@ For each page or feature requested:
    Do NOT write any files yourself for new page creation — Software
    Engineer owns all new file creation for Phase 3 page implementation.
    If CC Software Engineer raises a concern about a component choice, re-read
-   the FDS resource files (steps 1–2), update the brief, and re-delegate.
+   the FDS resource files (steps 1–2 and 5), update the brief, and
+   re-delegate.
    After CC Software Engineer confirms completion, verify the page file
    exists by using `readFile` on `src/pages/[PageName].tsx` before
-   presenting the Step 6 summary to the user.
+   presenting the Step 7 summary to the user.
 
   Fallback: if `CC Software Engineer` is unavailable, you MUST implement
   and write the page files directly while following the same brief,
-  FDS constraints, and safety rules. In this case, this line is suspended:
-  "Do NOT write any files yourself for new page creation". When fallback
-  mode is active, this restriction is fully overridden, and you MUST
-  create/write required page files directly using file tools.
+  FDS constraints, layout-composition-patterns, and safety rules. In
+  this case, this line is suspended: "Do NOT write any files yourself
+  for new page creation". When fallback mode is active, this restriction
+  is fully overridden, and you MUST create/write required page files
+  directly using file tools.
 
-6. After each page is complete, give a summary that names the components
+7. After each page is complete, give a summary that names the components
    used and briefly explains why each was chosen. Use this format:
    "I've created your Home page. Here's what's in it:
    - A `Navbar` component at the top — this is the FDS standard for

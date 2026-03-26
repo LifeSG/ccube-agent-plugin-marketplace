@@ -64,6 +64,11 @@ you need.
   `styled-components`.
 - **`resources/theme-setup.md`**: Project setup, `ThemeProvider` wiring,
   available theme presets, `DSThemeProvider`, and theme customisation.
+- **`resources/layout-composition-patterns.md`**: Page-level aesthetic
+  patterns — page shell structure, spacing rhythm, visual hierarchy,
+  card composition, dashboard grids, table polish, and form layout
+  recipes. Read this **after** selecting components and **before**
+  writing or delegating page implementation.
 
 ## How to Use This Skill
 
@@ -87,6 +92,20 @@ you need.
 2. Use `${Colour["token-key"]}` or `${Spacing["token-key"]}` directly in
    styled-components template literals.
 3. Never hardcode hex, px, or rem values — always use tokens.
+
+### When composing visually polished page layouts
+
+1. Read `resources/layout-composition-patterns.md` — identify the page
+   recipe that best matches the type of page being built (dashboard,
+   form, list/transaction).
+2. Apply the page shell pattern (every page starts with
+   `Layout.Section` > `Layout.Container` > `Layout.Content`).
+3. Apply the spacing rhythm table for consistent vertical gaps.
+4. Apply the visual hierarchy text levels (at least three distinct
+   Typography sizes per page).
+5. Apply the relevant composition patterns (card grids, table cards,
+   form grouping) from the recipes.
+6. Cross-check against the anti-patterns table — fix any matches.
 
 ### When setting up a new project or configuring a theme
 

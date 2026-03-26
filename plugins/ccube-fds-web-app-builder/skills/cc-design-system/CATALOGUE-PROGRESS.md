@@ -82,8 +82,8 @@ https://designsystem.life.gov.sg/react/index.html
 | Filter                             | `filter`              | ✅      |
 | Filter.Addons (FilterItemCheckbox) | `filter/addons`       | ✅      |
 | FeedbackRating                     | `feedback-rating`     | ✅      |
-| DateNavigator                      | `date-navigator`      | ⬜      |
-| ImageButton                        | `image-button`        | ⬜      |
+| DateNavigator                      | `date-navigator`      | ✅      |
+| ImageButton                        | `image-button`        | ✅      |
 | Schedule                           | `schedule`            | ⬜      |
 | TimeSlotBar                        | `time-slot-bar`       | ⬜      |
 | TimeSlotBarWeek                    | `time-slot-bar-week`  | ⬜      |
@@ -136,8 +136,8 @@ https://designsystem.life.gov.sg/react/index.html
 | Form.DateRangeInput                             | `date-range-input`          | ✅      |
 | Form.Timepicker                                 | `timepicker`                | ✅      |
 | Form.OtpVerification                            | `otp-verification`          | ✅      |
-| Form.UnitNumberInput                            | `unit-number`               | ⬜      |
-| Form.PredictiveTextInput                        | `predictive-text-input`     | ⬜      |
+| Form.UnitNumberInput                            | `unit-number`               | ✅      |
+| Form.PredictiveTextInput                        | `predictive-text-input`     | ✅      |
 | Form.TimeRangePicker                            | `time-range-picker`         | ⬜      |
 | Form.Slider (InputSlider)                       | `input-slider`              | ⬜      |
 | Form.RangeSlider (InputRangeSlider)             | `input-range-slider`        | ⬜      |
@@ -168,26 +168,27 @@ https://designsystem.life.gov.sg/react/index.html
 > `resources/theme-setup.md`.
 > To add a section, run the `Add DS Foundation to Catalogue` prompt.
 
-| Topic                        | File                    | Status                               |
-| ---------------------------- | ----------------------- | ------------------------------------ |
-| Installation                 | `theme-setup.md`        | ✅                                    |
-| Theme Presets & ThemeSpec    | `theme-setup.md`        | ✅                                    |
-| DSThemeProvider              | `theme-setup.md`        | ✅                                    |
-| Advanced Theme Customisation | `theme-setup.md`        | ⬜                                    |
-| Dark Mode                    | `theme-setup.md`        | ⬜                                    |
-| Colour tokens                | `foundations-tokens.md` | ✅ (semantic + primitive + overrides) |
-| Spacing tokens               | `foundations-tokens.md` | ✅                                    |
-| Font tokens                  | `foundations-tokens.md` | ✅ (basic usage + overrides)          |
-| Breakpoints / MediaQuery     | `foundations-tokens.md` | ✅                                    |
-| Shadow                       | `foundations-tokens.md` | ✅                                    |
-| Border                       | `foundations-tokens.md` | ✅                                    |
-| Border Radius                | `foundations-tokens.md` | ✅                                    |
-| Z-index                      | `foundations-tokens.md` | ⬜                                    |
-| Motion                       | `foundations-tokens.md` | ✅                                    |
+| Topic                        | File                             | Status                               |
+| ---------------------------- | -------------------------------- | ------------------------------------ |
+| Installation                 | `theme-setup.md`                 | ✅                                    |
+| Theme Presets & ThemeSpec    | `theme-setup.md`                 | ✅                                    |
+| DSThemeProvider              | `theme-setup.md`                 | ✅                                    |
+| Advanced Theme Customisation | `theme-setup.md`                 | ⬜                                    |
+| Dark Mode                    | `theme-setup.md`                 | ⬜                                    |
+| Colour tokens                | `foundations-tokens.md`          | ✅ (semantic + primitive + overrides) |
+| Spacing tokens               | `foundations-tokens.md`          | ✅                                    |
+| Font tokens                  | `foundations-tokens.md`          | ✅ (basic usage + overrides)          |
+| Breakpoints / MediaQuery     | `foundations-tokens.md`          | ✅                                    |
+| Shadow                       | `foundations-tokens.md`          | ✅                                    |
+| Border                       | `foundations-tokens.md`          | ✅                                    |
+| Border Radius                | `foundations-tokens.md`          | ✅                                    |
+| Z-index                      | `foundations-tokens.md`          | ⬜                                    |
+| Motion                       | `foundations-tokens.md`          | ✅                                    |
+| Layout Composition Patterns  | `layout-composition-patterns.md` | ✅                                    |
 
 ---
 
-**Progress**: 64 / 90 components documented (3 deprecated excluded from count)
+**Progress**: 68 / 90 components documented (3 deprecated excluded from count)
 
 > New sub-components confirmed via Storybook full expansion:
 > `Layout.ColDiv`, `Filter.Addons`, `Animations.Customisable`.
