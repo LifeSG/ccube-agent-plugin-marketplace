@@ -65,6 +65,12 @@ The file types this repo authors and maintains:
 <!-- <adding-plugins> -->
 ## Adding a New Plugin
 
+> **CRITICAL — marketplace registration is MANDATORY**: Every new plugin MUST
+> be registered in `.github/plugin/marketplace.json` (Step 6) before the work
+> is considered complete. A plugin directory that exists on disk but is absent
+> from `marketplace.json` will never load. Do NOT commit a new plugin without
+> completing Step 6.
+
 Follow these steps exactly when adding a new plugin to this marketplace.
 
 ### Step 0 — Clarify requirements then explore (MANDATORY)
@@ -196,7 +202,7 @@ Use the existing plugin's README as your structural reference. Read
 `plugins/ccube-fds-web-app-builder/README.md` to see the expected level of
 detail, tone, and section layout before writing.
 
-### Step 6 — Register in marketplace.json
+### Step 6 — Register in marketplace.json (MANDATORY)
 
 Open `.github/plugin/marketplace.json` and append a new entry to the
 `"plugins"` array:
@@ -319,9 +325,9 @@ on macOS vs Linux).
 
 ### Marketplace sync
 
-- You MUST update `.github/plugin/marketplace.json` whenever you add, rename,
-  or remove a skill folder, instructions folder, or agents folder in any
-  plugin.
+- You MUST update `.github/plugin/marketplace.json` whenever you **create a
+  new plugin directory** or whenever you add, rename, or remove a skill
+  folder, instructions folder, or agents folder in any existing plugin.
 - The `"skills"` array in each plugin entry MUST exactly reflect the
   subdirectories present under `plugins/<plugin-name>/skills/`. An
   unregistered skill folder will silently fail to load with no error message.

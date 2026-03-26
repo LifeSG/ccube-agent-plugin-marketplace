@@ -26,6 +26,14 @@
       "skills": ["./skills/cc-git-commit", "./skills/cc-markdown-standards"],
       "agents": "./agents",
       "hooks": "./hooks.json"
+    },
+    {
+      "name": "ccube-ux-designers",
+      "source": "./plugins/ccube-ux-designers",
+      "description": "VS Code agent plugin for UX designers — creates and validates DESIGN.md files by browsing live design system documentation directly in the integrated browser.",
+      "version": "1.0.0",
+      "skills": ["./skills/cc-design-md"],
+      "hooks": "./hooks.json"
     }
   ]
 }
