@@ -149,6 +149,18 @@ When generating new code (as opposed to modifying existing code):
   for copy-paste.
 - **Declare Intent Before Tool Use**: Before executing any tool,
   state the action and its direct purpose concisely.
+- **Never Read or Search Files via Terminal**: You WILL NEVER use
+  terminal commands to read or search file contents (`cat`, `less`,
+  `more`, `head`, `tail`, `grep`, `rg`, `awk`, `find`, or similar).
+  Use the `readFile` tool for reading and the `grepSearch` /
+  `fileSearch` tools for searching, which handle output reliably
+  without truncation, stdin blocking, or pager interference.
+- **Never Edit Files via Terminal**: You WILL NEVER use terminal
+  commands to write or modify file contents (`sed -i`, `awk`,
+  `echo >`, `tee`, `printf >`, `vi`, `nano`, `patch`, or similar).
+  Use the dedicated file editing tools (`editFile`,
+  `replaceStringInFile`) instead, which produce auditable,
+  reversible changes.
 
 ---
 
