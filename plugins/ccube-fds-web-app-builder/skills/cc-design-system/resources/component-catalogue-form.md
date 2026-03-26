@@ -97,28 +97,28 @@ import { Input } from "@lifesg/react-design-system/input";
   category selector) next to free text entry.
 
 **When NOT to use**
-| Situation                             | Use instead  |
-| ------------------------------------- | ------------ |
-| Plain labelled text input             | `Form.Input` |
-| Multi-line free text                  | `Form.Textarea` |
+| Situation                 | Use instead     |
+| ------------------------- | --------------- |
+| Plain labelled text input | `Form.Input`    |
+| Multi-line free text      | `Form.Textarea` |
 
 **Key props**
-| Prop              | Type                                 | Required | Notes |
-| ----------------- | ------------------------------------ | -------- | ----- |
-| addon             | `AddonProps<T, V>`                   | no       | Configures addon `type` (`label`, `list`, `custom`) and `position`. |
-| noBorder          | `boolean`                            | no       | Removes border wrapper around combined control. |
-| allowClear        | `boolean`                            | no       | Inherited from `Input`; shows clear action in text field. |
-| options           | `T[]`                                | no       | List addon only; options shown in addon selector. |
-| selectedOption    | `T`                                  | no       | List addon only; currently selected addon option. |
-| onSelectOption    | `(option: T, extractedValue: T \| V) => void` | no | List addon selection callback. |
-| enableSearch      | `boolean`                            | no       | List addon only; enables text search in selector list. |
-| dropdownZIndex    | `number`                             | no       | Overrides addon dropdown z-index in complex overlays. |
-| dropdownRootNode  | `RefObject<HTMLElement>`             | no       | Changes dropdown mount root for shared scroll contexts. |
+| Prop             | Type                                          | Required | Notes                                                               |
+| ---------------- | --------------------------------------------- | -------- | ------------------------------------------------------------------- |
+| addon            | `AddonProps<T, V>`                            | no       | Configures addon `type` (`label`, `list`, `custom`) and `position`. |
+| noBorder         | `boolean`                                     | no       | Removes border wrapper around combined control.                     |
+| allowClear       | `boolean`                                     | no       | Inherited from `Input`; shows clear action in text field.           |
+| options          | `T[]`                                         | no       | List addon only; options shown in addon selector.                   |
+| selectedOption   | `T`                                           | no       | List addon only; currently selected addon option.                   |
+| onSelectOption   | `(option: T, extractedValue: T \| V) => void` | no       | List addon selection callback.                                      |
+| enableSearch     | `boolean`                                     | no       | List addon only; enables text search in selector list.              |
+| dropdownZIndex   | `number`                                      | no       | Overrides addon dropdown z-index in complex overlays.               |
+| dropdownRootNode | `RefObject<HTMLElement>`                      | no       | Changes dropdown mount root for shared scroll contexts.             |
 
 **Type-specific requirements**
-| Type value | Extra requirement               | Notes |
-| ---------- | ------------------------------- | ----- |
-| `list`     | `options` + `onSelectOption`   | Required to render and handle addon list interactions. |
+| Type value | Extra requirement            | Notes                                                  |
+| ---------- | ---------------------------- | ------------------------------------------------------ |
+| `list`     | `options` + `onSelectOption` | Required to render and handle addon list interactions. |
 
 **Canonical usage**
 ```tsx
@@ -137,10 +137,10 @@ import { Form } from "@lifesg/react-design-system/form";
 ```
 
 **Figma mapping hints**
-| Figma element / layer pattern                    | Map to            | Condition |
-| ------------------------------------------------ | ----------------- | --------- |
-| Text input with fixed prefix/suffix unit addon  | `Form.InputGroup` | Use `addon.type="label"` with `position="left"` or `"right"`. |
-| Text input with dropdown selector addon          | `Form.InputGroup` | Use `addon.type="list"` with addon options and extractor callbacks. |
+| Figma element / layer pattern                  | Map to            | Condition                                                           |
+| ---------------------------------------------- | ----------------- | ------------------------------------------------------------------- |
+| Text input with fixed prefix/suffix unit addon | `Form.InputGroup` | Use `addon.type="label"` with `position="left"` or `"right"`.       |
+| Text input with dropdown selector addon        | `Form.InputGroup` | Use `addon.type="list"` with addon options and extractor callbacks. |
 
 **Composition patterns**
 - Use standalone `InputGroup` for unlabelled widget composition; use
@@ -222,6 +222,82 @@ import { Form } from "@lifesg/react-design-system/form";
   clipping.
 - Pair with a `zIndex` override if rendered inside `Modal` or `Overlay` and
   the default z-index auto-adjustment is insufficient.
+
+---
+
+### Form.DateRangeInput
+
+**Import**:
+`import { Form } from "@lifesg/react-design-system/form"` *(or standalone:
+`import { DateRangeInput } from "@lifesg/react-design-system/date-range-input"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.DateRangeInput` when the user must select both a start and end
+> date in one field; use `Form.DateInput` when only one date is needed.
+
+**When to use**
+- From/to date windows such as booking periods and reporting ranges.
+- Week-range or fixed-duration range selection using variant-driven behavior.
+
+**When NOT to use**
+| Situation                                        | Use instead      |
+| ------------------------------------------------ | ---------------- |
+| Field captures only one date                     | `Form.DateInput` |
+| Always-visible calendar panel without text input | `Calendar`       |
+
+**Key props**
+| Prop                   | Type                                           | Required | Notes                                              |
+| ---------------------- | ---------------------------------------------- | -------- | -------------------------------------------------- |
+| label                  | `string \| FormLabelProps`                     | no       | Form label above the range field.                  |
+| errorMessage           | `string \| React.ReactNode`                    | no       | Validation message shown below the field.          |
+| value                  | `string`                                       | no       | Start date in `"YYYY-MM-DD"` or `"YYYY-M-D"`.      |
+| valueEnd               | `string`                                       | no       | End date in `"YYYY-MM-DD"` or `"YYYY-M-D"`.        |
+| variant                | `"range" \| "week" \| "fixed-range"`           | no       | Selection type. Defaults to `"range"`.             |
+| numberOfDays           | `number`                                       | no       | Fixed-range duration in days. Defaults to `7`.     |
+| disabledDates          | `string[]`                                     | no       | Unavailable dates in `"YYYY-MM-DD"` format.        |
+| minDate / maxDate      | `string`                                       | no       | Inclusive allowed date window boundaries.          |
+| allowDisabledSelection | `boolean`                                      | no       | Allows selecting dates that are visually disabled. |
+| withButton             | `boolean`                                      | no       | Shows `Done`/`Cancel`; effectively true on mobile. |
+| onChange               | `(startDate: string, endDate: string) => void` | no       | Returns selected start and end dates.              |
+
+**Type-specific requirements**
+| Type value      | Extra requirement | Notes                                              |
+| --------------- | ----------------- | -------------------------------------------------- |
+| `"fixed-range"` | `numberOfDays`    | Controls required fixed duration (default 7 days). |
+
+**Canonical usage**
+```tsx
+// Labelled date range field in a form
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.DateRangeInput
+  label="Travel period"
+  value={startDate}
+  valueEnd={endDate}
+  minDate="2026-01-01"
+  maxDate="2026-12-31"
+  onChange={(start, end) => {
+    setStartDate(start);
+    setEndDate(end);
+  }}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                | Map to                | Condition                                       |
+| -------------------------------------------- | --------------------- | ----------------------------------------------- |
+| Date range input with `From` and `To` fields | `Form.DateRangeInput` | Two-date range selection in one control.        |
+| Week range picker (Sun–Sat)                  | `Form.DateRangeInput` | Set `variant="week"`.                           |
+| Fixed-duration range picker                  | `Form.DateRangeInput` | Set `variant="fixed-range"` and `numberOfDays`. |
+
+**Composition patterns**
+- Use standalone `DateRangeInput` import when label/error wrapper behavior is
+  not needed.
+
+**Known limitations**
+- `value` and `valueEnd` must be managed together for controlled range state.
 
 ---
 
@@ -494,6 +570,89 @@ import { Form } from "@lifesg/react-design-system/form";
 
 ---
 
+### Form.OtpVerification
+
+**Import**:
+`import { Form } from "@lifesg/react-design-system/form"` *(or standalone:
+`import { OtpVerification } from "@lifesg/react-design-system/otp-verification"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.OtpVerification` when the field must handle end-to-end OTP send,
+> verify, resend, and verified-state transitions for phone or email.
+
+**When to use**
+- Identity verification fields requiring OTP send/verify flow in a single form
+  component.
+- Phone or email contact verification with countdown-based resend behavior.
+
+**When NOT to use**
+| Situation                                               | Use instead  |
+| ------------------------------------------------------- | ------------ |
+| Plain OTP digit entry without contact verification flow | `OtpInput`   |
+| Standard text/email input with no OTP step              | `Form.Input` |
+
+**Key props**
+| Prop                    | Type                                                      | Required | Notes                                             |
+| ----------------------- | --------------------------------------------------------- | -------- | ------------------------------------------------- |
+| type                    | `"phone-number" \| "email"`                               | yes      | Verification channel type.                        |
+| otpState                | `"default" \| "sent" \| "verified"`                       | yes      | Current verification state.                       |
+| onOtpStateChange        | `(otpState: OtpVerificationState) => void`                | no       | Called when component transitions OTP state.      |
+| onSendOtp               | `() => Promise<void>`                                     | no       | Triggered when user requests OTP send.            |
+| onVerifyOtp             | `(otp: string) => Promise<void>`                          | no       | Triggered when user submits OTP for verification. |
+| onResendOtp             | `() => Promise<void>`                                     | no       | Triggered on resend action after cooldown.        |
+| verifyOtpCountdownTimer | `number`                                                  | no       | Resend cooldown seconds. Defaults to `60`.        |
+| otpValue                | `{ prefix?: string; separator?: string; value?: string }` | no       | Current OTP value model.                          |
+| onOtpChange             | `(value: string) => void`                                 | no       | Called when OTP value changes.                    |
+| sendOtpError            | `string`                                                  | no       | Error message for send OTP step.                  |
+| verifyOtpError          | `string`                                                  | no       | Error message for verify OTP step.                |
+| showVerifyOtpThumbnail  | `boolean`                                                 | no       | Shows verification thumbnail in verify state.     |
+
+**Type-specific requirements**
+| Type value       | Extra requirement                         | Notes                                                   |
+| ---------------- | ----------------------------------------- | ------------------------------------------------------- |
+| `"phone-number"` | `phoneNumberValue`, `onPhoneNumberChange` | Uses `PhoneNumberInputValue` (`countryCode`, `number`). |
+| `"email"`        | `emailValue`, `onEmailChange`             | Uses email string field for contact input.              |
+
+**Canonical usage**
+```tsx
+// Phone OTP verification field in form context
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.OtpVerification
+  label="Mobile number"
+  type="phone-number"
+  otpState={otpState}
+  phoneNumberValue={phoneNumberValue}
+  onPhoneNumberChange={setPhoneNumberValue}
+  onSendOtp={sendOtp}
+  onVerifyOtp={verifyOtp}
+  onResendOtp={resendOtp}
+  onOtpStateChange={setOtpState}
+  verifyOtpCountdownTimer={60}
+  sendOtpError={sendOtpError}
+  verifyOtpError={verifyOtpError}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                    | Map to                 | Condition                                          |
+| ------------------------------------------------ | ---------------------- | -------------------------------------------------- |
+| OTP verification field with Send/Verify states   | `Form.OtpVerification` | Use when design includes contact input + OTP flow. |
+| Phone verification block with country code input | `Form.OtpVerification` | Set `type="phone-number"`.                         |
+| Email verification block with OTP step           | `Form.OtpVerification` | Set `type="email"`.                                |
+
+**Composition patterns**
+- Use standalone `OtpVerification` import when form label/error wrapper props
+  are not needed.
+
+**Known limitations**
+- Verification flow is state-driven (`otpState`); parent state orchestration
+  is required for async send/verify transitions.
+
+---
+
 ### Form.PhoneNumberInput
 
 **Import**:
@@ -659,6 +818,70 @@ const options = [
   are objects — without them the component cannot display meaningful labels.
 - No built-in multi-line option rendering — use `renderListItem` for custom
   option layouts.
+
+---
+
+### Form.Timepicker
+
+**Import**:
+`import { Form } from "@lifesg/react-design-system/form"` *(or standalone:
+`import { Timepicker } from "@lifesg/react-design-system/timepicker"`)*
+
+**Category**: Form
+
+**Decision rule**
+> Use `Form.Timepicker` when the user must enter/select a time value (12hr or
+> 24hr) in a labelled form field.
+
+**When to use**
+- Appointment, slot, or cut-off-time fields where users pick a time via
+  dropdown selector.
+- Forms requiring explicit 12-hour (`AM/PM`) or 24-hour time format support.
+
+**When NOT to use**
+| Situation                                      | Use instead                               |
+| ---------------------------------------------- | ----------------------------------------- |
+| Field captures a date or date range            | `Form.DateInput` or `Form.DateRangeInput` |
+| User picks from predefined textual time labels | `Form.Select`                             |
+
+**Key props**
+| Prop           | Type                        | Required | Notes                                                         |
+| -------------- | --------------------------- | -------- | ------------------------------------------------------------- |
+| label          | `string \| FormLabelProps`  | no       | Label above the field with optional tooltip/popover addon.    |
+| value          | `string`                    | no       | Time value (`"hh:mm"` for 24hr, `"hh:mmA"` for 12hr).         |
+| format         | `"12hr" \| "24hr"`          | no       | Time format. Defaults to `"24hr"`.                            |
+| placeholder    | `string`                    | no       | Placeholder text in the field.                                |
+| disabled       | `boolean`                   | no       | Disables entry and selection.                                 |
+| readOnly       | `boolean`                   | no       | Displays value without allowing changes.                      |
+| errorMessage   | `string \| React.ReactNode` | no       | Validation message shown below the field.                     |
+| alignment      | `"left" \| "right"`         | no       | Dropdown alignment relative to field. Defaults to `"left"`.   |
+| dropdownZIndex | `number`                    | no       | Custom popover z-index when overlay stacking conflicts occur. |
+| onChange       | `(value: string) => void`   | no       | Called on confirm from time selection panel.                  |
+
+**Canonical usage**
+```tsx
+// Labelled time field in 12-hour format
+import { Form } from "@lifesg/react-design-system/form";
+
+<Form.Timepicker
+  label="Preferred callback time"
+  format="12hr"
+  value={timeValue}
+  onChange={setTimeValue}
+  errorMessage={errors.time}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern              | Map to            | Condition                                       |
+| ------------------------------------------ | ----------------- | ----------------------------------------------- |
+| Time picker field with dropdown clock list | `Form.Timepicker` | Labelled form field for selecting a time value. |
+| 12-hour time field with AM/PM              | `Form.Timepicker` | Set `format="12hr"`.                            |
+| Standalone time selector without label     | `Timepicker`      | Use standalone import from `timepicker`.        |
+
+**Composition patterns**
+- Use `dropdownRootNode`/`dropdownZIndex` when rendered inside modal/overlay
+  containers with competing stacking contexts.
 
 ---
 

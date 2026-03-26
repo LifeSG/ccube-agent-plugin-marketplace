@@ -109,17 +109,17 @@ import { Alert } from "@lifesg/react-design-system/alert";
   active FDS theme.
 
 **When NOT to use**
-| Situation                                   | Use instead          |
-| ------------------------------------------- | -------------------- |
-| User needs to track current step in a flow  | `ProgressIndicator`  |
-| Toast-like success/error message state      | `Toast`              |
+| Situation                                  | Use instead         |
+| ------------------------------------------ | ------------------- |
+| User needs to track current step in a flow | `ProgressIndicator` |
+| Toast-like success/error message state     | `Toast`             |
 
 **Key props**
-| Prop        | Type     | Required | Notes |
-| ----------- | -------- | -------- | ----- |
-| id          | `string` | no       | Optional element id for animation root. |
-| className   | `string` | no       | CSS hook for custom spacing or layout integration. |
-| data-testid | `string` | no       | Test selector on animation element. |
+| Prop        | Type     | Required | Notes                                                     |
+| ----------- | -------- | -------- | --------------------------------------------------------- |
+| id          | `string` | no       | Optional element id for animation root.                   |
+| className   | `string` | no       | CSS hook for custom spacing or layout integration.        |
+| data-testid | `string` | no       | Test selector on animation element.                       |
 | color       | `string` | no       | Only for `LoadingDotsSpinner`; customises spinner colour. |
 
 **Canonical usage**
@@ -131,14 +131,69 @@ import { ThemedLoadingSpinner } from "@lifesg/react-design-system/animations";
 ```
 
 **Figma mapping hints**
-| Figma element / layer pattern        | Map to                 | Condition |
-| ------------------------------------ | ---------------------- | --------- |
-| Inline loading dots / spinner state  | `LoadingDotsSpinner`   | Use when a compact in-context loading indicator is needed. |
-| Branded circular loading indicator   | `ThemedLoadingSpinner` | Use theme-aware spinner for full-section loading states. |
+| Figma element / layer pattern       | Map to                 | Condition                                                  |
+| ----------------------------------- | ---------------------- | ---------------------------------------------------------- |
+| Inline loading dots / spinner state | `LoadingDotsSpinner`   | Use when a compact in-context loading indicator is needed. |
+| Branded circular loading indicator  | `ThemedLoadingSpinner` | Use theme-aware spinner for full-section loading states.   |
 
 **Known limitations**
 - API surface is intentionally minimal (`BaseAnimationProps`); size and
   advanced motion customisation should be handled via container CSS.
+
+---
+
+### Animations.Customisable
+
+**Import**:
+`import { LoadingDotsSpinner, ThemedLoadingSpinner } from "@lifesg/react-design-system/animations"`
+
+**Category**: Feedback indicators
+
+**Decision rule**
+> Use `LoadingDotsSpinner` or `ThemedLoadingSpinner` when you need spinner
+> visuals with explicit component-level customisation or branding.
+
+**When to use**
+- Inline loading states that need explicit spinner component selection.
+- Theme-aware section/page loading indicators where brand styling matters.
+
+**When NOT to use**
+| Situation                                    | Use instead         |
+| -------------------------------------------- | ------------------- |
+| Loading state needs textual status messaging | `Alert` or `Toast`  |
+| User needs explicit step-by-step progression | `ProgressIndicator` |
+
+**Key props**
+| Prop        | Type     | Required | Notes                                                       |
+| ----------- | -------- | -------- | ----------------------------------------------------------- |
+| id          | `string` | no       | Optional element id on spinner root.                        |
+| className   | `string` | no       | Styling hook for placement/size wrappers.                   |
+| data-testid | `string` | no       | Test selector on spinner root.                              |
+| color       | `string` | no       | Available on `LoadingDotsSpinner`; overrides spinner color. |
+
+**Canonical usage**
+```tsx
+// Inline custom-colour spinner
+import {
+  LoadingDotsSpinner,
+  ThemedLoadingSpinner,
+} from "@lifesg/react-design-system/animations";
+
+<LoadingDotsSpinner color="#1c76d5" data-testid="inline-loading" />
+
+// Theme-aware section loading
+<ThemedLoadingSpinner data-testid="section-loading" />
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                   | Map to                 | Condition                                     |
+| ----------------------------------------------- | ---------------------- | --------------------------------------------- |
+| Inline loading spinner with custom brand colour | `LoadingDotsSpinner`   | Spinner appears inside cards/forms/list rows. |
+| Theme-aware section loading spinner             | `ThemedLoadingSpinner` | Loading state must follow active DS theme.    |
+
+**Known limitations**
+- Only `LoadingDotsSpinner` accepts `color`; `ThemedLoadingSpinner` uses theme
+  colours.
 
 ---
 
@@ -196,6 +251,75 @@ import { Badge } from "@lifesg/react-design-system/badge";
 **Known limitations**
 - Intended for short counts/indicators only; long textual statuses should use
   `Tag`.
+
+---
+
+### CountdownTimer
+
+**Import**:
+`import { CountdownTimer } from "@lifesg/react-design-system/countdown-timer"`
+
+**Category**: Feedback indicators
+
+**Decision rule**
+> Use `CountdownTimer` when the UI must display a live countdown with optional
+> sticky positioning and threshold notifications.
+
+**When to use**
+- Session expiry, OTP validity, or task window countdowns where users need
+  active remaining-time visibility.
+- Sticky timers that should stay visible after scrolling past their original
+  position.
+
+**When NOT to use**
+| Situation                                   | Use instead         |
+| ------------------------------------------- | ------------------- |
+| Multi-step process progress                 | `ProgressIndicator` |
+| Static deadline text with no live countdown | `Typography`        |
+
+**Key props**
+| Prop             | Type                                              | Required | Notes                                                          |
+| ---------------- | ------------------------------------------------- | -------- | -------------------------------------------------------------- |
+| show             | `boolean`                                         | yes      | Starts/shows the countdown timer.                              |
+| timer            | `number`                                          | yes*     | Countdown duration in seconds. Required if `timestamp` absent. |
+| timestamp        | `number`                                          | yes*     | End timestamp (ms since epoch). Takes precedence over `timer`. |
+| fixed            | `boolean`                                         | no       | Enables sticky behavior when timer scrolls out of view.        |
+| align            | `"left" \| "right"`                               | no       | Sticky alignment. Defaults to `"right"`.                       |
+| offset           | `{ top?: number; left?: number; right?: number }` | no       | Desktop/tablet sticky offset.                                  |
+| mobileOffset     | `{ top?: number }`                                | no       | Mobile sticky top offset.                                      |
+| notifyTimer      | `number`                                          | no       | Threshold (seconds) that triggers notify/tick callbacks.       |
+| reminderInterval | `number`                                          | no       | Screen-reader reminder interval in seconds.                    |
+| onTick           | `(seconds: number) => void`                       | no       | Called during threshold window as time counts down.            |
+
+**Type-specific requirements**
+| Type value  | Extra requirement | Notes                                      |
+| ----------- | ----------------- | ------------------------------------------ |
+| `timer`     | `timer`           | Required when `timestamp` is not provided. |
+| `timestamp` | `timestamp`       | Required when `timer` is not provided.     |
+
+**Canonical usage**
+```tsx
+// Countdown with threshold notifications
+import { CountdownTimer } from "@lifesg/react-design-system/countdown-timer";
+
+<CountdownTimer
+  show={true}
+  timer={300}
+  notifyTimer={60}
+  onNotify={handleNotify}
+  onFinish={handleFinish}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern             | Map to           | Condition                                               |
+| ----------------------------------------- | ---------------- | ------------------------------------------------------- |
+| Session timeout countdown strip           | `CountdownTimer` | Use sticky mode when timer must stay visible on scroll. |
+| Live countdown for expiring action/window | `CountdownTimer` | Drive value via `timer` or `timestamp`.                 |
+
+**Known limitations**
+- Storybook notes that scroll detection may appear less accurate in the docs
+  environment than in real app pages.
 
 ---
 
@@ -367,6 +491,76 @@ const objectSteps = [
 **Known limitations**
 - The deprecated `fadeColor` and `fadePosition` props have no visual effect
   and will be removed in v3.0.0; do not use them.
+
+---
+
+### SmartAppBanner
+
+**Import**:
+`import { SmartAppBanner } from "@lifesg/react-design-system/smart-app-banner"`
+
+**Category**: Feedback indicators
+
+**Decision rule**
+> Use `SmartAppBanner` for sticky app-promo style banners that summarise a
+> destination and redirect users via a primary CTA and banner click.
+
+**When to use**
+- App promotion strips with title, short message, star rating, and download CTA.
+- Persistent top-of-page promotional notices that can be dismissed.
+
+**When NOT to use**
+| Situation                                          | Use instead          |
+| -------------------------------------------------- | -------------------- |
+| Generic system status notice with no app-promo CTA | `NotificationBanner` |
+| Temporary success/error message                    | `Toast`              |
+
+**Key props**
+| Prop      | Type                         | Required | Notes                                                               |
+| --------- | ---------------------------- | -------- | ------------------------------------------------------------------- |
+| show      | `boolean`                    | yes      | Controls whether the banner is shown.                               |
+| href      | `string`                     | yes      | Destination URL opened by default when non-dismiss area is clicked. |
+| content   | `SmartAppBannerContentProps` | yes      | Content object containing title/message/button/stars metadata.      |
+| onDismiss | `() => void`                 | yes      | Called when dismiss action is triggered.                            |
+| onClick   | `() => void`                 | no       | Optional override/additional behavior for non-dismiss clicks.       |
+| icon      | `string`                     | no       | Icon URL. Defaults to LifeSG app icon URL.                          |
+| animated  | `boolean`                    | no       | Enables slide-down appearance animation. Defaults to `false`.       |
+| offset    | `number`                     | no       | Top offset in pixels for sticky placement. Defaults to `0`.         |
+
+**Type-specific requirements**
+| Type value | Extra requirement                                          | Notes                    |
+| ---------- | ---------------------------------------------------------- | ------------------------ |
+| `content`  | `title`, `buttonLabel`, `buttonAriaLabel`, `numberOfStars` | Required content fields. |
+
+**Canonical usage**
+```tsx
+// Sticky app promo banner with dismiss and destination link
+import { SmartAppBanner } from "@lifesg/react-design-system/smart-app-banner";
+
+<SmartAppBanner
+  show={showBanner}
+  href="https://go.gov.sg/lifesg-app"
+  content={{
+    title: "LifeSG App",
+    message: "Report neighbourhood issues in 3 simple steps",
+    numberOfStars: 4.8,
+    buttonLabel: "Download",
+    buttonAriaLabel: "Download LifeSG app",
+  }}
+  onDismiss={() => setShowBanner(false)}
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                     | Map to           | Condition                                        |
+| ------------------------------------------------- | ---------------- | ------------------------------------------------ |
+| Sticky app download banner with title/message/CTA | `SmartAppBanner` | Use for app-promo strip with destination URL.    |
+| App promo banner with star rating display         | `SmartAppBanner` | Set `content.numberOfStars` (supports decimals). |
+
+**Known limitations**
+- `content.numberOfStars` hides stars when passed `NaN` or negative values.
+- Default behavior opens the destination in a new tab for non-dismiss click
+  areas.
 
 ---
 

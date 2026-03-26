@@ -11,6 +11,57 @@
 
 ---
 
+### Avatar
+
+**Import**: `import { Avatar } from "@lifesg/react-design-system/avatar"`
+
+**Category**: Navigation
+
+**Decision rule**
+> Use `Avatar` when the UI needs a compact visual identity token (initial or
+> custom node) for a user/entity; use `Menu` as the interaction shell when
+> that token must open account actions.
+
+**When to use**
+- Header/account areas where a user initial or small profile visual is shown.
+- Trigger visuals for user-related contextual menus when paired with `Menu`.
+
+**When NOT to use**
+| Situation                                   | Use instead |
+| ------------------------------------------- | ----------- |
+| User avatar needs click/hover action list   | `Menu`      |
+| UI requires notification count/dot overlays | `Badge`     |
+
+**Key props**
+| Prop        | Type                    | Required | Notes                                                |
+| ----------- | ----------------------- | -------- | ---------------------------------------------------- |
+| children    | `string \| JSX.Element` | yes      | Avatar content, typically an initial or custom node. |
+| sizeType    | `"default" \| "small"`  | no       | Avatar size variant. Defaults to `"default"`.        |
+| data-testid | `string`                | no       | Test selector. Defaults to `"avatar"`.               |
+
+**Canonical usage**
+```tsx
+// Small avatar used as an account trigger visual
+import { Avatar } from "@lifesg/react-design-system/avatar";
+
+<Avatar sizeType="small">M</Avatar>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern  | Map to   | Condition                                       |
+| ------------------------------ | -------- | ----------------------------------------------- |
+| Avatar / profile initial badge | `Avatar` | Static identity marker with text/initials.      |
+| Navbar user/profile marker     | `Avatar` | Compose with `Menu` when interaction is needed. |
+
+**Composition patterns**
+- Compose `Avatar` as the `Menu` trigger for account dropdowns in `Navbar`.
+- Wrap with `Badge` to show unread counts or attention dots.
+
+**Known limitations**
+- No built-in image URL prop; pass custom child content for image-like output.
+
+---
+
 ### Breadcrumb
 
 **Import**: `import { Breadcrumb } from "@lifesg/react-design-system/breadcrumb"`
@@ -171,22 +222,22 @@ import { Footer } from "@lifesg/react-design-system/footer";
   `loadMode="lazy"` with `onLoadMore`.
 
 **When NOT to use**
-| Situation                                       | Use instead  |
-| ----------------------------------------------- | ------------ |
-| Global top navigation with branding/actions     | `Navbar`     |
-| Persistent section hierarchy in a left side rail | `Sidenav`    |
+| Situation                                        | Use instead |
+| ------------------------------------------------ | ----------- |
+| Global top navigation with branding/actions      | `Navbar`    |
+| Persistent section hierarchy in a left side rail | `Sidenav`   |
 
 **Key props**
-| Prop         | Type                                            | Required | Notes |
-| ------------ | ----------------------------------------------- | -------- | ----- |
-| items        | `LinkListItemProps<T>[]`                        | yes      | Link items with `title` and optional descriptions. |
-| loadMode     | `"eager" \| "lazy"`                           | no       | `"eager"` supports `maxShown`; `"lazy"` requires `loadMore` + `onLoadMore`. |
-| maxShown     | `number`                                        | no       | Maximum items shown before minimizing (eager mode only). |
-| loadMore     | `boolean`                                       | no       | Required in lazy mode to control whether "View more" is shown. |
-| onLoadMore   | `() => void \| Promise<void>`                  | no       | Lazy-mode callback to append more items. |
-| onItemClick  | `(item: LinkListItemProps<T>, event: React.MouseEvent<HTMLAnchorElement>) => void` | no | Component-level click handler for all items. |
-| customLabels | `{ viewMore?: string; viewLess?: string }`      | no       | Override default labels for minimized/lazy controls. |
-| style        | `"default" \| "small"`                       | no       | Text size style for link rows. |
+| Prop         | Type                                                                               | Required | Notes                                                                       |
+| ------------ | ---------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------- |
+| items        | `LinkListItemProps<T>[]`                                                           | yes      | Link items with `title` and optional descriptions.                          |
+| loadMode     | `"eager" \| "lazy"`                                                                | no       | `"eager"` supports `maxShown`; `"lazy"` requires `loadMore` + `onLoadMore`. |
+| maxShown     | `number`                                                                           | no       | Maximum items shown before minimizing (eager mode only).                    |
+| loadMore     | `boolean`                                                                          | no       | Required in lazy mode to control whether "View more" is shown.              |
+| onLoadMore   | `() => void \| Promise<void>`                                                      | no       | Lazy-mode callback to append more items.                                    |
+| onItemClick  | `(item: LinkListItemProps<T>, event: React.MouseEvent<HTMLAnchorElement>) => void` | no       | Component-level click handler for all items.                                |
+| customLabels | `{ viewMore?: string; viewLess?: string }`                                         | no       | Override default labels for minimized/lazy controls.                        |
+| style        | `"default" \| "small"`                                                             | no       | Text size style for link rows.                                              |
 
 **Canonical usage**
 ```tsx
@@ -208,8 +259,8 @@ import { LinkList } from "@lifesg/react-design-system/link-list";
 ```
 
 **Figma mapping hints**
-| Figma element / layer pattern                       | Map to     | Condition |
-| --------------------------------------------------- | ---------- | --------- |
+| Figma element / layer pattern                       | Map to     | Condition                                                        |
+| --------------------------------------------------- | ---------- | ---------------------------------------------------------------- |
 | Link list / quick links section with optional notes | `LinkList` | Vertical list of link rows, optionally minimized or lazy-loaded. |
 
 **Known limitations**

@@ -62,7 +62,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Sidenav    | `sidenav`    | ✅      |
 | LocalNav   | `local-nav`  | ✅      |
 | LinkList   | `link-list`  | ✅      |
-| Avatar     | `avatar`     | ⬜      |
+| Avatar     | `avatar`     | ✅      |
 
 ## Selection and input
 
@@ -79,9 +79,9 @@ https://designsystem.life.gov.sg/react/index.html
 | SingpassButton                     | `singpass-button`     | ✅      |
 | IconButton                         | `icon-button`         | ✅      |
 | ButtonWithIcon                     | `button-with-icon`    | ✅      |
-| Filter                             | `filter`              | ⬜      |
-| Filter.Addons (FilterItemCheckbox) | `filter/addons`       | ⬜      |
-| FeedbackRating                     | `feedback-rating`     | ⬜      |
+| Filter                             | `filter`              | ✅      |
+| Filter.Addons (FilterItemCheckbox) | `filter/addons`       | ✅      |
+| FeedbackRating                     | `feedback-rating`     | ✅      |
 | DateNavigator                      | `date-navigator`      | ⬜      |
 | ImageButton                        | `image-button`        | ⬜      |
 | Schedule                           | `schedule`            | ⬜      |
@@ -103,9 +103,9 @@ https://designsystem.life.gov.sg/react/index.html
 | Timeline                                                           | `timeline`            | ✅      |
 | Pill                                                               | `pill`                | ✅      |
 | Animations                                                         | `animations`          | ✅      |
-| Animations.Customisable (LoadingDotsSpinner, ThemedLoadingSpinner) | `animations`          | ⬜      |
-| CountdownTimer                                                     | `countdown-timer`     | ⬜      |
-| SmartAppBanner                                                     | `smart-app-banner`    | ⬜      |
+| Animations.Customisable (LoadingDotsSpinner, ThemedLoadingSpinner) | `animations`          | ✅      |
+| CountdownTimer                                                     | `countdown-timer`     | ✅      |
+| SmartAppBanner                                                     | `smart-app-banner`    | ✅      |
 
 ## Overlays
 
@@ -133,9 +133,9 @@ https://designsystem.life.gov.sg/react/index.html
 | Form.PhoneNumberInput                           | `phone-number-input`        | ✅      |
 | Form.MaskedInput (MaskedInput)                  | `masked-input`              | ✅      |
 | InputGroup                                      | `input-group`               | ✅      |
-| Form.DateRangeInput                             | `date-range-input`          | ⬜      |
-| Form.Timepicker                                 | `timepicker`                | ⬜      |
-| Form.OtpVerification                            | `otp-verification`          | ⬜      |
+| Form.DateRangeInput                             | `date-range-input`          | ✅      |
+| Form.Timepicker                                 | `timepicker`                | ✅      |
+| Form.OtpVerification                            | `otp-verification`          | ✅      |
 | Form.UnitNumberInput                            | `unit-number`               | ⬜      |
 | Form.PredictiveTextInput                        | `predictive-text-input`     | ⬜      |
 | Form.TimeRangePicker                            | `time-range-picker`         | ⬜      |
@@ -187,7 +187,7 @@ https://designsystem.life.gov.sg/react/index.html
 
 ---
 
-**Progress**: 54 / 90 components documented (3 deprecated excluded from count)
+**Progress**: 64 / 90 components documented (3 deprecated excluded from count)
 
 > New sub-components confirmed via Storybook full expansion:
 > `Layout.ColDiv`, `Filter.Addons`, `Animations.Customisable`.

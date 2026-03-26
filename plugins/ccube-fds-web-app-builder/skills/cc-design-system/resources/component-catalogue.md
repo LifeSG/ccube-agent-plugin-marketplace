@@ -35,8 +35,14 @@ https://designsystem.life.gov.sg/react/index.html
 
 | Figma element / layer pattern                                  | FDS Component             | Group file          | Notes                                                                          |
 | -------------------------------------------------------------- | ------------------------- | ------------------- | ------------------------------------------------------------------------------ |
+| Avatar / profile initial badge                                 | `Avatar`                  | navigation          | Static identity marker with initial or custom child content                    |
 | Filter bar / search box (no label)                             | `Input`                   | form                | Use `styleType="no-border"`                                                    |
+| Filter sidebar with collapsible sections                       | `Filter`                  | selection-input     | Desktop mode renders grouped collapsible filter panels                         |
+| Filter fullscreen editor (mobile/tablet)                       | `Filter`                  | selection-input     | Mobile/tablet mode renders modal with `Done` / `Clear` controls                |
+| Filter panel with checkbox option groups                       | `Filter.Checkbox`         | selection-input     | Use inside `Filter.Item` for grouped multi-select options                      |
+| Star rating block with submit CTA                              | `FeedbackRating`          | selection-input     | 1–5 star sentiment rating with explicit submit action                          |
 | Tel / phone field (standalone, no label)                       | `Input`                   | form                | Use `type="tel"` and `spacing` prop                                            |
+| Time picker field (labelled form control)                      | `Form.Timepicker`         | form                | Use `format="12hr"` or `format="24hr"` to match design                         |
 | Text field with error state, no label                          | `Input`                   | form                | Set `error={true}`                                                             |
 | Text field with label                                          | `Form.Input`              | form                | Default choice for any labelled single-line input                              |
 | Standalone form label with helper icon/addon                   | `Form.Label`              | form                | Use when label and field are rendered separately in custom layouts             |
@@ -47,10 +53,12 @@ https://designsystem.life.gov.sg/react/index.html
 | Textarea with prefix line                                      | `Form.Textarea`           | form                | Set `prefix` to the fixed non-editable leading text                            |
 | Button — text only, any size or style                          | `Button`                  | selection-input     | Use `.Default`, `.Small`, or `.Large` sub-component                            |
 | Button — text + icon                                           | `ButtonWithIcon`          | selection-input     | Pass an `icon` JSX element and optional `iconPosition`                         |
-| Button with trailing icon                                      | `ButtonWithIcon`          | selection-input     | Set `iconPosition="right"`                                                    |
+| Button with trailing icon                                      | `ButtonWithIcon`          | selection-input     | Set `iconPosition="right"`                                                     |
 | Button — icon only, no visible text label                      | `IconButton`              | selection-input     | Use `IconButton` from `@lifesg/react-design-system/icon-button`                |
 | Destructive action button (delete, remove, cancel)             | `Button`                  | selection-input     | Add `danger={true}` to any `Button.*` variant                                  |
 | Button showing async loading state                             | `Button`                  | selection-input     | Add `loading={true}` to any `Button.*` variant                                 |
+| Countdown strip for expiring action/session                    | `CountdownTimer`          | feedback-indicators | Live countdown with optional sticky/fixed positioning                          |
+| Sticky app promotion banner with CTA and rating                | `SmartAppBanner`          | feedback-indicators | Dismissible app-promo strip with destination URL and star rating               |
 | Confirmation dialog / alert dialog                             | `ModalV2`                 | overlays            | Compose with `ModalV2.Card`, `ModalV2.Content`, `ModalV2.Footer`               |
 | Dialog with header, content, action buttons                    | `ModalV2`                 | overlays            | Use `ModalV2.CloseButton` + `ModalV2.Footer` with button slots                 |
 | Bottom sheet that slides up                                    | `ModalV2`                 | overlays            | Set `animationFrom="bottom"`                                                   |
@@ -128,7 +136,7 @@ https://designsystem.life.gov.sg/react/index.html
 | Dropdown / select field with label                             | `Form.Select`             | form                | Wraps `InputSelect` with label and error message                               |
 | Dropdown select (standalone, no label)                         | `InputSelect`             | form                | Use `valueExtractor` + `listExtractor` to map option objects                   |
 | Searchable dropdown / autocomplete select                      | `InputSelect`             | form                | Set `enableSearch={true}` and optionally `searchFunction`                      |
-| Text input with fixed prefix/suffix unit addon                 | `Form.InputGroup`         | form                | Use `addon.type="label"` with left/right position                             |
+| Text input with fixed prefix/suffix unit addon                 | `Form.InputGroup`         | form                | Use `addon.type="label"` with left/right position                              |
 | Side navigation rail with nested flyout subitems               | `Sidenav`                 | navigation          | Left-side grouped navigation with optional drawer subitems                     |
 | Sensitive text field with reveal/hide eye icon                 | `Form.MaskedInput`        | form                | Masked value display with controlled unmask behavior                           |
 | Singpass login CTA button                                      | `SingpassButton`          | selection-input     | Use official white-filled or red-filled variant only                           |
@@ -138,12 +146,17 @@ https://designsystem.life.gov.sg/react/index.html
 | Notification dot indicator                                     | `Badge`                   | feedback-indicators | Dot-style attention indicator without text                                     |
 | Inline loading dots / spinner state                            | `LoadingDotsSpinner`      | feedback-indicators | Import from `animations`; optional `color` prop                                |
 | Branded circular loading spinner                               | `ThemedLoadingSpinner`    | feedback-indicators | Theme-aware loading state for section/page pending states                      |
+| Inline loading spinner with custom brand colour                | `LoadingDotsSpinner`      | feedback-indicators | Use `color` prop for explicit spinner colour override                          |
+| Theme-aware section loading spinner                            | `ThemedLoadingSpinner`    | feedback-indicators | Uses active DS theme colour tokens                                             |
 | Auto-dismissing notification pop-up                            | `Toast`                   | feedback-indicators | Set `autoDismiss={true}`; default dismiss time is 4 s                          |
 | Dashed separator line                                          | `Divider`                 | core                | Set `lineStyle="dashed"`                                                       |
 | Date field with blackout / unavailable dates                   | `Form.DateInput`          | form                | Pass `disabledDates` array with each entry in `"YYYY-MM-DD"` format            |
 | Date field with restricted date range                          | `Form.DateInput`          | form                | Set `minDate` and/or `maxDate` to match design constraints                     |
 | Date input (standalone, no label)                              | `DateInput`               | form                | Use standalone import from `date-input` without the `Form` wrapper             |
 | Date picker / date input field (single date)                   | `Form.DateInput`          | form                | Field has a label and opens a calendar dropdown                                |
+| Date range field with `From` / `To` inputs                     | `Form.DateRangeInput`     | form                | Use one control for start and end date selection                               |
+| Date range field with fixed duration                           | `Form.DateRangeInput`     | form                | Set `variant="fixed-range"` and `numberOfDays`                                 |
+| OTP verification field with send/verify/resend flow            | `Form.OtpVerification`    | form                | Use for phone/email verification with `otpState` transitions                   |
 | Description / informational callout box                        | `Alert`                   | feedback-indicators | Set `type="description"`                                                       |
 | Status pop-up with title and description text                  | `Toast`                   | feedback-indicators | Set both `title` and `label` props                                             |
 | Sticky top-of-page announcement banner                         | `NotificationBanner`      | feedback-indicators | Persistent page-level notice above main content                                |

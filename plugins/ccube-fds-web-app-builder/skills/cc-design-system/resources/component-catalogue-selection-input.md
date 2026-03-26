@@ -99,21 +99,21 @@ import { Button } from "@lifesg/react-design-system/button";
   `loading` states.
 
 **When NOT to use**
-| Situation                          | Use instead  |
-| ---------------------------------- | ------------ |
-| Text-only button                   | `Button`     |
-| Icon-only action with no text      | `IconButton` |
+| Situation                     | Use instead  |
+| ----------------------------- | ------------ |
+| Text-only button              | `Button`     |
+| Icon-only action with no text | `IconButton` |
 
 **Key props**
-| Prop                  | Type                                      | Required | Notes |
-| --------------------- | ----------------------------------------- | -------- | ----- |
-| icon                  | `JSX.Element`                             | yes      | Icon rendered inside the button beside the label. |
-| styleType             | `"default" \| "secondary" \| "light" \| "link"` | no | Visual button style variant. |
-| iconPosition          | `"left" \| "right"`                     | no       | Icon position relative to text; defaults to `"left"`. |
-| danger                | `boolean`                                 | no       | Applies red destructive colour scheme. |
-| loading               | `boolean`                                 | no       | Replaces icon with loading spinner and disables interaction. |
-| focusableWhenDisabled | `boolean`                                 | no       | Keeps disabled button focusable for accessibility flows. |
-| disabled              | `boolean`                                 | no       | Disables interaction (inherited button prop). |
+| Prop                  | Type                                            | Required | Notes                                                        |
+| --------------------- | ----------------------------------------------- | -------- | ------------------------------------------------------------ |
+| icon                  | `JSX.Element`                                   | yes      | Icon rendered inside the button beside the label.            |
+| styleType             | `"default" \| "secondary" \| "light" \| "link"` | no       | Visual button style variant.                                 |
+| iconPosition          | `"left" \| "right"`                             | no       | Icon position relative to text; defaults to `"left"`.        |
+| danger                | `boolean`                                       | no       | Applies red destructive colour scheme.                       |
+| loading               | `boolean`                                       | no       | Replaces icon with loading spinner and disables interaction. |
+| focusableWhenDisabled | `boolean`                                       | no       | Keeps disabled button focusable for accessibility flows.     |
+| disabled              | `boolean`                                       | no       | Disables interaction (inherited button prop).                |
 
 **Canonical usage**
 ```tsx
@@ -131,9 +131,9 @@ import { ArrowRightIcon } from "@lifesg/react-icons/arrow-right";
 ```
 
 **Figma mapping hints**
-| Figma element / layer pattern         | Map to           | Condition |
-| ------------------------------------- | ---------------- | --------- |
-| Button with label and trailing icon   | `ButtonWithIcon` | Set `iconPosition="right"` when icon is on the right side. |
+| Figma element / layer pattern       | Map to           | Condition                                                  |
+| ----------------------------------- | ---------------- | ---------------------------------------------------------- |
+| Button with label and trailing icon | `ButtonWithIcon` | Set `iconPosition="right"` when icon is on the right side. |
 
 **Known limitations**
 - `focusableWhenDisabled` keeps the button in tab order, but other event
@@ -403,6 +403,198 @@ import { FileDownload } from "@lifesg/react-design-system/file-download";
 - Pair with `FileUpload` from `@lifesg/react-design-system/file-upload` in
   upload-then-download workflows — show `FileUpload` for the input step and
   `FileDownload` to present the processed result for retrieval.
+
+---
+
+### Filter
+
+**Import**: `import { Filter } from "@lifesg/react-design-system/filter"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `Filter` when the UI needs grouped, collapsible filtering controls that
+> switch automatically between sidebar (desktop) and modal (mobile/tablet)
+> layouts.
+
+**When to use**
+- Results pages with multi-section filters that should collapse by panel.
+- Responsive layouts where filter controls move from sidebar to fullscreen
+  modal in smaller viewports.
+
+**When NOT to use**
+| Situation                                          | Use instead |
+| -------------------------------------------------- | ----------- |
+| Single-field quick filter with no grouped sections | `Input`     |
+| Status/category chips used as tappable selectors   | `Tag`       |
+
+**Key props**
+| Prop                    | Type                                                               | Required | Notes                                                       |
+| ----------------------- | ------------------------------------------------------------------ | -------- | ----------------------------------------------------------- |
+| children                | `ReactNode \| ((mode: Mode) => ReactNode)`                         | yes      | Filter items/content; supports render-prop mode access.     |
+| clearButtonDisabled     | `boolean`                                                          | no       | Disables clear action in header controls.                   |
+| customLabels            | `FilterModalCustomLabelProps \| FilterSidebarCustomLabelProps`     | no       | Overrides default labels (e.g. `Clear`, `Done`, `Filters`). |
+| toggleFilterButtonStyle | `"default" \| "secondary" \| "light" \| "link"`                    | no       | Mobile toggle button style. Defaults to `"light"`.          |
+| insets                  | `{ top?: number; bottom?: number; left?: number; right?: number }` | no       | Mobile safe-area offsets for header/footer.                 |
+| onClear                 | `() => void`                                                       | no       | Called when clear is pressed.                               |
+| onDismiss               | `() => void`                                                       | no       | Mobile only; called when modal is dismissed.                |
+| onDone                  | `() => void`                                                       | no       | Mobile only; called when done is pressed.                   |
+
+**Canonical usage**
+```tsx
+// Responsive filter with collapsible items
+import { Filter } from "@lifesg/react-design-system/filter";
+
+<Filter onClear={handleClear} onDone={handleDone} onDismiss={handleDismiss}>
+  <Filter.Item title="Search" collapsible>
+    <Input placeholder="Search" />
+  </Filter.Item>
+  <Filter.Item title="Date" collapsible showDivider>
+    <Calendar value={date} onChange={setDate} />
+  </Filter.Item>
+</Filter>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern            | Map to   | Condition                                         |
+| ---------------------------------------- | -------- | ------------------------------------------------- |
+| Filter sidebar with collapsible panels   | `Filter` | Desktop/tablet result pages with grouped filters. |
+| Fullscreen filter editor with done/clear | `Filter` | Mobile flow using modal presentation.             |
+
+**Composition patterns**
+- Use `Filter.Item` for grouped sections and move advanced child controls
+  inside each panel.
+- Use `Filter.Modal` or `Filter.Sidebar` directly only when you need to force
+  one mode regardless of viewport.
+
+**Known limitations**
+- `onDone`, `onDismiss`, and `onModalOpen` are mobile-mode behaviors.
+
+---
+
+### Filter.Addons (FilterItemCheckbox)
+
+**Import**: `import { Filter } from "@lifesg/react-design-system/filter"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `Filter.Checkbox` (tracked as `Filter.Addons`) when a filter section
+> needs grouped checkbox options (including nested options) inside a filter
+> panel.
+
+**When to use**
+- Multi-select filter categories in a `Filter.Item` section (e.g. service type,
+  status, or agency).
+- Nested filter trees where parent/child checkbox options need consistent
+  extraction and selection handling.
+
+**When NOT to use**
+| Situation                                    | Use instead   |
+| -------------------------------------------- | ------------- |
+| Single-value selection within a filter group | `RadioButton` |
+| Free-text filtering without option lists     | `Input`       |
+
+**Key props**
+| Prop                   | Type                           | Required | Notes                                                       |
+| ---------------------- | ------------------------------ | -------- | ----------------------------------------------------------- |
+| options                | `T[]`                          | yes      | Filter option list (supports nested option trees).          |
+| selectedOptions        | `T[]`                          | no       | Controlled selected options.                                |
+| onSelect               | `(options: T[]) => void`       | no       | Called when selected options change.                        |
+| labelExtractor         | `(item: T) => React.ReactNode` | no       | Derives display label; defaults to `item.label` when valid. |
+| valueExtractor         | `(item: T) => string`          | no       | Derives stable option value key; defaults to `item.value`.  |
+| showAsCheckboxInMobile | `boolean`                      | no       | Forces checkbox-list rendering in mobile mode.              |
+| minimisableOptions     | `boolean`                      | no       | Enables option list minimisation (`View more`).             |
+| useToggleContentWidth  | `boolean`                      | no       | Fits mobile toggle width to content.                        |
+
+**Canonical usage**
+```tsx
+// Checkbox addon section inside Filter panel
+import { Filter } from "@lifesg/react-design-system/filter";
+
+<Filter.Item title="Category" collapsible>
+  <Filter.Checkbox
+    options={categoryOptions}
+    selectedOptions={selectedCategories}
+    onSelect={setSelectedCategories}
+    labelExtractor={(item) => item.label}
+    valueExtractor={(item) => item.value}
+  />
+</Filter.Item>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern            | Map to            | Condition                                                |
+| ---------------------------------------- | ----------------- | -------------------------------------------------------- |
+| Filter panel with checkbox option list   | `Filter.Checkbox` | Use within `Filter.Item` section for multi-select input. |
+| Filter panel with nested checkbox groups | `Filter.Checkbox` | Pass tree-structured `options` and extractors.           |
+
+**Composition patterns**
+- Compose inside `Filter.Item` to keep collapsible panel heading and divider
+  behavior.
+
+**Known limitations**
+- No dedicated Storybook docs page was found for `Filter.Checkbox`; API is
+  sourced from package type exports.
+
+---
+
+### FeedbackRating
+
+**Import**:
+`import { FeedbackRating } from "@lifesg/react-design-system/feedback-rating"`
+
+**Category**: Selection and input
+
+**Decision rule**
+> Use `FeedbackRating` when users must submit a 1–5 star sentiment rating with
+> an explicit submit action.
+
+**When to use**
+- Post-task feedback prompts where users rate experience quality using stars.
+- Flows that require a controlled rating state and explicit submit callback.
+
+**When NOT to use**
+| Situation                                      | Use instead   |
+| ---------------------------------------------- | ------------- |
+| Binary like/dislike or yes/no sentiment        | `Toggle`      |
+| Multi-question satisfaction survey form fields | `Form.Select` |
+
+**Key props**
+| Prop           | Type                      | Required | Notes                                                              |
+| -------------- | ------------------------- | -------- | ------------------------------------------------------------------ |
+| rating         | `number`                  | yes      | Current selected star rating (1 to 5).                             |
+| onRatingChange | `(value: number) => void` | yes      | Called when a star option is selected.                             |
+| onSubmit       | `() => void`              | yes      | Called when the submit button is pressed.                          |
+| buttonLabel    | `string`                  | no       | Submit button text. Defaults to `"Submit"`.                        |
+| description    | `string`                  | no       | Prompt text shown above stars. Defaults to "Rate your experience". |
+| imgSrc         | `string`                  | no       | Optional banner image URL; pass empty string to hide image.        |
+| id             | `string`                  | no       | Unique id on component root.                                       |
+| className      | `string`                  | no       | CSS hook on component root.                                        |
+| data-testid    | `string`                  | no       | Test selector on component root.                                   |
+
+**Canonical usage**
+```tsx
+// 1–5 star feedback with explicit submit
+import { FeedbackRating } from "@lifesg/react-design-system/feedback-rating";
+
+<FeedbackRating
+  rating={rating}
+  onRatingChange={setRating}
+  onSubmit={handleSubmitFeedback}
+  buttonLabel="Submit"
+  description="Rate your experience"
+/>
+```
+
+**Figma mapping hints**
+| Figma element / layer pattern                  | Map to           | Condition                                           |
+| ---------------------------------------------- | ---------------- | --------------------------------------------------- |
+| Star rating block with submit CTA              | `FeedbackRating` | Use when design shows 1–5 stars plus submit button. |
+| Experience rating card with optional top image | `FeedbackRating` | Use `imgSrc` when a header/banner image is present. |
+
+**Known limitations**
+- Submit is intended to be enabled only after a rating value is set.
 
 ---
 
