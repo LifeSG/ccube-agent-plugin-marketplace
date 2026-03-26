@@ -162,7 +162,9 @@ npm install
 #### Step 2: Install Flagship Design System
 
 ```bash
-npm install @lifesg/react-design-system @lifesg/react-icons styled-components
+# Pinned to ^3 — v4 is alpha and has breaking ThemeProvider API changes.
+# Remove the @^3 pin once v4 reaches stable and resources-v4/ is populated.
+npm install @lifesg/react-design-system@^3 @lifesg/react-icons styled-components
 npm install -D @types/styled-components
 ```
 

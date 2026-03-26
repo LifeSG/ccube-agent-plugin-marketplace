@@ -1,0 +1,8 @@
+# resources-v4/
+
+This folder will hold v4-specific FDS resource files once
+`@lifesg/react-design-system` v4 reaches a stable release.
+
+See the FDS v4 Migration Checklist in AGENT.md for the full list of
+files to populate and steps to follow before removing the `@^3`
+version pins.
