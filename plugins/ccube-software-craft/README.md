@@ -1,7 +1,7 @@
 # ccube-software-craft
 
 A VS Code agent plugin that bundles software engineering knowledge as
-structured, AI-accessible instructions and agents. Intended for anyone
+structured, AI-accessible agents and skills. Intended for anyone
 who writes software and wants principal-level engineering guidance on
 architecture, system design, technical debt, and code quality.
 
@@ -9,7 +9,7 @@ architecture, system design, technical debt, and code quality.
 
 ## What This Plugin Does
 
-Installs a curated set of agents and instructions that bring proven
+Installs a curated set of agents and skills that bring proven
 software engineering practices directly into Copilot chat. You get
 actionable guidance on principles, architecture, and workflow without
 leaving the editor.
@@ -29,20 +29,19 @@ leaving the editor.
 
 ## What Gets Installed
 
-| Type        | Name                           | Purpose                                             |
-| ----------- | ------------------------------ | --------------------------------------------------- |
-| Agent       | Principal Software Engineer V2 | Architecture, system design, trade-off analysis     |
-| Instruction | cc-taming-copilot              | Core behavioral directives for all code generation  |
-| Instruction | cc-software-craft-standards    | Technology-agnostic coding standards (always-on)    |
-| Instruction | cc-security-standards          | OWASP Top 10 security verification (always-on)      |
-| Instruction | cc-engineering-principles      | SOLID, DRY/KISS/YAGNI, design patterns, code smells |
-| Instruction | cc-markdown-standards          | Markdown formatting rules for `.md` files           |
+| Type  | Name                 | Purpose                                                         |
+| ----- | -------------------- | --------------------------------------------------------------- |
+| Agent | CC Software Engineer | Architecture, system design, and technical trade-off analysis   |
+| Agent | Prompt Refiner       | Subagent for refining user prompts before downstream execution  |
+| Skill | cc-create-ep         | Stepwise EP creation with parallel research                     |
+| Skill | cc-git-commit        | Atomic commits with Conventional Commit messages                |
+| Skill | cc-markdown-standards| 80-char markdown formatting rules                               |
 
 ---
 
-## Agent
+## Agents
 
-### Principal Software Engineer V2
+### CC Software Engineer
 
 Principal-level engineering agent for architecture decisions, technical
 debt strategy, scalability analysis, and system design trade-offs.
@@ -56,52 +55,46 @@ Provides multi-perspective analysis with explicit options and rationale.
 - "We're scaling from 1k to 100k users -- what needs to change?"
 - "Should we break this monolith into services now, or later?"
 
+### Prompt Refiner
+
+Specialist subagent that rewrites user prompts into clearer,
+execution-ready instructions and explains the prompt-engineering
+improvements applied. This agent is not user-facing and is invoked by
+the main engineering agent when needed.
+
 ---
 
-## Instructions
+## Skills
 
-All instructions are automatically applied by VS Code based on their
-`applyTo` patterns. No manual loading is needed.
+Skills are loaded on demand when semantically matched to the current
+task. No manual loading is needed.
 
-### cc-taming-copilot
+### cc-create-ep
 
-Core behavioral directives that govern every Copilot response involving
-code. Enforces surgical minimal edits, existing code preservation,
-standard patterns, no emojis, and reasoning explanations.
+Stepwise Enhancement Proposal (EP) creation following KEP-style
+documentation standards. Covers template discovery, parallel
+codebase research via subagents, structured Part-1 / Part-2 /
+Part-3 generation, and blocking clarification gates. Bundles the
+official EP template as a portable resource.
 
-- **Applies to:** all files (`**/*`)
+**Invoke when:** creating or drafting a new EP or feature design
+document.
 
-### cc-software-craft-standards
+### cc-git-commit
 
-Technology-agnostic coding standards covering naming, function design,
-error handling, constants, comments, testing, documentation,
-accessibility, module design, and code review readiness.
+Atomic commit workflow that groups changed files into logical
+commits and produces Conventional Commit messages prefixed with
+the branch name and author initials.
 
-- **Applies to:** all files (`**/*`)
-
-### cc-security-standards
-
-OWASP Top 10 security verification checklist with risk-based scoping,
-technology-specific checks, vulnerability patterns, and severity
-classification.
-
-- **Applies to:** all files (`**/*`)
-
-### cc-engineering-principles
-
-Reference knowledge for SOLID principles, DRY/KISS/YAGNI, Clean Code,
-a 25-pattern design patterns catalogue, and a 15-smell code smell
-reference with refactoring directions.
-
-- **Applies to:** all files (`**/*`)
+**Invoke when:** staging, committing, or pushing work.
 
 ### cc-markdown-standards
 
-Formatting rules for Markdown files: 80-character hard line wrap,
-heading hierarchy (no H1), fenced code blocks with language tags,
-table alignment, and YAML front matter conventions.
+Markdown formatting rules enforcing 80-character hard line wrap,
+heading hierarchy, fenced code blocks, table alignment, and YAML
+front matter conventions.
 
-- **Applies to:** Markdown files (`**/*.md`)
+**Invoke when:** creating or editing any `.md` or markdown file.
 
 ---
 
@@ -116,7 +109,7 @@ file contents, or workspace data is ever collected.
 - A random anonymous ID (generated locally at
   `~/.ccube/telemetry-id`, reused across sessions)
 - The plugin name
-- The agent name (e.g. `cc-principal-software-engineerV2`)
+- The agent name (e.g. `cc-software-engineer`)
 - A UTC timestamp
 
 **How to opt out:**
