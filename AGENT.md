@@ -70,6 +70,10 @@ The file types this repo authors and maintains:
 > is considered complete. A plugin directory that exists on disk but is absent
 > from `marketplace.json` will never load. Do NOT commit a new plugin without
 > completing Step 6.
+>
+> This section is only for creating a **new plugin directory**. If you are
+> adding or changing skills, instructions, or agents in an **existing plugin**,
+> follow [Updating an Existing Plugin](#updating-an-existing-plugin) instead.
 
 Follow these steps exactly when adding a new plugin to this marketplace.
 
@@ -258,6 +262,58 @@ Before committing, verify:
 
 <!-- </adding-plugins> -->
 
+<!-- <updating-existing-plugin> -->
+## Updating an Existing Plugin
+
+Use this workflow when the plugin already exists and you are adding,
+renaming, or removing skills, instruction files, or agent files.
+
+> **CRITICAL — this is independent of new-plugin creation**: You MUST update
+> `.github/plugin/marketplace.json` for existing-plugin capability changes even
+> when no new plugin directory is being created.
+
+### Step U1 — Make file changes in the existing plugin
+
+Add, rename, or remove files under:
+
+- `plugins/<plugin-name>/skills/`
+- `plugins/<plugin-name>/instructions/`
+- `plugins/<plugin-name>/agents/`
+
+### Step U2 — Sync marketplace.json (MANDATORY)
+
+Open `.github/plugin/marketplace.json` and update the existing plugin entry:
+
+- Ensure every skill folder under `plugins/<plugin-name>/skills/` appears in
+  the plugin's `"skills"` array.
+- If an `instructions/` folder is added or removed, add or remove the
+  `"instructions"` field accordingly.
+- If an `agents/` folder is added or removed, add or remove the `"agents"`
+  field accordingly.
+
+### Step U3 — Bump plugin version (MANDATORY)
+
+Increment the existing plugin's `"version"` using semantic versioning whenever
+`marketplace.json` changes.
+
+- `patch` for metadata-only corrections
+- `minor` for additive capability changes (e.g., new skill)
+- `major` for breaking changes
+
+### Step U4 — Verify before commit
+
+Before committing, verify:
+
+1. `marketplace.json` matches the on-disk skill folders exactly.
+2. `"instructions"` and `"agents"` fields match folder existence.
+3. The plugin version was bumped correctly for the change type.
+
+Reasoning: Existing-plugin changes can silently fail to load if
+`marketplace.json` is not updated. This workflow prevents that drift even when
+no new plugin is being created.
+
+<!-- </updating-existing-plugin> -->
+
 <!-- <authoring-rules> -->
 ## Rules for Authoring Customization Files
 
@@ -410,11 +466,11 @@ unintended actions (e.g. `tools: [readFile, codebase]`). Common tool names:
 ---
 name: skill-name
 description: 'Use when: <trigger>. Provides <what the skill does>.'
-user-invokable: false
+user-invocable: false
 ---
 ```
 
-Set `user-invokable: false` when the skill should only activate automatically
+Set `user-invocable: false` when the skill should only activate automatically
 via semantic matching and not appear in the skill picker list. Set `true` or
 omit to allow manual invocation.
 
