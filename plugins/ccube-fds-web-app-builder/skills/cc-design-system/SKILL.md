@@ -41,21 +41,28 @@ Online reference: https://designsystem.life.gov.sg/react/index.html
 
 ## Resources in This Skill
 
+> **CRITICAL — Access method**: Skill resource files live inside the
+> agent-plugin directory, which is **excluded from workspace search,
+> grep, and codebase search by default**. You MUST use `readFile` with
+> the full resource path to access them. NEVER attempt to locate FDS
+> components via workspace search — it will return nothing and lead
+> you to wrongly conclude a component does not exist.
+
 ### Component catalogue (split by Storybook group)
 
 The component catalogue is split into one file per group, mirroring the
 Storybook left-hand sidebar. Load only the file(s) relevant to the components
 you need.
 
-| Group                | File                                                   | Contains (documented so far)                   |
-| -------------------- | ------------------------------------------------------ | ---------------------------------------------- |
-| Index + quick lookup | `resources/component-catalogue.md`                     | Figma → FDS quick lookup table, Known FDS Gaps |
-| Core                 | `resources/component-catalogue-core.md`                | Layout, Typography                             |
-| Content              | `resources/component-catalogue-content.md`             | Accordion, Card                                |
-| Selection and input  | `resources/component-catalogue-selection-input.md`     | Button, Checkbox, RadioButton                  |
-| Feedback indicators  | `resources/component-catalogue-feedback-indicators.md` | Alert                                          |
-| Overlays             | `resources/component-catalogue-overlays.md`            | Modal (legacy), ModalV2                        |
-| Form                 | `resources/component-catalogue-form.md`                | Input, Form.Input, Form.Select (InputSelect)   |
+| Group                | File                                                   | Contains (documented so far)                                                                                                    |
+| -------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Index + quick lookup | `resources/component-catalogue.md`                     | Figma → FDS quick lookup table, Known FDS Gaps                                                                                  |
+| Core                 | `resources/component-catalogue-core.md`                | Layout, Typography                                                                                                              |
+| Content              | `resources/component-catalogue-content.md`             | Accordion, Card                                                                                                                 |
+| Selection and input  | `resources/component-catalogue-selection-input.md`     | Button, Checkbox, RadioButton                                                                                                   |
+| Feedback indicators  | `resources/component-catalogue-feedback-indicators.md` | Alert                                                                                                                           |
+| Overlays             | `resources/component-catalogue-overlays.md`            | Modal (legacy), ModalV2                                                                                                         |
+| Form                 | `resources/component-catalogue-form.md`                | Input, Form.Input, Form.Select, Form.DateInput, Form.DateRangeInput, Form.Textarea, Form.MultiSelect, Form.Timepicker, and more |
 
 ### Other resources
 

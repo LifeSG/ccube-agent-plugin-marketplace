@@ -16,15 +16,15 @@ Load the file for the Storybook group that contains the component you need.
 Groups mirror the left-hand sidebar at
 https://designsystem.life.gov.sg/react/index.html
 
-| Group               | File                                                   | Documented so far                            |
-| ------------------- | ------------------------------------------------------ | -------------------------------------------- |
-| Core                | `resources/component-catalogue-core.md`                | Layout, Typography                           |
-| Content             | `resources/component-catalogue-content.md`             | Accordion, Card, Tab                         |
-| Navigation          | `resources/component-catalogue-navigation.md`          | Breadcrumb                                   |
-| Selection and input | `resources/component-catalogue-selection-input.md`     | Button, Checkbox, RadioButton, Toggle        |
-| Feedback indicators | `resources/component-catalogue-feedback-indicators.md` | Alert, Toast                                 |
-| Overlays            | `resources/component-catalogue-overlays.md`            | Menu, Modal (legacy), ModalV2                |
-| Form                | `resources/component-catalogue-form.md`                | Input, Form.Input, Form.Select (InputSelect) |
+| Group               | File                                                   | Documented so far                                                                                                               |
+| ------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Core                | `resources/component-catalogue-core.md`                | Layout, Typography                                                                                                              |
+| Content             | `resources/component-catalogue-content.md`             | Accordion, Card, Tab                                                                                                            |
+| Navigation          | `resources/component-catalogue-navigation.md`          | Breadcrumb                                                                                                                      |
+| Selection and input | `resources/component-catalogue-selection-input.md`     | Button, Checkbox, RadioButton, Toggle                                                                                           |
+| Feedback indicators | `resources/component-catalogue-feedback-indicators.md` | Alert, Toast                                                                                                                    |
+| Overlays            | `resources/component-catalogue-overlays.md`            | Menu, Modal (legacy), ModalV2                                                                                                   |
+| Form                | `resources/component-catalogue-form.md`                | Input, Form.Input, Form.Select, Form.DateInput, Form.DateRangeInput, Form.Textarea, Form.MultiSelect, Form.Timepicker, and more |
 
 ---
 

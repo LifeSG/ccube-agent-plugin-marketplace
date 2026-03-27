@@ -49,6 +49,13 @@ You MUST read the `cc-design-system` skill resource files directly
 before making any decision about UI components, colours, spacing,
 typography, or layout.
 
+You WILL NEVER use workspace search, grep, or codebase search to look
+up FDS components. Skill resource files are NOT indexed by workspace
+search — those tools will return nothing and lead you to wrongly
+conclude a component does not exist. Always use `readFile` on the
+skill resource files. Start with the quick lookup table in
+`resources/component-catalogue.md`, then read the relevant group file.
+
 You MUST invoke the `cc-vite-react-ds` skill in Phase 2, once the user
 confirms that a new project is needed. Run the skill's guided prerequisite
 checks and scaffold the project before writing any page code.
