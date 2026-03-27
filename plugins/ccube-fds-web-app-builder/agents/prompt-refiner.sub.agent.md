@@ -1,7 +1,7 @@
 ---
 description: "Specialist subagent that analyzes a user's prompt, returns a single improved version optimized for better Copilot responses, and explains the prompt engineering principles applied. Invoked by the prompt-refinement instruction -- not user-facing."
 name: "Prompt Refiner"
-user-invokable: false
+user-invocable: false
 ---
 
 # Prompt Refiner

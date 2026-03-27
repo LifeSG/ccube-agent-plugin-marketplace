@@ -1,7 +1,7 @@
 ---
 name: "cc-vite-react-ds"
 description: "Initialize a new Vite + React + TypeScript frontend project with Flagship Design System (@lifesg/react-design-system) pre-configured. Use when user wants to scaffold a new web application using FDS components."
-user-invokable: false
+user-invocable: false
 ---
 
 # Create Vite React Design System Project

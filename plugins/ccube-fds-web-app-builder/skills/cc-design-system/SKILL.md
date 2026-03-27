@@ -2,7 +2,7 @@
 name: "cc-design-system"
 description: "Flagship Design System (FDS) knowledge for @lifesg/react-design-system — component catalogue, token reference, and Figma-to-FDS mapping heuristics. Use when implementing UI with FDS components or analysing which Figma elements can be fulfilled by FDS."
 argument-hint: "Ask about specific FDS components, token usage, or Figma element mapping"
-user-invokable: false
+user-invocable: false
 ---
 
 # Flagship Design System Knowledge Skill
