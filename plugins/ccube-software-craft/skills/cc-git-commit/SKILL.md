@@ -154,10 +154,13 @@ Process each group from the approved plan in order. For each group:
 
 ### 4a — Stage the group's files
 
-Stage only the files belonging to this group in a single command:
+Stage only the files belonging to this group. You MUST place each file
+on its own line using `\` continuation for readability:
 
 ```bash
-git add <file1> <file2> ...
+git add \
+  <file1> \
+  <file2>
 ```
 
 For mixed-concern files where only specific hunks belong to this group,
@@ -167,12 +170,18 @@ avoid patch-mode staging.
 
 ### 4b — Commit with the composed message
 
-Run staging and committing as a single compound command per group:
+Run staging and committing as a single compound command per group.
+You MUST place each file on its own line and each `&&` command on its
+own line:
 
 ```bash
-git add <file1> <file2> \
-  && git commit -m "<subject line>" -m "<body>" \
-  && git log --oneline -1
+git add \
+  <file1> \
+  <file2> \
+&& git commit \
+  -m "<subject line>" \
+  -m "<body>" \
+&& git log --oneline -1
 ```
 
 - Use one `-m` per paragraph. Omit the second `-m` when there is no body.
