@@ -12,7 +12,7 @@
 <p align="center">
   <a href="plugins/"><img src="https://img.shields.io/badge/Agents-5-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents"></a>
 
-  <a href="plugins/"><img src="https://img.shields.io/badge/Skills-6-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills"></a>
+  <a href="plugins/"><img src="https://img.shields.io/badge/Skills-7-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills"></a>
 
 </p>
 
