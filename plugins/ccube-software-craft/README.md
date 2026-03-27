@@ -29,13 +29,13 @@ leaving the editor.
 
 ## What Gets Installed
 
-| Type  | Name                 | Purpose                                                         |
-| ----- | -------------------- | --------------------------------------------------------------- |
-| Agent | CC Software Engineer | Architecture, system design, and technical trade-off analysis   |
-| Agent | Prompt Refiner       | Subagent for refining user prompts before downstream execution  |
-| Skill | cc-create-ep         | Stepwise EP creation with parallel research                     |
-| Skill | cc-git-commit        | Atomic commits with Conventional Commit messages                |
-| Skill | cc-markdown-standards| 80-char markdown formatting rules                               |
+| Type  | Name                  | Purpose                                                        |
+| ----- | --------------------- | -------------------------------------------------------------- |
+| Agent | CC Software Engineer  | Architecture, system design, and technical trade-off analysis  |
+| Agent | Prompt Refiner        | Subagent for refining user prompts before downstream execution |
+| Skill | cc-create-ep          | Stepwise EP creation with parallel research                    |
+| Skill | cc-git-commit         | Atomic commits with Conventional Commit messages               |
+| Skill | cc-markdown-standards | 80-char markdown formatting rules                              |
 
 ---
 
