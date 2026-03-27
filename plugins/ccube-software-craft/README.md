@@ -93,6 +93,26 @@ front matter conventions.
 
 **Invoke when:** creating or editing any `.md` or markdown file.
 
+### cc-react-18-patterns
+
+React 18 patterns reference covering concurrent rendering,
+automatic batching, transitions, Suspense, new hooks (`useId`,
+`useTransition`, `useDeferredValue`, `useSyncExternalStore`),
+streaming SSR, and TypeScript integration. Includes migration
+notes for upgrading to React 19.
+
+**Invoke when:** implementing, reviewing, or debugging React 18.x
+components.
+
+### cc-react-19-patterns
+
+React 19.2 modern patterns reference covering hooks, Actions API,
+Server Components, concurrent rendering, and TypeScript integration.
+Includes decision trees, code examples, and common-mistake flags.
+
+**Invoke when:** implementing, reviewing, or debugging React 19+
+components.
+
 ---
 
 ## Telemetry

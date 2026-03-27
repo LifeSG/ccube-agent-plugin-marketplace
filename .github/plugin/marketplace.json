@@ -26,7 +26,9 @@
       "skills": [
         "./skills/cc-git-commit",
         "./skills/cc-markdown-standards",
-        "./skills/cc-create-ep"
+        "./skills/cc-create-ep",
+        "./skills/cc-react-19-patterns",
+        "./skills/cc-react-18-patterns"
       ],
       "agents": "./agents",
       "hooks": "./hooks.json"
