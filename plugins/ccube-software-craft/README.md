@@ -1,46 +1,38 @@
-# ccube-software-craft
+<div align="center">
+
+# CCube Software Craft
+
+*Principal-level software engineering knowledge — directly in Copilot chat*
 
 <p align="center">
   <img src="https://img.shields.io/badge/Agents-2-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents">
   <img src="https://img.shields.io/badge/Skills-3-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills">
 </p>
 
-A VS Code agent plugin that bundles software engineering knowledge as
-structured, AI-accessible agents and skills. Intended for anyone
-who writes software and wants principal-level engineering guidance on
-architecture, system design, technical debt, and code quality.
+</div>
 
 ---
 
 ## What This Plugin Does
 
-Installs a curated set of agents and skills that bring proven
-software engineering practices directly into Copilot chat. You get
-actionable guidance on principles, architecture, and workflow without
-leaving the editor.
+This plugin brings proven software engineering practices directly into Copilot
+chat. Once installed, you get actionable principal-level guidance on
+architecture, system design, clean code, and workflow — without leaving the
+editor.
 
-**Key capabilities:**
-
-- Get multi-perspective trade-off analysis for architecture and design
-  decisions
-- Apply engineering principles (SOLID, DRY, Clean Code, design patterns)
-  to your own codebase
-- Get structured, severity-graded code reviews at the architectural level
-- Enforce coding standards, security baselines, and markdown formatting
-  automatically across every Copilot interaction
-- Technical debt strategy and incremental migration planning
+The result: An AI pair programmer that can reason about trade-offs across
+multiple architectural approaches, help manage technical debt strategically,
+enforce coding standards and markdown formatting automatically, and assist
+with git workflow and feature design documentation.
 
 ---
 
 ## What Gets Installed
 
-| Type  | Name                  | Purpose                                                        |
-| ----- | --------------------- | -------------------------------------------------------------- |
-| Agent | CC Software Engineer  | Architecture, system design, and technical trade-off analysis  |
-| Agent | Prompt Refiner        | Subagent for refining user prompts before downstream execution |
-| Skill | cc-create-ep          | Stepwise EP creation with parallel research                    |
-| Skill | cc-git-commit         | Atomic commits with Conventional Commit messages               |
-| Skill | cc-markdown-standards | 80-char markdown formatting rules                              |
+| File        | Location         | What it does                                                                 |
+| ----------- | ---------------- | ---------------------------------------------------------------------------- |
+| `.agent.md` | `agents/`        | Specialized AI agents for architecture decisions and software craft guidance |
+| `SKILL.md`  | `skills/<name>/` | Domain-knowledge packages — EP authoring, git workflow, markdown standards   |
 
 ---
 
