@@ -53,10 +53,10 @@ Before running this skill you MUST confirm the user has:
 
 Ask the user to confirm one value before proceeding:
 
-| Value             | Where to find it                                                    |
-| ----------------- | ------------------------------------------------------------------- |
-| `GITLAB_REPO_URL` | From the Rabbit Deploy Portal — your project's full GitLab repo URL |
-|                   | e.g. `https://gitlab.cio.sandbox.gov.sg/my-team/my-project.git`     |
+| Value             | Where to find it                                                        |
+| ----------------- | ----------------------------------------------------------------------- |
+| `GITLAB_REPO_URL` | From the Rabbit Deploy Portal — your project's full GitLab repo URL     |
+|                   | e.g. `https://sgts.gitlab-dedicated.com/wog/gvt/<agency>/<product>.git` |
 
 > **Security:** You MUST NOT ask the user to share their Project Access
 > Token with Copilot. The token is a secret credential. All commands
@@ -104,10 +104,10 @@ git remote add origin \
 
 ```bash
 # Original URL from the portal:
-#   https://gitlab.cio.sandbox.gov.sg/my-team/my-project.git
+#   https://sgts.gitlab-dedicated.com/wog/gvt/ciooffice/cio-office-infra/cioo-automation/gdp-products/cc-work-planner.git
 
 git remote add origin \
-  https://oauth2:glpat-xxxxxxxxxxxxxxxxxxxx@gitlab.cio.sandbox.gov.sg/my-team/my-project.git
+  https://oauth2:glpat-xxxxxxxxxxxxxxxxxxxx@sgts.gitlab-dedicated.com/wog/gvt/ciooffice/cio-office-infra/cioo-automation/gdp-products/cc-work-planner.git
 ```
 
 Verify the remote was set correctly:
