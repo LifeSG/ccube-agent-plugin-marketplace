@@ -206,6 +206,41 @@ Use the existing plugin's README as your structural reference. Read
 `plugins/ccube-fds-web-app-builder/README.md` to see the expected level of
 detail, tone, and section layout before writing.
 
+### Step 5.5 — Update the root README (MANDATORY)
+
+Open `README.md` at the repository root and add a row for the new plugin to
+the `## Plugins` table:
+
+```markdown
+| [<plugin-name>](plugins/<plugin-name>/) | <one-sentence description> |
+```
+
+Use the `"description"` value from the plugin's `marketplace.json` entry as
+the source of truth for the description text.
+
+Do NOT update the `Plugins` badge count manually — the pre-commit hook
+updates it automatically on the next commit.
+
+Reasoning: The root `README.md` is the first thing contributors and users
+read. A table that omits a plugin creates the false impression that the plugin
+does not exist.
+
+### Step 5.6 — Add Agents and Skills badges to the plugin README (MANDATORY)
+
+The plugin's own `README.md` (created in Step 5) MUST include `Agents-N` and
+`Skills-N` badges so the pre-commit hook can keep them in sync. Add a badge
+block after the title or subtitle:
+
+```html
+<p align="center">
+  <img src="https://img.shields.io/badge/Agents-0-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents">
+  <img src="https://img.shields.io/badge/Skills-0-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills">
+</p>
+```
+
+The placeholder counts (`0`) will be corrected automatically on the next
+commit by `scripts/update-counts.sh`.
+
 ### Step 6 — Register in marketplace.json (MANDATORY)
 
 Open `.github/plugin/marketplace.json` and append a new entry to the
@@ -299,6 +334,17 @@ Increment the existing plugin's `"version"` using semantic versioning whenever
 - `patch` for metadata-only corrections
 - `minor` for additive capability changes (e.g., new skill)
 - `major` for breaking changes
+
+### Step U3.5 — Update the root README if the description or plugin set changed
+
+If you renamed, removed, or updated the description of the plugin in
+`marketplace.json`, open `README.md` at the repository root and update the
+corresponding row in the `## Plugins` table to match. If a plugin was removed,
+delete its row and decrement the `Plugins` badge count.
+
+Reasoning: The root `README.md` is the authoritative plugin listing for
+contributors and users. Keeping it in sync with `marketplace.json` prevents
+stale or missing entries.
 
 ### Step U4 — Verify before commit
 
@@ -397,6 +443,27 @@ Reasoning: `marketplace.json` is the single source of truth for what each
 plugin exposes. Files that exist on disk but are not registered will load
 silently with no diagnostic — keeping the registry in sync is the only
 reliable way to catch drift.
+
+### Root README sync
+
+- You MUST update the `## Plugins` table in the root `README.md` whenever
+  you **add or remove a plugin**, or whenever a plugin's one-sentence
+  description changes in `marketplace.json`.
+- You MUST NOT defer root README table updates to a separate commit — they
+  MUST be included in the same commit as the `marketplace.json` change.
+- **Do NOT manually edit badge counts anywhere.** The pre-commit hook
+  (`scripts/update-counts.sh`) recomputes and updates them automatically on
+  every commit. Manual edits will be overwritten.
+  - The `Plugins` badge in the root `README.md` is updated from the count of
+    `hooks.json` files across all plugin directories.
+  - The `Agents` and `Skills` badges in each plugin's `README.md` are updated
+    from the count of `*.agent.md` files and `SKILL.md` sentinels within that
+    plugin directory.
+
+Reasoning: The root `README.md` is the first thing contributors and users
+read. A stale or incomplete Plugins table gives a false picture of what the
+marketplace contains. Badge counts are kept in sync automatically by the
+commit hook so contributors never need to count manually.
 
 ### Content boundaries
 
@@ -686,5 +753,11 @@ Before committing a new or updated customization file, verify:
    the plugin — every skill folder under `plugins/<plugin-name>/skills/` has
    a corresponding entry in the `"skills"` array, and `"instructions"` /
    `"agents"` fields are present only if the corresponding folders exist.
+8. Root `README.md` `## Plugins` table is accurate — every plugin in
+   `marketplace.json` has a corresponding row with an up-to-date description,
+   and no removed plugin still appears.
+9. Each plugin's `README.md` contains `Agents-N` and `Skills-N` badges so the
+   pre-commit hook can keep them in sync. (All badge counts are updated
+   automatically — do not edit them manually.)
 
 <!-- </acceptance-checks> -->
