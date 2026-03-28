@@ -44,6 +44,15 @@ never drifts from the design system.
 
 ## Skills
 
+### `cc-rabbit-deploy`
+
+Activated when a user wants to deploy their project to GCC using Rabbit Deploy
+(GovTech CIO Office). Covers git initialisation, Project Access Token setup,
+configuring the Rabbit Deploy GitLab remote, and pushing code to trigger
+automatic CI/CD deployment.
+
+---
+
 ### `cc-vite-react-ds`
 
 Activated when a user wants to create or build a new web application using the
