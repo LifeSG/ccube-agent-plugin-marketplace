@@ -12,6 +12,11 @@
   <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"></a>
 </p>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Agents-2-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents">
+  <img src="https://img.shields.io/badge/Skills-3-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills">
+</p>
+
 </div>
 
 ---
