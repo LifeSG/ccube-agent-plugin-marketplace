@@ -315,6 +315,31 @@ Add, rename, or remove files under:
 - `plugins/<plugin-name>/instructions/`
 - `plugins/<plugin-name>/agents/`
 
+### Step U1.5 — Update the plugin's own README (MANDATORY)
+
+Open `plugins/<plugin-name>/README.md` and update it to reflect every
+change made in Step U1:
+
+- **New skill added**: Add a `### <skill-name>` entry under `## Skills`
+  describing what it does and when it activates. Use the same format as
+  the adjacent skill entries.
+- **Skill renamed or removed**: Update or delete the corresponding
+  `### <skill-name>` entry.
+- **New agent added**: Add a `### <Agent Name>` entry under `## Agents`
+  with a one-paragraph description and example prompts.
+- **Agent renamed or removed**: Update or delete the corresponding
+  `### <Agent Name>` entry.
+- **Instructions added or removed**: Update the `## What Gets Installed`
+  table row for `.instructions.md` to reflect whether the folder now
+  exists or not.
+
+Do NOT edit the `Agents-N` or `Skills-N` badge counts manually — the
+pre-commit hook updates them automatically.
+
+Reasoning: The plugin README is the first thing a user reads after
+installing. A README that does not reflect what is actually installed
+leads to confusion and missed features.
+
 ### Step U2 — Sync marketplace.json (MANDATORY)
 
 Open `.github/plugin/marketplace.json` and update the existing plugin entry:
@@ -353,6 +378,9 @@ Before committing, verify:
 1. `marketplace.json` matches the on-disk skill folders exactly.
 2. `"instructions"` and `"agents"` fields match folder existence.
 3. The plugin version was bumped correctly for the change type.
+4. The plugin's own `README.md` lists every skill and agent currently
+   present on disk — no entry is missing, stale, or references a
+   removed file.
 
 Reasoning: Existing-plugin changes can silently fail to load if
 `marketplace.json` is not updated. This workflow prevents that drift even when
@@ -459,6 +487,21 @@ reliable way to catch drift.
   - The `Agents` and `Skills` badges in each plugin's `README.md` are updated
     from the count of `*.agent.md` files and `SKILL.md` sentinels within that
     plugin directory.
+
+### Plugin README sync
+
+- You MUST update `plugins/<plugin-name>/README.md` whenever you add,
+  rename, or remove a skill, agent, or instruction file in that plugin.
+- The `## Skills` section MUST list every folder under
+  `plugins/<plugin-name>/skills/` that contains a `SKILL.md`.
+- The `## Agents` section MUST list every `*.agent.md` file under
+  `plugins/<plugin-name>/agents/` that is user-facing (i.e. not a
+  `*.sub.agent.md` subagent-only file).
+- The `## What Gets Installed` table MUST reflect the actual file types
+  present (`.instructions.md`, `.agent.md`, `SKILL.md`) — omit rows for
+  types that do not exist in the plugin.
+- You MUST NOT defer plugin README updates to a separate commit — they
+  MUST be included in the same commit as the capability change.
 
 Reasoning: The root `README.md` is the first thing contributors and users
 read. A stale or incomplete Plugins table gives a false picture of what the
@@ -759,5 +802,8 @@ Before committing a new or updated customization file, verify:
 9. Each plugin's `README.md` contains `Agents-N` and `Skills-N` badges so the
    pre-commit hook can keep them in sync. (All badge counts are updated
    automatically — do not edit them manually.)
+10. Each plugin's `README.md` `## Skills` section lists every skill folder on
+    disk that contains a `SKILL.md`, and `## Agents` lists every user-facing
+    `.agent.md`. No stale entries remain for removed files.
 
 <!-- </acceptance-checks> -->

@@ -39,15 +39,44 @@ never drifts from the design system.
 
 ## What Gets Installed
 
-| File               | Location         | What it does                                                                                      |
-| ------------------ | ---------------- | ------------------------------------------------------------------------------------------------- |
-| `.instructions.md` | `instructions/`  | Always-on coding standards that enforce FDS component usage, React conventions, and accessibility |
-| `.agent.md`        | `agents/`        | Specialized AI agents that develop web applications within FDS constraints                        |
-| `SKILL.md`         | `skills/<name>/` | Domain-knowledge packages — FDS component catalog, theming guidance, project scaffolding          |
+| File        | Location         | What it does                                                                             |
+| ----------- | ---------------- | ---------------------------------------------------------------------------------------- |
+| `.agent.md` | `agents/`        | Specialized AI agents that develop web applications within FDS constraints               |
+| `SKILL.md`  | `skills/<name>/` | Domain-knowledge packages — FDS component catalog, theming guidance, project scaffolding |
+
+---
+
+## Agents
+
+### Product Manager
+
+Guided web application builder for product managers. Translates product goals
+and requirements into working React applications using FDS — no coding
+experience required.
+
+**Example prompts:**
+
+- "Build me a dashboard that shows monthly active users."
+- "Create a contact form page with validation."
+- "Add a settings page to the existing app."
+
+### Prompt Refiner
+
+Specialist subagent that rewrites vague prompts into specific, FDS-compliant,
+execution-ready instructions before Copilot acts. Not user-facing — invoked
+automatically by the Product Manager agent when needed.
 
 ---
 
 ## Skills
+
+### `cc-design-system`
+
+Activated when Copilot needs to look up FDS component usage, tokens, theming,
+or accessibility patterns. Routes to the correct version of the FDS Storybook
+(v3 or v4) based on the installed package version.
+
+---
 
 ### `cc-rabbit-deploy`
 
