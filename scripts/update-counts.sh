@@ -6,10 +6,6 @@ set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 README="$REPO_ROOT/README.md"
 
-AGENTS=$(find "$REPO_ROOT/plugins" -name "*.agent.md" 2>/dev/null | wc -l | tr -d ' ')
-# Skills: each skill lives in its own subdirectory inside a plugin; count SKILL.md sentinels
-SKILLS=$(find "$REPO_ROOT/plugins" -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
-
 # Portable in-place sed (macOS requires an empty-string backup extension; Linux does not)
 sed_inplace() {
   if [[ "$(uname)" == "Darwin" ]]; then
@@ -19,7 +15,25 @@ sed_inplace() {
   fi
 }
 
-sed_inplace "s|/badge/Agents-[0-9]*-|/badge/Agents-${AGENTS}-|g"           "$README"
-sed_inplace "s|/badge/Skills-[0-9]*-|/badge/Skills-${SKILLS}-|g"           "$README"
+# Root README: update Plugins count only
+# (Agents and Skills counts live in each plugin's own README)
+PLUGINS=$(find "$REPO_ROOT/plugins" -maxdepth 2 -name "hooks.json" 2>/dev/null | wc -l | tr -d ' ')
+sed_inplace "s|/badge/Plugins-[0-9]*-|/badge/Plugins-${PLUGINS}-|g" "$README"
 
-echo "✔ Badge counts updated — Agents: ${AGENTS}  Skills: ${SKILLS}"
+echo "✔ Root badge updated — Plugins: ${PLUGINS}"
+
+# Per-plugin READMEs: update Agents and Skills counts
+for PLUGIN_DIR in "$REPO_ROOT/plugins"/*/; do
+  PLUGIN_README="${PLUGIN_DIR}README.md"
+  [[ -f "$PLUGIN_README" ]] || continue
+
+  PLUGIN_AGENTS=$(find "$PLUGIN_DIR" -maxdepth 2 -name "*.agent.md" 2>/dev/null | wc -l | tr -d ' ')
+  # Skills: count SKILL.md sentinels (one per skill subdirectory)
+  PLUGIN_SKILLS=$(find "$PLUGIN_DIR" -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
+
+  sed_inplace "s|/badge/Agents-[0-9]*-|/badge/Agents-${PLUGIN_AGENTS}-|g" "$PLUGIN_README"
+  sed_inplace "s|/badge/Skills-[0-9]*-|/badge/Skills-${PLUGIN_SKILLS}-|g" "$PLUGIN_README"
+
+  PLUGIN_NAME=$(basename "$PLUGIN_DIR")
+  echo "✔ ${PLUGIN_NAME} — Agents: ${PLUGIN_AGENTS}  Skills: ${PLUGIN_SKILLS}"
+done
