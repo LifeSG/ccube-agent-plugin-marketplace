@@ -344,9 +344,10 @@ function StatusBar() {
 
 ### `useInsertionEffect`
 
-Runs before DOM mutations. Intended for **CSS-in-JS library
-authors** only — application code should use `useEffect` or
-`useLayoutEffect`.
+Intended for **CSS-in-JS library authors** only — application
+code should use `useEffect` or `useLayoutEffect`. It runs
+before layout effects, but may run either before or after DOM
+updates, so do not rely on exact DOM timing.
 
 ```tsx
 import { useInsertionEffect } from "react";
@@ -364,8 +365,9 @@ function useCSS(rule: string) {
 }
 ```
 
-**Execution order**: `useInsertionEffect` → DOM mutations →
-`useLayoutEffect` → paint → `useEffect`
+**Timing note:** This hook is for style insertion use cases and
+fires before layout effects. Do not depend on exact ordering
+relative to DOM updates.
 
 ---
 
@@ -517,7 +519,8 @@ class ErrorBoundary extends Component<
 - Libraries like `react-error-boundary` provide a function
   component wrapper with retry support
 - React 19 adds `onCaughtError`/`onUncaughtError` on
-  `createRoot` — see migration notes
+  `createRoot` for reporting; these do NOT replace error
+  boundaries for fallback UI
 
 ---
 
@@ -893,8 +896,8 @@ When planning an upgrade to React 19, these are the key changes:
 - Manual `useMemo`/`useCallback` → React Compiler (automatic)
 - `useEffect` + onChange → `useActionState` for form handling
 - Custom form state → `useFormStatus` + `useOptimistic`
-- Class error boundaries → `onCaughtError`/`onUncaughtError`
-  on `createRoot`
+- `createRoot` adds `onCaughtError`/`onUncaughtError` for
+  reporting (error boundaries are still needed for fallback UI)
 - Offscreen (experimental) → `<Activity>` (stable in 19.2)
 - `useEvent` RFC → `useEffectEvent` (stable in 19.2)
 

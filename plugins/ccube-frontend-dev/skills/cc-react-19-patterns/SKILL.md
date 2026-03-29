@@ -15,13 +15,14 @@ skill is loaded automatically when the agent works on React code.
 It covers hooks, APIs, and conventions introduced or stabilised in
 React 19.0, 19.1, and 19.2.
 
-**Version baseline**: React 19.2.1+ (includes the critical RSC
-security patch from December 2025). Flag projects on earlier
-versions before proceeding.
+**Version baseline**: Prefer latest React 19.x stable. For
+React Server Components packages, known fixed backports for the
+2025/2026 advisories include `19.0.4`, `19.1.5`, and `19.2.4`;
+flag earlier patch versions.
 
-**React Compiler**: v1.0+ is stable (October 2025). Avoid manual
-`useMemo`/`useCallback` unless the compiler is explicitly disabled
-in the project config.
+**React Compiler**: v1.0+ is stable (October 2025). Prefer
+compiler defaults for new code, but keep/remove existing manual
+memoization only with measurement and profiling.
 
 > **Note:** Code examples use vanilla React elements. When working
 > in a design system context, substitute the corresponding design
@@ -515,10 +516,11 @@ export function UserForm() {
 
 ### Security Note
 
-React 19.2.1 patches a critical unauthenticated RCE
-vulnerability in React Server Components (CVE disclosed December
-2025). Projects using RSC MUST be on 19.0.1+, 19.1.2+, or
-19.2.1+.
+React Server Components had critical and follow-up advisories in
+December 2025 and January 2026. For impacted RSC packages,
+upgrade to fixed patch lines such as `19.0.4`, `19.1.5`,
+`19.2.4`, or newer. Apps not using server/RSC paths are not
+affected.
 
 ---
 
@@ -652,11 +654,13 @@ function useToggle(initial = false) {
 2. **Manual memoization with React Compiler** — `useMemo` and
    `useCallback` are rarely needed when the compiler is active
 3. **`forwardRef` in new code** — use ref as a regular prop
-4. **`<Context.Provider>`** — render context directly as JSX
+4. **Using legacy `<Context.Provider>` in new React 19 code** —
+  valid but verbose; prefer `<Context value={...}>`
 5. **`useContext` for conditional reads** — use `use()` instead
 6. **`useEffect` for derived state** — compute in render
 7. **`eslint-plugin-react-hooks` < v6** — upgrade to support
    `useEffectEvent` and React Compiler rules
-8. **React < 19.2.1 with RSC** — critical security vulnerability
+8. **Outdated RSC patch levels** — use fixed patch lines (for
+  example `19.0.4`, `19.1.5`, `19.2.4`) or newer
 
 <!-- This skill is part of the ccube-software-craft plugin. -->

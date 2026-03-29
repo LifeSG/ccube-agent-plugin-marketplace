@@ -265,7 +265,8 @@ function UserProfile({ userId }: { userId: string }) {
 
 **Dependency array rules:**
 
-- `[]` — run once on mount only
+- `[]` — run after the initial mount (in development Strict
+  Mode, React runs setup + cleanup + setup one extra time)
 - `[userId]` — run when `userId` changes
 - No array — run after every render (almost always a bug)
 - Every value used inside the effect MUST be in the array —
@@ -389,9 +390,10 @@ function FilterableList() {
    function causes memory leaks and stale data after unmount
 5. **Missing deps in `useEffect`** — causes stale closures;
    always install `eslint-plugin-react-hooks`
-6. **Fetching without abort** — if the component unmounts
-   before the fetch resolves, it tries to setState on an
-   unmounted component; always use `AbortController`
+6. **Fetching without cleanup** — if the component unmounts
+  before the fetch resolves, stale async work can update the
+  wrong UI state; add cancellation/ignore cleanup
+  (`AbortController`, ignore flag, or library-managed cleanup)
 7. **Defining components inside other components** — a
    component defined inside render is recreated on every
    render, breaking keys, focus, and state; move it outside
