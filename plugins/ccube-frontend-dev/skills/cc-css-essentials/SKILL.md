@@ -114,7 +114,7 @@ nav {
 
 ```css
 .item {
-  flex: 1;           /* shorthand: flex-grow: 1 */
+  flex: 1;           /* shorthand: 1 1 0 (browsers use 0%) */
   flex-shrink: 0;    /* prevent shrinking below flex-basis */
   flex-basis: 200px; /* starting size before flex algorithm */
   min-width: 0;      /* fix text overflow in flex items */
@@ -181,7 +181,7 @@ grid-template-columns: repeat(12, 1fr);
 | ----------- | ----------------------------------------- | ----------------------------- |
 | `px`        | Fixed pixels                              | Borders, shadows, `min-width` |
 | `rem`       | Relative to root font-size (default 16px) | Font sizes, spacing, sizing   |
-| `em`        | Relative to parent font-size              | Padding tied to text size     |
+| `em`        | Relative to font-size context             | Padding tied to text size     |
 | `%`         | Relative to parent dimension              | Fluid widths                  |
 | `vw` / `vh` | 1% of viewport width / height             | Full-viewport sections        |
 | `fr`        | Fraction unit in grid                     | Grid column widths            |
@@ -201,16 +201,20 @@ grid-template-columns: repeat(12, 1fr);
 
 ## Specificity
 
-Specificity determines which CSS rule wins when multiple rules
-target the same element. Higher specificity wins.
+Specificity helps break ties only after cascade origin, layer,
+and importance are resolved. Within the same origin/layer and
+importance, higher specificity wins.
 
 **Specificity order** (lowest to highest):
 
 1. Element selector: `p`, `div` → 0,0,1
 2. Class selector: `.btn` → 0,1,0
 3. ID selector: `#main` → 1,0,0
-4. Inline style: `style="..."` → overrides all selectors
-5. `!important` — avoid; breaks the cascade
+4. Inline style: `style="..."` → wins over normal author
+  stylesheet rules
+
+`!important` is not a specificity level — it changes cascade
+importance and should be used sparingly.
 
 **Rules:**
 
@@ -228,21 +232,24 @@ target the same element. Higher specificity wins.
 position: static;   /* default — stays in normal document flow */
 position: relative; /* offsets from its normal position */
 position: absolute; /* removed from flow; positioned relative to
-                       nearest non-static ancestor */
-position: fixed;    /* relative to the viewport; stays on scroll */
+                       its containing block */
+position: fixed;    /* relative to the viewport unless an ancestor
+                       establishes a containing block */
 position: sticky;   /* normal flow until scroll threshold, then
                        sticks to top/bottom */
 ```
 
 **Key rules:**
 
-- `absolute` positioning is relative to the nearest ancestor
-  with `position: relative` (or `absolute`/`fixed`). If none
-  exists, it is relative to the document.
+- `absolute` positioning uses the nearest containing block.
+  Commonly this is the nearest ancestor with
+  `position: relative`/`absolute`/`fixed`, but transforms,
+  filters, and containment can also create containing blocks.
 - Always set `position: relative` on the parent when using
   `position: absolute` on a child.
-- `sticky` requires a defined `top`/`bottom` value and a
-  a parent that actually scrolls with a constrained height.
+- `sticky` requires a non-`auto` inset (`top`, `bottom`, etc.)
+  and sticks relative to the nearest ancestor with a scrolling
+  mechanism (`overflow: auto | scroll | hidden | overlay`).
 
 ```css
 /* Overlay a badge on a card */
@@ -262,16 +269,19 @@ position: sticky;   /* normal flow until scroll threshold, then
 ## Z-index and Stacking Context
 
 `z-index` controls the vertical stacking order of overlapping
-elements. **It only works on positioned elements**
-(`position` other than `static`).
+elements. It applies to positioned elements and also flex/grid
+items.
 
 ### Stacking Context Rules
 
-A new stacking context is created by any of:
+Common stacking context triggers include:
 
 - `position` (not `static`) + `z-index` (not `auto`)
+- `position: fixed` or `position: sticky`
 - `opacity` less than `1`
-- `transform`, `filter`, `will-change`
+- `transform`, `filter`, `will-change`, `perspective`
+- `isolation: isolate`, `contain: paint|layout`,
+  `container-type: size|inline-size`
 
 `z-index` only competes within the same stacking context. A
 `z-index: 9999` child cannot escape its parent's stacking
@@ -352,10 +362,10 @@ This ensures the smallest, simplest layout is the default.
 | Element wider than container       | Missing `box-sizing: border-box`      | Apply global `box-sizing` reset       |
 | Text overflows flex item           | `min-width: auto` default             | Add `min-width: 0` to the flex item   |
 | `absolute` child in wrong position | No `position: relative` on parent     | Add `position: relative` to parent    |
-| `z-index` has no effect            | Element not positioned                | Add `position: relative`              |
-| `sticky` not sticking              | No `top` value or parent lacks height | Add `top: 0`; ensure parent scrolls   |
+| `z-index` has no effect            | Wrong stacking context or target      | Ensure positioned/flex/grid item, then inspect stacking contexts |
+| `sticky` not sticking              | No inset or wrong scroll ancestor     | Set `top`/`bottom`; check nearest overflow ancestor |
 | Horizontal scroll on mobile        | `100vw` includes scrollbar            | Use `width: 100%` instead of `100vw`  |
-| Image stretches in flex/grid       | Default `align-items: stretch`        | Add `align-self: flex-start` on image |
+| Image stretches in flex/grid       | Stretch alignment or intrinsic sizing mismatch | Set `align-self: start` and/or explicit size/`object-fit` |
 | Margins between siblings merge     | Adjacent block margins collapse       | Use `gap` or `padding` instead        |
 | Modal behind nav bar               | Parent has `transform`/`opacity`      | Render modal at the document root     |
 
