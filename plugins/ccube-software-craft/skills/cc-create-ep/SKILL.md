@@ -309,41 +309,11 @@ After completing Part-2, offer:
 > "Would you like me to generate an Implementation Plan (Part-3)
 > with a parallelized execution strategy?"
 
-If the user agrees, locate the implementation plan prompt using
-`file_search` with pattern `**prompts**/cc-plan-implementation*`.
-Read the file in full before proceeding. If no file is found,
-notify the user:
-
-> "The `cc-plan-implementation` prompt was not found in this
-> workspace. Part-3 cannot be generated automatically. Please
-> provide the prompt file path or create the implementation plan
-> manually."
-
-and STOP Part-3 generation.
-
-In addition, you MUST produce a **Subagent Parallelized
-Implementation Strategy** section containing:
-
-1. **Dependency Graph Analysis**: Identify tasks with zero, light,
-   or high dependencies.
-2. **Phase-Based Grouping**: Organize tasks into phases where all
-   tasks within a phase can run in parallel.
-   - CRITICAL: Tasks in the same phase MUST NOT modify the same
-     file.
-   - Multiple agents may CREATE different files in parallel.
-   - Only ONE agent per phase may MODIFY any specific existing
-     file.
-   - Verify file-level exclusivity before finalizing phases.
-3. **Agent Prompt Generation**: Create detailed prompts for each
-   parallel agent with complete context, validation steps, and
-   success criteria.
-4. **Execution Time Estimation**: Estimate sequential vs
-   parallelized execution time.
-5. **Critical Path Identification**: Identify tasks that cannot
-   be parallelized.
-
-This structure enables 50–65% reduction in implementation time
-through parallel subagent execution.
+If the user agrees, invoke the `cc-plan-implementation` skill,
+passing the completed EP file path as context. That skill owns
+the full planning workflow — dependency graph, phase grouping,
+critical path analysis, per-task agent prompts, and parallel
+dispatch tables.
 
 ---
 

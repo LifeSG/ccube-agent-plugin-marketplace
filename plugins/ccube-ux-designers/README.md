@@ -26,6 +26,27 @@ component patterns — in technology-agnostic design language with no code.
 
 ---
 
+## Key Capabilities
+
+### Live Documentation Browsing — No Guessing
+
+Instead of relying on training data, the `cc-design-md` skill opens
+and navigates your design system's live Storybook (or equivalent
+docs) directly inside the VS Code integrated browser. Colour hex
+values, typography scales, spacing units, border radii, and
+elevation levels are extracted from what the page actually shows —
+not estimated from memory.
+
+### Validated Token Extraction
+
+Every design value written into the `DESIGN.md` is verified against
+what the live documentation displays. The skill will never output a
+`#hex` colour or spacing value it has not seen on-screen. The result
+is a `DESIGN.md` that accurately reflects the current state of your
+design system — not a cached snapshot from months ago.
+
+---
+
 ## What Gets Installed
 
 | Type  | Name           | Purpose                                        |

@@ -26,6 +26,39 @@ typed props to global styles and keyframe animations.
 
 ---
 
+## Key Capabilities
+
+### Auto-Invoked Expert Knowledge
+
+Skills load automatically when semantically matched to the current
+task. Ask about a concurrent rendering bug and the React 18 patterns
+skill activates. Start writing CSS and the CSS essentials skill kicks
+in. No manual selection needed.
+
+### Common Mistake Detection Built In
+
+Every skill includes dedicated **common-mistake flags** — a targeted
+list of anti-patterns the skill actively watches for and corrects
+before they become review comments. Examples:
+
+- **React 18**: incorrect `useEffect` cleanup with concurrent
+  rendering and automatic batching
+- **React 19**: conflating `useActionState` with `useFormStatus`
+- **CSS**: `z-index` not taking effect due to a missing stacking
+  context
+- **styled-components**: forgetting to extend TypeScript's
+  `DefaultTheme` when adding theme variables
+
+### Full React Generation Coverage
+
+Three complementary skills span the full React maturity curve:
+`cc-react-beginner` (fundamentals), `cc-react-18-patterns`
+(concurrent rendering, new hooks), and `cc-react-19-patterns`
+(Actions API, Server Components, React Compiler) — with explicit
+migration notes covering the upgrade path between versions.
+
+---
+
 ## What Gets Installed
 
 | File       | Location         | What it does                                               |
