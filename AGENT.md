@@ -822,6 +822,50 @@ variables are ever collected or transmitted.
 
 <!-- </telemetry> -->
 
+<!-- <shared-agents> -->
+## Shared Agents
+
+Some agent files are shipped identically across multiple plugins. These files
+are **shared contracts** — every copy must remain byte-for-byte identical
+(except for intentional per-plugin differences explicitly documented below).
+
+### prompt-refiner.sub.agent.md
+
+Shipped in:
+
+- `plugins/ccube-fds-web-app-builder/agents/prompt-refiner.sub.agent.md`
+- `plugins/ccube-software-craft/agents/prompt-refiner.sub.agent.md`
+
+There are **no** intentional differences between copies — both files must be
+identical in full.
+
+> **CRITICAL — cross-plugin consistency rule**: Any change to
+> `prompt-refiner.sub.agent.md` MUST be applied to **every** copy in the
+> same commit. A partial update — where one plugin's copy differs from
+> another's — is not acceptable.
+
+### Cross-plugin update protocol
+
+You MUST follow this protocol whenever a shared agent file changes:
+
+1. **Identify all copies.** Search for every plugin that ships the file
+   (e.g. `plugins/*/agents/prompt-refiner.sub.agent.md`).
+2. **Apply the change to every copy.** The same logical change MUST appear
+   in all copies in the same commit.
+3. **Run a sanity check.** After editing, confirm all copies are identical:
+
+   ```bash
+   diff \
+     plugins/ccube-fds-web-app-builder/agents/prompt-refiner.sub.agent.md \
+     plugins/ccube-software-craft/agents/prompt-refiner.sub.agent.md
+   ```
+
+   The diff MUST produce no output.
+4. **Stage all copies together.** Commit all changed copies as a single
+   atomic commit so the repo is never in an inconsistent state.
+
+<!-- </shared-agents> -->
+
 <!-- <acceptance-checks> -->
 ## Acceptance Checks for New Customization Files
 
@@ -854,6 +898,10 @@ Before committing a new or updated customization file, verify:
     disk that contains a `SKILL.md`, and `## Agents` lists every user-facing
     `.agent.md`. No stale entries remain for removed files.
 11. `bash .githooks/pre-commit` stages all README badge updates (root and
-  `plugins/*/README.md`) with no unstaged badge drift.
+    `plugins/*/README.md`) with no unstaged badge drift.
+12. If a shared agent file (e.g. `prompt-refiner.sub.agent.md`) was modified,
+    confirm every copy across all plugins is identical by running the diff
+    command documented in the [Shared Agents](#shared-agents) section. No copy
+    may differ.
 
 <!-- </acceptance-checks> -->
