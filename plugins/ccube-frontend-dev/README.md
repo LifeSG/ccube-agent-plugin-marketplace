@@ -71,15 +71,25 @@ components.
 
 ### cc-css-essentials
 
-CSS fundamentals and styled-components patterns. Covers the box model,
-`box-sizing` global reset, flexbox alignment, CSS Grid, units (`rem`
-vs `px` vs `vw`), specificity, positioning, z-index stacking context,
-responsive (mobile-first) design, and a full styled-components
-section — basic usage, props-based styling, extending, theming with
-TypeScript, global styles, and keyframe animations. Includes a 9-row
-common layout bugs table and 10 common-mistake flags.
+CSS fundamentals — box model, `box-sizing` global reset, flexbox
+alignment, CSS Grid, units (`rem` vs `px` vs `vw`), specificity,
+positioning, z-index stacking context, and responsive (mobile-first)
+design. Includes a 9-row common layout bugs table and 9 common-mistake
+flags. Library-agnostic: all examples use plain CSS.
 
-**Invoke when:** writing, reviewing, or debugging component styles.
+**Invoke when:** writing, reviewing, or debugging component styles in
+any web project regardless of CSS library.
+
+### cc-styled-components
+
+styled-components v5/v6 API patterns for React + TypeScript — basic
+components, pseudo-classes, props-based styling, extending styles,
+`ThemeProvider`, TypeScript typed theme with `DefaultTheme`, global
+styles with `createGlobalStyle`, keyframe animations, `attrs`, and 8
+common-mistake flags.
+
+**Invoke when:** writing or reviewing component styles with
+styled-components in a React project.
 
 ---
 

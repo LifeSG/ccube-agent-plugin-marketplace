@@ -434,4 +434,4 @@ function FilterableList() {
 | Avoid prop drilling           | Context or state library                |
 | Complex state transitions     | `useReducer`                            |
 
-<!-- This skill is part of the ccube-software-craft plugin. -->
+<!-- This skill is part of the ccube-frontend-dev plugin. -->

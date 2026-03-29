@@ -907,4 +907,4 @@ migration smoother.
 
 See the `cc-react-19-patterns` skill for React 19+ guidance.
 
-<!-- This skill is part of the ccube-software-craft plugin. -->
+<!-- This skill is part of the ccube-frontend-dev plugin. -->

@@ -663,4 +663,4 @@ function useToggle(initial = false) {
 8. **Outdated RSC patch levels** — use fixed patch lines (for
   example `19.0.4`, `19.1.5`, `19.2.4`) or newer
 
-<!-- This skill is part of the ccube-software-craft plugin. -->
+<!-- This skill is part of the ccube-frontend-dev plugin. -->
