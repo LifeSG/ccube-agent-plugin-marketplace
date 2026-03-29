@@ -50,9 +50,11 @@ When refinement is applied, the caller MUST present:
 **What was improved:**
 > {2-5 bullet points returned by this subagent}
 
-Would you like to proceed with the refined prompt, the original, or would you like to adjust it?
+Proceed with the refined prompt? (yes / no)
 
 The caller MUST wait for confirmation before performing downstream work.
+If the user replies "yes", proceed with the refined prompt.
+If the user replies "no", proceed with the original prompt unchanged.
 
 ## Analysis Process
 
