@@ -26,11 +26,23 @@
       "skills": [
         "./skills/cc-git-commit",
         "./skills/cc-markdown-standards",
-        "./skills/cc-create-ep",
-        "./skills/cc-react-19-patterns",
-        "./skills/cc-react-18-patterns"
+        "./skills/cc-create-ep"
       ],
       "agents": "./agents",
+      "hooks": "./hooks.json"
+    },
+    {
+      "name": "ccube-frontend-dev",
+      "source": "./plugins/ccube-frontend-dev",
+      "description": "VS Code agent plugin for frontend development knowledge — React 18/19 patterns, React fundamentals, CSS essentials, and styled-components best practices.",
+      "version": "1.0.0",
+      "skills": [
+        "./skills/cc-react-beginner",
+        "./skills/cc-react-18-patterns",
+        "./skills/cc-react-19-patterns",
+        "./skills/cc-css-essentials",
+        "./skills/cc-styled-components"
+      ],
       "hooks": "./hooks.json"
     },
     {
