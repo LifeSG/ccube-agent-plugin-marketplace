@@ -1,0 +1,12 @@
+{
+  "name": "ccube-vsc-agent-plugin-marketplace",
+  "private": true,
+  "scripts": {
+    "setup": "npm install && git config core.hooksPath .githooks",
+    "changelog": "git-cliff --unreleased --prepend CHANGELOG.md",
+    "changelog:init": "git-cliff -o CHANGELOG.md"
+  },
+  "devDependencies": {
+    "git-cliff": "^2.12.0"
+  }
+}

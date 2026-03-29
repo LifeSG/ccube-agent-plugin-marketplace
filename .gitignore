@@ -1,2 +1,4 @@
 plan.md
 docs/telemetry/DESIGN.md
+node_modules/
+package-lock.json

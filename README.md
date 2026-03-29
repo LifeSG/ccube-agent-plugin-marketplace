@@ -86,22 +86,44 @@ To pull the latest version of installed plugins, open the Command Palette
 ### Prerequisites
 
 - VS Code with the [GitHub Copilot extension](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
+- [Node.js](https://nodejs.org/en/download) (LTS recommended)
 - Familiarity with [Copilot customization file formats](https://code.visualstudio.com/docs/copilot/copilot-customization)
 
 ### First-time setup
 
-After cloning, activate the committed git hooks so badge counts stay in sync
-automatically:
+After cloning, run the setup script to install dependencies and activate
+the committed git hooks:
 
 ```bash
-git config core.hooksPath .githooks
+npm run setup
 ```
 
-To update the counts manually at any time without committing:
+This installs `git-cliff` (the changelog generator) and wires up the
+pre-commit hook that keeps README badge counts in sync automatically.
+
+To update the badge counts manually at any time without committing:
 
 ```bash
 bash scripts/update-counts.sh
 ```
+
+### Updating the changelog
+
+To append entries for commits since the last release tag:
+
+```bash
+npm run changelog
+```
+
+To regenerate the full `CHANGELOG.md` from scratch:
+
+```bash
+npm run changelog:init
+```
+
+Changelog entries are grouped by plugin scope (e.g. `ccube-software-craft`).
+This works automatically when commits follow the
+[scope conventions in AGENT.md](AGENT.md#git-commit-conventions).
 
 ### Adding a new plugin
 
