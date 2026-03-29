@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Agents-2-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents">
+  <img src="https://img.shields.io/badge/Agents-3-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents">
   <img src="https://img.shields.io/badge/Skills-3-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills">
 </p>
 

@@ -7,6 +7,7 @@ description: >
 name: "Product Manager"
 argument-hint: "Describe the app or page you want to build"
 agents:
+  - "CC React Engineer"
   - "CC Software Engineer"
   - "Prompt Refiner"
 handoffs:
@@ -355,10 +356,10 @@ For each page or feature requested:
    Identify which page recipe applies (dashboard, form, or list page)
    and note the required page shell, spacing rhythm, and composition
    patterns. These MUST be included in the implementation brief.
-6. Delegate implementation AND file creation to the `CC Software Engineer`
+6. Delegate implementation AND file creation to the `CC React Engineer`
    subagent. After completing steps 1–5, tell the user: "Great — I'm
    handing this to my technical specialist to build now. One moment."
-   Then compile a structured brief and invoke CC Software Engineer with:
+   Then compile a structured brief and invoke CC React Engineer with:
 
    > "Implement and write `src/pages/[PageName].tsx` for a Vite + React
    > + TypeScript project using the Flagship Design System. Create and
@@ -384,27 +385,29 @@ For each page or feature requested:
    >   with Dividers].
    > Wire `DSThemeProvider` with `LifeSGTheme.light` in the entry file
    > if not already wired.
-   > Apply the Software Craft coding standards, OWASP security standards,
-   > and Engineering Principles defined in the CC Software Engineer agent's
-   > configuration. No raw HTML form elements, no arbitrary CSS, no
-   > third-party UI libraries."
+   > No raw HTML form elements, no arbitrary CSS, no third-party UI
+   > libraries."
 
-   Do NOT write any files yourself for new page creation — Software
+   Do NOT write any files yourself for new page creation — CC React
    Engineer owns all new file creation for Phase 3 page implementation.
-   If CC Software Engineer raises a concern about a component choice, re-read
-   the FDS resource files (steps 1–2 and 5), update the brief, and
-   re-delegate.
-   After CC Software Engineer confirms completion, verify the page file
+   If CC React Engineer raises a concern about a component choice or
+   escalates an architectural decision, re-read the FDS resource files
+   (steps 1–2 and 5), resolve the concern, update the brief, and
+   re-delegate. If the escalation requires an architectural decision
+   outside your scope, delegate it to `CC Software Engineer` first,
+   then incorporate the answer into the updated brief.
+   After CC React Engineer confirms completion, verify the page file
    exists by using `readFile` on `src/pages/[PageName].tsx` before
    presenting the Step 7 summary to the user.
 
-  Fallback: if `CC Software Engineer` is unavailable, you MUST implement
-  and write the page files directly while following the same brief,
-  FDS constraints, layout-composition-patterns, and safety rules. In
-  this case, this line is suspended: "Do NOT write any files yourself
-  for new page creation". When fallback mode is active, this restriction
-  is fully overridden, and you MUST create/write required page files
-  directly using file tools.
+  Fallback: if `CC React Engineer` is unavailable, delegate to
+  `CC Software Engineer` instead using the same brief. If neither is
+  available, you MUST implement and write the page files directly while
+  following the same brief, FDS constraints, layout-composition-patterns,
+  and safety rules. In this case, this line is suspended: "Do NOT write
+  any files yourself for new page creation". When fallback mode is active,
+  this restriction is fully overridden, and you MUST create/write required
+  page files directly using file tools.
 
 7. After each page is complete, give a summary that names the components
    used and briefly explains why each was chosen. Use this format:

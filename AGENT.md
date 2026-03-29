@@ -241,6 +241,24 @@ block after the title or subtitle:
 The placeholder counts (`0`) will be corrected automatically on the next
 commit by `scripts/update-counts.sh`.
 
+### Step 5.7 — Verify pre-commit badge staging coverage (MANDATORY)
+
+When a new plugin is added, you MUST verify that the pre-commit workflow
+includes badge updates for both:
+
+- `README.md` at the repository root, and
+- `plugins/*/README.md` for plugin badge counts.
+
+Required checks:
+
+1. Read `.githooks/pre-commit` and confirm it stages plugin README files
+  (not only root `README.md`).
+2. Run the pre-commit hook once (`bash .githooks/pre-commit`) and confirm no
+  badge-related README changes remain unstaged.
+
+If plugin README badge updates are left unstaged, you MUST update
+`.githooks/pre-commit` in the same change before committing.
+
 ### Step 6 — Register in marketplace.json (MANDATORY)
 
 Open `.github/plugin/marketplace.json` and append a new entry to the
@@ -381,6 +399,8 @@ Before committing, verify:
 4. The plugin's own `README.md` lists every skill and agent currently
    present on disk — no entry is missing, stale, or references a
    removed file.
+5. Running `bash .githooks/pre-commit` does not leave badge-related README
+  edits unstaged.
 
 Reasoning: Existing-plugin changes can silently fail to load if
 `marketplace.json` is not updated. This workflow prevents that drift even when
@@ -487,6 +507,9 @@ reliable way to catch drift.
   - The `Agents` and `Skills` badges in each plugin's `README.md` are updated
     from the count of `*.agent.md` files and `SKILL.md` sentinels within that
     plugin directory.
+- If adding a plugin causes badge updates in `plugins/*/README.md` to remain
+  unstaged after running the hook, you MUST update `.githooks/pre-commit` in
+  the same commit.
 
 ### Plugin README sync
 
@@ -805,5 +828,7 @@ Before committing a new or updated customization file, verify:
 10. Each plugin's `README.md` `## Skills` section lists every skill folder on
     disk that contains a `SKILL.md`, and `## Agents` lists every user-facing
     `.agent.md`. No stale entries remain for removed files.
+11. `bash .githooks/pre-commit` stages all README badge updates (root and
+  `plugins/*/README.md`) with no unstaged badge drift.
 
 <!-- </acceptance-checks> -->

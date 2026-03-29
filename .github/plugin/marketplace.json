@@ -32,6 +32,20 @@
       "hooks": "./hooks.json"
     },
     {
+      "name": "ccube-frontend-dev",
+      "source": "./plugins/ccube-frontend-dev",
+      "description": "VS Code agent plugin for frontend development knowledge — React 18/19 patterns, React fundamentals, CSS essentials, and styled-components best practices.",
+      "version": "1.0.0",
+      "skills": [
+        "./skills/cc-react-beginner",
+        "./skills/cc-react-18-patterns",
+        "./skills/cc-react-19-patterns",
+        "./skills/cc-css-essentials",
+        "./skills/cc-styled-components"
+      ],
+      "hooks": "./hooks.json"
+    },
+    {
       "name": "ccube-ux-designers",
       "source": "./plugins/ccube-ux-designers",
       "description": "VS Code agent plugin for UX designers — creates and validates DESIGN.md files by browsing live design system documentation directly in the integrated browser.",
