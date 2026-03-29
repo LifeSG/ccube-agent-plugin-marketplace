@@ -17,18 +17,22 @@ only — for CSS fundamentals (box model, flexbox, grid, units,
 specificity, responsive design), see the `cc-css-essentials`
 skill.
 
-**Version note:** Examples target styled-components v5 (React
-18) and v6 (React 19). v6 drops IE11 support and requires React
-16.8+. Check `package.json` for the project version.
+**Version note:** Examples target styled-components v5 and v6.
+v5 aligns with React v16.3+ browser support; v6 aligns with
+React v18+ modern evergreen browsers (IE11 dropped). Check
+`package.json` for the project version.
 
 ---
 
 ## Setup
 
 ```bash
-# Install runtime + TypeScript types
+# Install runtime
 npm install styled-components
-npm install -D @types/styled-components
+
+# TypeScript:
+# - v6+: types are bundled (do NOT install @types/styled-components)
+# - older versions: install @types/styled-components if needed
 ```
 
 ---
@@ -85,8 +89,9 @@ const Button = styled.button`
 ## Props-Based Styling
 
 Pass custom props to drive conditional styles. Declare
-non-HTML props in the TypeScript generic to prevent them from
-being forwarded to the DOM.
+non-HTML props in the TypeScript generic for type safety. To
+prevent styling-only props from reaching the DOM, use transient
+`$` props or `shouldForwardProp`.
 
 ```tsx
 interface ButtonProps {
@@ -118,11 +123,13 @@ const Button = styled.button<ButtonProps>`
 
 **Key points:**
 
-- In v5, any prop not listed in HTML spec leaks to the DOM and
-  causes a warning; prefix transient props with `$` (v5.1+)
-  to prevent forwarding
-- In v6, `$`-prefix is the default convention — always use it
+- TypeScript generics provide typing only; forwarding behavior
+  is runtime behavior
+- In both v5 and v6, use transient props (`$variant`, `$size`)
   for styling-only props
+- In v6, default `shouldForwardProp` behavior changed; use
+  transient props or a `StyleSheetManager` `shouldForwardProp`
+  override when needed
 - Keep conditional logic readable — extract to a helper
   function when the ternary chain grows beyond 3 branches
 
@@ -241,6 +248,10 @@ function App() {
 `ThemeProvider` injects a theme object into every styled
 component via the `theme` prop automatically. No manual prop
 passing required.
+
+In React Server Components (v6.3+), `ThemeProvider` is a
+pass-through/no-op; prefer CSS custom properties for server-side
+theming in those trees.
 
 ```tsx
 import { ThemeProvider } from "styled-components";
@@ -379,10 +390,9 @@ const Input = styled.input.attrs<{ $size?: string }>((props) => ({
 ```
 
 **Key point:** Use `attrs` for attributes that are constant or
-have meaningful defaults. Do NOT use `attrs` for styles that
-change frequently — it triggers re-renders for every prop
-change because a new component class is generated per unique
-`attrs` result.
+have meaningful defaults. For rapidly-changing values
+(mouse/scroll/animation), prefer `.attrs(...style)` or CSS
+custom properties to avoid generating many classes.
 
 ---
 
@@ -416,21 +426,18 @@ change because a new component class is generated per unique
    a styled component creates high-specificity rules that are
    hard to override; prefer composing separate styled
    components instead
-4. **Inline `style` mixed with styled-components** —
-   `style={{color: "red"}}` on a styled component bypasses
-   the theme and creates specificity conflicts; move all
-   styles into the template literal
+4. **Putting rapidly-changing values in interpolations** —
+  this can generate many classes; prefer CSS variables or
+  `.attrs(...style)` for per-frame updates
 5. **Not using theme tokens** — hardcoding `#0070f3` instead
    of `${({ theme }) => theme.colors.primary}` means a single
    color change requires a global find-and-replace
-6. **Missing `ThemeProvider` at the root** — accessing
-   `theme` in a styled component without a wrapping
-   `ThemeProvider` returns an empty object; all theme values
-   are `undefined` and styles silently fall back to nothing
-7. **Using `createGlobalStyle` inside a component** —
-   global styles are injected on every render; render
-   `<GlobalStyle />` once at the app root, outside loops
-   or conditional rendering
+6. **Assuming `ThemeProvider` works in RSC** — in v6.3+ RSC,
+  `ThemeProvider` is a no-op; use CSS custom properties for
+  server-side theming
+7. **Sprinkling many dynamic `createGlobalStyle` instances** —
+  hard to reason about and can cause unnecessary churn; keep
+  a small number near app root and pass props intentionally
 8. **Over-relying on `!important` to beat specificity** —
    styled-components generates unique class names; if you are
    fighting specificity, the component tree is likely
