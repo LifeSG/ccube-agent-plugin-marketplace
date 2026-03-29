@@ -10,7 +10,7 @@
 <img src="docs/assets/hero.jpg" alt="CCube mascots" width="280">
 
 <p align="center">
-  <a href="plugins/"><img src="https://img.shields.io/badge/Plugins-3-555?style=for-the-badge&logo=visualstudiocode&logoColor=white&labelColor=3c873a" alt="Plugins"></a>
+  <a href="plugins/"><img src="https://img.shields.io/badge/Plugins-4-555?style=for-the-badge&logo=visualstudiocode&logoColor=white&labelColor=3c873a" alt="Plugins"></a>
 </p>
 
 </div>
