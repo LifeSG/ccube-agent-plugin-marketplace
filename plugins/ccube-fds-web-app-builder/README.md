@@ -37,50 +37,6 @@ never drifts from the design system.
 
 ---
 
-## Key Capabilities
-
-These capabilities are provided by the **Product Manager** agent.
-
-### Multi-Agent Orchestration
-
-Behind every request, three specialist subagents coordinate
-automatically — you describe what you want, the agents decide how
-to build it:
-
-| Agent                  | Role                                                              |
-| ---------------------- | ----------------------------------------------------------------- |
-| CC React Engineer      | Implements pages and components directly in your codebase         |
-| CC Software Engineer † | Validates code quality, FDS compliance, and accessibility         |
-| Prompt Refiner         | Rewrites vague requests into specific, FDS-compliant instructions |
-
-† Requires the **CCube Software Craft** plugin to be installed.
-If it is absent, the Product Manager agent handles these tasks
-directly.
-
-### Automatic Prompt Refinement
-
-Before any code is written, every request is evaluated for
-specificity. A vague prompt like `"build me a login page"` is
-rewritten into an execution-ready instruction that names exact FDS
-components, a target file path, validation requirements, and routing
-integration. You see both versions and choose which to proceed with.
-
-### Guided Phase-by-Phase Development
-
-Every build follows a five-phase workflow:
-**Understand → Setup → Build → Review → Iterate**. Explicit gates
-prevent the agent from writing code before requirements are clear,
-and prevent shipping before a quality check has run.
-
-### Safe-by-Default Scaffolding
-
-The project scaffolding skill validates your existing workspace
-first. If an FDS-compatible project is already present, it adds only
-the missing pieces — running it on an existing project never
-overwrites your work.
-
----
-
 ## What Gets Installed
 
 | File        | Location         | What it does                                                                             |
@@ -97,6 +53,30 @@ overwrites your work.
 Guided web application builder for product managers. Translates product goals
 and requirements into working React applications using FDS — no coding
 experience required.
+
+**Key capabilities:**
+
+- **Multi-agent orchestration** — three specialist subagents coordinate
+  automatically behind every request:
+
+  | Agent                  | Role                                                              |
+  | ---------------------- | ----------------------------------------------------------------- |
+  | CC React Engineer      | Implements pages and components directly in your codebase         |
+  | CC Software Engineer † | Validates code quality, FDS compliance, and accessibility         |
+  | Prompt Refiner         | Rewrites vague requests into specific, FDS-compliant instructions |
+
+  † Requires the **CCube Software Craft** plugin to be installed.
+  If absent, the Product Manager agent handles these tasks directly.
+
+- **Guided five-phase workflow** — Understand → Setup → Build →
+  Review → Iterate. Explicit gates prevent writing code before
+  requirements are clear, and prevent shipping before a quality
+  check has run.
+- **Automatic prompt refinement** — vague requests like
+  `"build me a login page"` are rewritten into execution-ready
+  instructions naming exact FDS components, a target file path,
+  validation requirements, and routing integration. You see both
+  versions and choose which to proceed with.
 
 **Example prompts:**
 
@@ -140,6 +120,12 @@ Flagship Design System. Provides guidance on:
 - Design system — FDS components, design tokens, spacing, colour, and typography
 - Accessibility — WCAG compliance patterns enforced by default
 - Component patterns — FDS-compliant compositions and usage patterns
+
+**Key capabilities:**
+
+- **Safe-by-default** — validates the existing workspace before making any
+  changes. If an FDS-compatible project is detected, it adds only the missing
+  pieces and never overwrites existing work.
 
 ---
 

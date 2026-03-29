@@ -27,48 +27,6 @@ with git workflow and feature design documentation.
 
 ---
 
-## Key Capabilities
-
-### 5 Parallel Research Subagents — EP Creation
-
-When you ask to write an Enhancement Proposal, the `cc-create-ep`
-skill fires **5 specialist research subagents simultaneously** —
-codebase context is gathered in one shot rather than sequentially:
-
-| Subagent                     | What it finds                                     |
-| ---------------------------- | ------------------------------------------------- |
-| Service Pattern Researcher   | Related services, controllers, repositories       |
-| API Endpoint Researcher      | Matching routes, endpoint patterns, auth flows    |
-| Migration Pattern Researcher | DB schemas, entity definitions, rollback patterns |
-| Existing EP Researcher       | Prior EPs with overlapping scope                  |
-| Testing Pattern Researcher   | Unit/integration test patterns and fixtures       |
-
-The results are merged into a single, evidence-backed EP with no
-manual codebase searching required.
-
-### AI-Generated Implementation Plans with Parallel Dispatch
-
-`cc-plan-implementation` takes your EP and produces a full workplan
-automatically:
-
-- **Mermaid dependency graph** with critical-path edges highlighted
-  in red
-- **Phase table** — which tasks can run in parallel vs. which must
-  be sequential
-- **Critical path analysis** with time-saving estimates, e.g.
-  "8 hours sequential → 3 hours parallelised"
-- **Per-task agent prompts** — ready to dispatch to multiple agents
-  simultaneously, each pre-loaded with full execution context
-
-### Atomic Commit Intelligence
-
-`cc-git-commit` analyses all changed files, groups them into logical
-atomic commits, proposes Conventional Commit messages prefixed with
-your branch name and initials, and presents the full plan for your
-review before a single `git add` runs.
-
----
-
 ## What Gets Installed
 
 | File        | Location         | What it does                                                                 |
@@ -119,6 +77,24 @@ official EP template as a portable resource.
 **Invoke when:** creating or drafting a new EP or feature design
 document.
 
+**Key capabilities:**
+
+- Fires **5 specialist research subagents in parallel** — codebase
+  context is gathered in one shot rather than sequentially:
+
+  | Subagent                     | What it finds                                     |
+  | ---------------------------- | ------------------------------------------------- |
+  | Service Pattern Researcher   | Related services, controllers, repositories       |
+  | API Endpoint Researcher      | Matching routes, endpoint patterns, auth flows    |
+  | Migration Pattern Researcher | DB schemas, entity definitions, rollback patterns |
+  | Existing EP Researcher       | Prior EPs with overlapping scope                  |
+  | Testing Pattern Researcher   | Unit/integration test patterns and fixtures       |
+
+- Results are merged into a single, evidence-backed EP — no
+  manual codebase searching required.
+- Blocking clarification gates halt generation if the feature goal,
+  primary actors, or success criteria are missing.
+
 ### cc-plan-implementation
 
 Decomposes an EP or task description into a parallelised,
@@ -130,6 +106,19 @@ multi-agent workflows.
 **Invoke when:** creating an implementation plan for a completed
 EP or any task description.
 
+**Key capabilities:**
+
+- **Mermaid dependency graph** with critical-path edges in red and
+  tasks grouped by phase — parallel work is visually obvious.
+- **Phase table** showing which tasks can run concurrently vs. which
+  must wait for a dependency.
+- **Critical path analysis** with time-saving estimates, e.g.
+  "8 hours sequential → 3 hours parallelised".
+- **Per-task agent prompts** ready to dispatch simultaneously, each
+  pre-loaded with full execution context and scope constraints.
+- **File-exclusivity check** — tasks in the same phase are verified
+  for file conflicts before the plan is finalised.
+
 ### cc-git-commit
 
 Atomic commit workflow that groups changed files into logical
@@ -137,6 +126,15 @@ commits and produces Conventional Commit messages prefixed with
 the branch name and author initials.
 
 **Invoke when:** staging, committing, or pushing work.
+
+**Key capabilities:**
+
+- Analyses all staged and unstaged changes and groups them into
+  atomic commits — one logical concern per commit.
+- Proposes Conventional Commit messages prefixed with your branch
+  name and author initials.
+- Presents the full grouping plan for your review before a single
+  `git add` runs — nothing is staged without your approval.
 
 ### cc-markdown-standards
 

@@ -26,39 +26,6 @@ typed props to global styles and keyframe animations.
 
 ---
 
-## Key Capabilities
-
-### Auto-Invoked Expert Knowledge
-
-Skills load automatically when semantically matched to the current
-task. Ask about a concurrent rendering bug and the React 18 patterns
-skill activates. Start writing CSS and the CSS essentials skill kicks
-in. No manual selection needed.
-
-### Common Mistake Detection Built In
-
-Every skill includes dedicated **common-mistake flags** — a targeted
-list of anti-patterns the skill actively watches for and corrects
-before they become review comments. Examples:
-
-- **React 18**: incorrect `useEffect` cleanup with concurrent
-  rendering and automatic batching
-- **React 19**: conflating `useActionState` with `useFormStatus`
-- **CSS**: `z-index` not taking effect due to a missing stacking
-  context
-- **styled-components**: forgetting to extend TypeScript's
-  `DefaultTheme` when adding theme variables
-
-### Full React Generation Coverage
-
-Three complementary skills span the full React maturity curve:
-`cc-react-beginner` (fundamentals), `cc-react-18-patterns`
-(concurrent rendering, new hooks), and `cc-react-19-patterns`
-(Actions API, Server Components, React Compiler) — with explicit
-migration notes covering the upgrade path between versions.
-
----
-
 ## What Gets Installed
 
 | File       | Location         | What it does                                               |
@@ -69,6 +36,11 @@ migration notes covering the upgrade path between versions.
 
 ## Skills
 
+Skills load automatically when semantically matched to the current
+task — no manual selection needed. Every skill includes dedicated
+**common-mistake flags**: targeted anti-patterns the skill actively
+watches for and corrects before they become review comments.
+
 ### cc-react-beginner
 
 React fundamentals for developers new to React. Covers JSX, functional
@@ -78,6 +50,12 @@ the 10 most common rookie mistakes with code examples.
 
 **Invoke when:** implementing basic React features, onboarding to
 React, or when rookie mistakes are suspected.
+
+**Common-mistake flags include:** missing dependency arrays in
+`useEffect`, mutating state directly, and misusing conditional hooks.
+
+**Part of the React maturity arc:** `cc-react-beginner` →
+`cc-react-18-patterns` → `cc-react-19-patterns`.
 
 ### cc-react-18-patterns
 
@@ -91,6 +69,10 @@ notes for upgrading to React 19.
 **Invoke when:** implementing, reviewing, or debugging React 18.x
 components.
 
+**Common-mistake flags include:** incorrect `useEffect` cleanup with
+automatic batching, misusing `useTransition` for synchronous updates,
+and over-rendering with context without memoisation.
+
 ### cc-react-19-patterns
 
 React 19.2 modern patterns reference covering the Actions API,
@@ -101,6 +83,11 @@ common-mistake flags.
 
 **Invoke when:** implementing, reviewing, or debugging React 19+
 components.
+
+**Common-mistake flags include:** conflating `useActionState` with
+`useFormStatus`, wrapping components in `forwardRef` (removed in
+React 19), and expecting the React Compiler to optimise impure
+functions.
 
 ### cc-css-essentials
 
@@ -113,6 +100,10 @@ flags. Library-agnostic: all examples use plain CSS.
 **Invoke when:** writing, reviewing, or debugging component styles in
 any web project regardless of CSS library.
 
+**Common-mistake flags include:** `z-index` not taking effect due to
+a missing stacking context, margin collapse surprises, and using `px`
+for font sizes instead of `rem`.
+
 ### cc-styled-components
 
 styled-components v5/v6 API patterns for React + TypeScript — basic
@@ -123,6 +114,10 @@ common-mistake flags.
 
 **Invoke when:** writing or reviewing component styles with
 styled-components in a React project.
+
+**Common-mistake flags include:** forgetting to extend TypeScript's
+`DefaultTheme` when adding theme variables, and using string
+interpolation for non-theme values instead of props-based styling.
 
 ---
 
