@@ -5,7 +5,22 @@ set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
+cd "$REPO_ROOT"
+
 bash "$REPO_ROOT/scripts/update-counts.sh"
 
-# Re-stage README.md so the updated counts are included in the commit.
-git add "$REPO_ROOT/README.md"
+# Re-stage README badges so updates are included in the same commit.
+git add README.md
+
+PLUGIN_READMES=(plugins/*/README.md)
+for PLUGIN_README in "${PLUGIN_READMES[@]}"; do
+	[[ -f "$PLUGIN_README" ]] || continue
+	git add "$PLUGIN_README"
+done
+
+# Guardrail: fail if any README badge updates remain unstaged.
+if ! git diff --quiet -- README.md "${PLUGIN_READMES[@]}"; then
+	echo "✖ pre-commit: README badge updates remain unstaged."
+	echo "  Re-run commit after staging README changes."
+	exit 1
+fi
