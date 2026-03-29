@@ -545,6 +545,31 @@ commit hook so contributors never need to count manually.
 
 <!-- </authoring-rules> -->
 
+<!-- <git-conventions> -->
+## Git Commit Conventions
+
+When using the `cc-git-commit` skill in this repository, apply the
+following scope rules in addition to the skill's standard grouping
+and message format.
+
+### Scope Resolution
+
+The `scope` in each commit message MUST identify the affected area
+using these rules, in priority order:
+
+1. **Single plugin** — all files in the group are under
+   `plugins/<name>/`: use the plugin folder name as the scope.
+   Example: `docs(ccube-software-craft): update readme`
+2. **Root-level files** (`README.md`, `scripts/`, `package.json`,
+   `.githooks/`, `.github/`, `changelog.config.js`): use `repo`.
+   Example: `chore(repo): add changelog generation scripts`
+
+This convention enables `conventional-changelog` to generate
+accurate, plugin-scoped changelog entries automatically.
+
+<!-- </git-conventions> -->
+
+
 <!-- <file-templates> -->
 ## Canonical Front Matter Templates
 
