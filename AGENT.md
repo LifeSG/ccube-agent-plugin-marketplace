@@ -567,6 +567,32 @@ using these rules, in priority order:
 This convention enables `conventional-changelog` to generate
 accurate, plugin-scoped changelog entries automatically.
 
+### Changelog Update Cadence
+
+The correct time to update `CHANGELOG.md` depends on the branch you are
+working on.
+
+**Working directly on `main`** (every commit is a release):
+
+1. Make your code changes.
+2. Update `CHANGELOG.md`: add a new versioned entry at the top using
+   `npm run changelog`, then edit the generated entry as needed.
+3. Commit code and `CHANGELOG.md` together in one atomic commit.
+4. Tag the commit with the new version if applicable.
+
+You MUST NOT commit to `main` without including a `CHANGELOG.md` update
+in that same commit.
+
+**Working on a feature branch** (changes are batched before release):
+
+1. Make commits freely on the branch — do not update `CHANGELOG.md`
+   during development.
+2. When the branch is ready to merge back to `main`, run
+   `npm run changelog` to generate entries from commits since the last
+   release tag, then edit as needed.
+3. Include the `CHANGELOG.md` update in the merge commit or as the final
+   commit on the branch before opening the merge request.
+
 <!-- </git-conventions> -->
 
 
