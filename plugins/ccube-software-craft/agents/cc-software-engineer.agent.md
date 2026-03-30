@@ -66,6 +66,14 @@ the confirmation step. The `Prompt Refiner` is the single source of
 truth for refinement behavior, invocation gate, output format, and
 confirmation handling.
 
+When presenting the Prompt Refiner result, you MUST include all four
+elements in your own chat response: **Original prompt**, **Refined
+prompt**, **Prompt engineering principles applied**, and **What was
+improved** — followed by the confirmation question. Presenting only the
+refined prompt text is a contract violation; all four elements MUST
+appear in your chat response, not only inside the subagent invocation
+block.
+
 ---
 
 ## General Interaction

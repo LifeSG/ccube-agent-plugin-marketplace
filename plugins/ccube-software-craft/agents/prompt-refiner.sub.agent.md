@@ -56,6 +56,12 @@ The caller MUST wait for confirmation before performing downstream work.
 If the user replies "yes", proceed with the refined prompt.
 If the user replies "no", proceed with the original prompt unchanged.
 
+> **CRITICAL — no summarisation allowed**: The caller MUST present all
+> four elements above in its own chat response. Presenting only the
+> refined prompt text — omitting **Prompt engineering principles applied**
+> or **What was improved** — is a contract violation. The "surface only
+> the outcome" pattern used for other delegated tasks does NOT apply here.
+
 ## Analysis Process
 
 When invoked with a user's prompt, you MUST:

@@ -109,7 +109,21 @@ bash scripts/update-counts.sh
 
 ### Updating the changelog
 
-To append entries for commits since the last release tag:
+The correct time to update `CHANGELOG.md` depends on the branch you are
+working on.
+
+**Working directly on `main`** — every commit is a release:
+
+Update `CHANGELOG.md` as part of every commit to `main`. The changelog
+entry must be included in the same commit as the code change.
+
+**Working on a feature branch** — changes are batched before release:
+
+Do not update `CHANGELOG.md` during development on the branch. Update it
+as the final step before merging back to `main`.
+
+In both cases, generate entries automatically from commits since the last
+release tag, then edit as needed:
 
 ```bash
 npm run changelog
