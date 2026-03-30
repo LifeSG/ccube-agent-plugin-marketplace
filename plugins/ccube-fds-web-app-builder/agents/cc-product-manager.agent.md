@@ -234,10 +234,10 @@ approval flow; they MUST always be delegated to the
 ## Workflow
 
 Before acting on any user request, you MUST invoke the `Prompt Refiner`
-subagent. Present its output to the user exactly as returned, then wait
-for the user to confirm which prompt to use before proceeding. The
-`Prompt Refiner` defines its own invocation gate — follow it to
-determine when refinement can be skipped.
+subagent and follow its Caller Presentation Contract exactly, including
+the confirmation step. The `Prompt Refiner` is the single source of
+truth for refinement behavior, invocation gate, output format, and
+confirmation handling.
 
 ### Phase 1: Understand — Gather Requirements
 
