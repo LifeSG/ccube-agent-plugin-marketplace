@@ -131,8 +131,6 @@ in our current monolith?
 
 The skill groups your changed files into logical atomic commits and proposes Conventional Commit messages — nothing is staged without your approval.
 
-**Use frontend dev skills** — invoke directly with slash commands:
-
 ---
 
 ## Updating
