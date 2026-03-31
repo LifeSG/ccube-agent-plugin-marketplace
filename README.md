@@ -72,6 +72,67 @@ For more details on agent plugins, see the [VS Code Agent Plugins documentation]
 
 ---
 
+## Quick Start — Product Manager
+
+Get from zero to a working React app in under five minutes.
+
+1. Install the **ccube-fds-web-app-builder** and **ccube-software-craft** plugins (see [Installation](#installation))
+   — the software craft plugin enables code quality checks and commit automation behind the scenes
+2. Open Copilot Chat (**⌃⌘I**)
+3. Switch to the **Product Manager** agent mode from the agent picker dropdown
+4. Paste this prompt and hit Enter:
+
+   ```
+   I want to build a citizen feedback portal. It should have a home page
+   and a feedback form page. This is a new project.
+   ```
+
+5. The agent will ask a few clarifying questions, scaffold the project, and build the pages — all using the [Flagship Design System](https://designsystem.life.gov.sg)
+
+No coding knowledge required. The agent explains every decision in plain language.
+
+---
+
+## Quick Start — Software Engineer
+
+Add principal-level engineering knowledge to your Copilot workflow.
+
+1. Install the **ccube-software-craft** and **ccube-frontend-dev** plugins (see [Installation](#installation))
+2. Open Copilot Chat (**⌃⌘I**) in any project
+3. 3. Switch to the **CC Software Engineer** agent mode from the agent picker dropdown
+
+
+**Draft an Enhancement Proposal** — use the `/cc-create-ep` slash command:
+
+```
+/cc-create-ep Add a notification service that sends email and push
+notifications when a citizen's application status changes.
+```
+
+**Plan an implementation** — use the `/cc-plan-implementation` slash command:
+
+```
+/cc-plan-implementation Plan the implementation for the notification
+service EP.
+```
+
+**Get architecture advice** — switch to the **CC Software Engineer** agent mode, then paste:
+
+```
+We're scaling from 1k to 100k users — what needs to change
+in our current monolith?
+```
+
+**Commit your work** — use the `/cc-git-commit` slash command:
+
+```
+/cc-git-commit
+```
+
+The skill groups your changed files into logical atomic commits and proposes Conventional Commit messages — nothing is staged without your approval.
+
+---
+
 ## Updating
 
 To pull the latest version of installed plugins, open the Command Palette
