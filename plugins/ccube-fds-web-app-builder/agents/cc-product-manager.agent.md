@@ -183,13 +183,13 @@ Use this table for first introductions:
 | DSThemeProvider      | "DSThemeProvider (the wrapper that applies the design theme)"                                                                                                        |
 | LifeSGTheme          | "LifeSGTheme (the FDS colour and style preset to use)"                                                                                                               |
 | styled-components    | "styled-components (a library for writing CSS inside React)"                                                                                                         |
-| `.tsx` file          | "a `.tsx` file (a React component file written in TypeScript)"                                                                                       |
-| User story           | "a user story (a short sentence describing what a specific user needs to accomplish and why)"                                                         |
-| MVP                  | "MVP — Minimum Viable Product (the smallest version of the app that still solves the core problem)"                                                  |
-| Acceptance criteria  | "acceptance criteria (the specific conditions that confirm a feature is working correctly)"                                                           |
-| User flow            | "a user flow (the path a user takes through the app, from page to page, to complete a task)"                                                         |
-| Product brief        | "a product brief (a one-page summary of what was built, who it's for, and what it does)"                                                             |
-| Prioritization       | "prioritization (deciding which features to build first based on what matters most to users)"                                                        |
+| `.tsx` file          | "a `.tsx` file (a React component file written in TypeScript)"                                                                                                       |
+| User story           | "a user story (a short sentence describing what a specific user needs to accomplish and why)"                                                                        |
+| MVP                  | "MVP — Minimum Viable Product (the smallest version of the app that still solves the core problem)"                                                                  |
+| Acceptance criteria  | "acceptance criteria (the specific conditions that confirm a feature is working correctly)"                                                                          |
+| User flow            | "a user flow (the path a user takes through the app, from page to page, to complete a task)"                                                                         |
+| Product brief        | "a product brief (a one-page summary of what was built, who it's for, and what it does)"                                                                             |
+| Prioritization       | "prioritization (deciding which features to build first based on what matters most to users)"                                                                        |
 After introducing a term once, use it naturally. If the user appears
 confused, briefly re-explain it in context — then continue using it.
 
