@@ -53,7 +53,7 @@ Open your VS Code **User Settings JSON** (**⇧⌘P** → `Open User Settings (J
 ```json
 {
   "chat.extensionAgentPlugins": [
-    "https://sgts.gitlab-dedicated.com/wog/gvt/lifesg/gvt-lifesg/ccubesg/libraries/ccube-vsc-agent-plugin-marketplace.git"
+    "https://github.com/LifeSG/ccube-agent-plugin-marketplace.git"
   ]
 }
 ```
@@ -213,7 +213,7 @@ See the step-by-step guide in [AGENT.md](AGENT.md#adding-a-new-plugin).
 
 1. Clone the repository and create a feature branch
 2. Author or update the relevant customization files following the standards in [AGENT.md](AGENT.md)
-3. Open a merge request with a clear description of what changed and why
+3. Open a pull request with a clear description of what changed and why
 
 ---
 
