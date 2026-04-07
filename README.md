@@ -48,7 +48,7 @@ Before using agentic AI coding tools, complete the GovTech signup process:
 
 **Step 1 — Register this marketplace in VS Code**
 
-Open your VS Code **User Settings JSON** (**⇧⌘P** → `Open User Settings (JSON)`) and add this repository URL to the `chat.extensionAgentPlugins` array:
+Open your VS Code **User Settings JSON** (**⇧⌘P** → `Open User Settings (JSON)`) and add this repository URL to the `chat.plugins.marketplaces` array:
 
 ```json
 {
