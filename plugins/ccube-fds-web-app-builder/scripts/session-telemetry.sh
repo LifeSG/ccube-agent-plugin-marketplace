@@ -49,6 +49,17 @@ if [[ "${STDIN_JSON}" =~ \"agent_type\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]];
   AGENT_TYPE="${AGENT_TYPE//[^a-zA-Z0-9_-]/}"
 fi
 
+# Extract chat session ID from hook context.
+# Try camelCase (documented) and snake_case (observed for other fields).
+SESSION_ID="UNDEFINED"
+if [[ "${STDIN_JSON}" =~ \"sessionId\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
+  SESSION_ID="${BASH_REMATCH[1]}"
+elif [[ "${STDIN_JSON}" =~ \"session_id\"[[:space:]]*:[[:space:]]*\"([^\"]+)\" ]]; then
+  SESSION_ID="${BASH_REMATCH[1]}"
+fi
+# Sanitise: allow alphanumeric with hyphens/underscores only.
+SESSION_ID="${SESSION_ID//[^a-zA-Z0-9_-]/}"
+
 # ── Create or load anonymous installation ID ─────────────────────────────────
 mkdir -p "${HOME}/.ccube" 2>/dev/null || true
 
@@ -100,8 +111,8 @@ NOW="$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date -u)"
 # Debug: write a local log so you can verify the hook is firing from VS Code.
 # Remove this block once telemetry delivery is confirmed.
 DEBUG_LOG="${HOME}/.ccube/hook-debug.log"
-printf '[%s] %s fired: plugin=%s agent_type=%s\n' \
-  "${NOW}" "${HOOK_EVENT}" "${PLUGIN_NAME}" "${AGENT_TYPE}" >> "${DEBUG_LOG}" 2>/dev/null || true
+printf '[%s] %s fired: plugin=%s agent_type=%s session_id=%s\n' \
+  "${NOW}" "${HOOK_EVENT}" "${PLUGIN_NAME}" "${AGENT_TYPE}" "${SESSION_ID}" >> "${DEBUG_LOG}" 2>/dev/null || true
 printf '[%s] stdin: %s\n' "${NOW}" "${STDIN_JSON}" >> "${DEBUG_LOG}" 2>/dev/null || true
 
 _fire() {
@@ -112,14 +123,14 @@ _fire() {
 }
 
 _fire "$(printf \
-  '{"event":"%s","anonymousId":"%s","plugin":"%s","agentType":"%s","ts":"%s"}' \
-  "${HOOK_EVENT}" "${ANON_ID}" "${PLUGIN_NAME}" "${AGENT_TYPE}" "${NOW}")" >/dev/null
+  '{"event":"%s","anonymousId":"%s","plugin":"%s","agentType":"%s","chatSessionId":"%s","ts":"%s"}' \
+  "${HOOK_EVENT}" "${ANON_ID}" "${PLUGIN_NAME}" "${AGENT_TYPE}" "${SESSION_ID}" "${NOW}")" >/dev/null
 
 # Fire per-plugin install event if not yet recorded
 if [[ "${NEEDS_INSTALL_EVENT}" == "true" ]]; then
   INSTALL_HTTP_CODE="$(_fire "$(printf \
-    '{"event":"plugin_installed","anonymousId":"%s","plugin":"%s","ts":"%s"}' \
-    "${ANON_ID}" "${PLUGIN_NAME}" "${NOW}")")"
+    '{"event":"plugin_installed","anonymousId":"%s","plugin":"%s","chatSessionId":"%s","ts":"%s"}' \
+    "${ANON_ID}" "${PLUGIN_NAME}" "${SESSION_ID}" "${NOW}")")"
   if [[ "${INSTALL_HTTP_CODE}" =~ ^2[0-9]{2}$ ]]; then
     printf '%s' "${NOW}" > "${MARKER_FILE}" 2>/dev/null || true
     printf '[%s] plugin_installed delivered for %s (HTTP %s)\n' \
