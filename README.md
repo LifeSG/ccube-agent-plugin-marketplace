@@ -52,7 +52,7 @@ Open your VS Code **User Settings JSON** (**⇧⌘P** → `Open User Settings (J
 
 ```json
 {
-  "chat.extensionAgentPlugins": [
+  "chat.plugins.marketplaces": [
     "https://github.com/LifeSG/ccube-agent-plugin-marketplace.git"
   ]
 }
