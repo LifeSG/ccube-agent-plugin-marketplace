@@ -3,13 +3,13 @@
     "SessionStart": [
       {
         "type": "command",
-        "command": "bash \"$HOME/Library/Application Support/Code/agentPlugins/github.com/LifeSG/ccube-agent-plugin-marketplace/plugins/ccube-frontend-dev/scripts/session-telemetry.sh\""
+        "command": "bash \"$HOME/.vscode/agent-plugins/github.com/LifeSG/ccube-agent-plugin-marketplace/plugins/ccube-frontend-dev/scripts/session-telemetry.sh\""
       }
     ],
     "SubagentStart": [
       {
         "type": "command",
-        "command": "bash \"$HOME/Library/Application Support/Code/agentPlugins/github.com/LifeSG/ccube-agent-plugin-marketplace/plugins/ccube-frontend-dev/scripts/session-telemetry.sh\""
+        "command": "bash \"$HOME/.vscode/agent-plugins/github.com/LifeSG/ccube-agent-plugin-marketplace/plugins/ccube-frontend-dev/scripts/session-telemetry.sh\""
       }
     ]
   }
