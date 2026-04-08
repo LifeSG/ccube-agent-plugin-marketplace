@@ -41,43 +41,98 @@ your project.
 
 ## Installation
 
-**Prerequisite — GovTech Copilot licence signup (for GovTech users)**
+### Prerequisites
 
-Before using agentic AI coding tools, complete the GovTech signup process:
+**Do you work at GovTech?**
+
+If yes, you must complete the Copilot licence signup before continuing:
 [Sign up for agentic AI coding tools (without MCP)](https://docs.developer.tech.gov.sg/docs/ai-coding-assistants/sign-up-for-agentic-tools-without-mcp)
 
-**Step 1 — Register this marketplace in VS Code**
+If you do not work at GovTech, skip this and go straight to Step 1.
 
-Open your VS Code **User Settings JSON** (**⇧⌘P** → `Open User Settings (JSON)`) and add this repository URL to the `chat.plugins.marketplaces` array:
+---
 
-```json
-{
-  "chat.plugins.marketplaces": [
-    "https://github.com/LifeSG/ccube-agent-plugin-marketplace.git"
-  ]
-}
-```
+### Step 1 — Register this marketplace in VS Code
 
-**Step 2 — Install individual plugins**
+This step tells VS Code where to find the CCube plugins. You only need
+to do this once.
 
-> **Note:** The Agent Plugins section requires the agent plugins experimental
-> feature to be enabled in VS Code. If you do not see the section, open
-> **User Settings JSON** and add:
-> ```json
-> "chat.plugins.enabled": true
-> ```
+1. Open the Command Palette:
+   - Mac: **Cmd + Shift + P**
+2. Type `Open User Settings JSON` and press **Enter**
+3. You will see a file with curly braces `{ }`. Add the following block
+   inside the outermost `{ }`. If the file already has other settings,
+   add a comma after the last existing entry before pasting this:
+   ```json
+   "chat.plugins.marketplaces": [
+     "https://github.com/LifeSG/ccube-agent-plugin-marketplace.git"
+   ]
+   ```
+   When done, the relevant part of your file should look like this:
+   ```json
+   {
+		.........
+     "some.existing.setting": true,
+     "chat.plugins.marketplaces": [
+       "https://github.com/LifeSG/ccube-agent-plugin-marketplace.git"
+     ]
+   }
+   ```
+4. Save the file (**Cmd + S**)
 
-VS Code does not install all plugins automatically. To install a specific plugin:
+You should see no error highlighting in the file. If VS Code shows a
+red underline, check that every line ends with a comma except the last
+entry before a closing `}` or `]`.
 
-1. Open the **Extensions** view (**⇧⌘X**)
-2. Locate the plugin under the **Agent Plugins** section
-3. Click **Install** on the plugin you want
+---
 
-If your **Extensions** tab does not show the **Agent Plugins** section
-1. right click your **Extensions** tab header and select to show the **Agent Plugins** section.
-![Alt Text](docs/assets/agent-plugins.gif)
+### Step 2 — Install individual plugins
 
-For more details on agent plugins, see the [VS Code Agent Plugins documentation](https://code.visualstudio.com/docs/copilot/customization/agent-plugins).
+If you have never enabled agent plugins before, you need to turn the
+feature on first.
+
+2. Open the Command Palette:
+   - Mac: press **Cmd + Shift + P**
+3. Type `Open User Settings JSON` and press **Enter** — a file called
+   `settings.json` opens
+4. Find the closing `}` at the very end of the file. Place your cursor
+   on the line just above it and add the following line. If the line
+   above already ends with `}` or `]`, add a comma first:
+   ```json
+   "chat.plugins.enabled": true
+   ```
+5. Save the file (**Cmd + S** on Mac, **Ctrl + S** on Windows)
+6. Restart VS Code
+
+Open the Extensions view (**Cmd + Shift + X** on Mac)
+You should now see an **Agent Plugins** section
+
+![Extension view](./docs/assets/extension.png)
+
+
+> If you do not see the **Agent Plugins** section, right-click the
+> **Extensions** tab header and select the option to show **Agent
+> Plugins**.
+>
+> ![Showing the Agent Plugins section via right-click](docs/assets/agent-plugins.gif)
+>
+> If it still does not appear, complete the prerequisite step above to
+> enable agent plugins first, then reload VS Code.
+
+---
+
+VS Code does not install all plugins automatically — you choose which
+ones you want. From the view above
+
+Type `@agentPlugins ccube` in the search bar
+
+![alt text](docs/assets/search.png)
+
+You should now see the plugin listed as installed. Repeat for any
+other plugins you want.
+
+For more details on agent plugins, see the
+[VS Code Agent Plugins documentation](https://code.visualstudio.com/docs/copilot/customization/agent-plugins).
 
 ---
 
@@ -108,7 +163,7 @@ Add principal-level engineering knowledge to your Copilot workflow.
 
 1. Install the **ccube-software-craft** and **ccube-frontend-dev** plugins (see [Installation](#installation))
 2. Open Copilot Chat (**⌃⌘I**) in any project
-3. 3. Switch to the **CC Software Engineer** agent mode from the agent picker dropdown
+3. Switch to the **CC Software Engineer** agent mode from the agent picker dropdown
 
 
 **Draft an Enhancement Proposal** — use the `/cc-create-ep` slash command:
