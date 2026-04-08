@@ -107,7 +107,7 @@ git remote add origin \
 #   https://sgts.gitlab-dedicated.com/wog/gvt/ciooffice/cio-office-infra/cioo-automation/gdp-products/cc-work-planner.git
 
 git remote add origin \
-  https://oauth2:glpat-xxxxxxxxxxxxxxxxxxxx@sgts.gitlab-dedicated.com/wog/gvt/ciooffice/cio-office-infra/cioo-automation/gdp-products/cc-work-planner.git
+  https://xxx@sgts.gitlab-dedicated.com/wog/gvt/ciooffice/cio-office-infra/cioo-automation/gdp-products/cc-work-planner.git
 ```
 
 Verify the remote was set correctly:
