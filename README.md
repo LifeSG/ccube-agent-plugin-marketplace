@@ -73,6 +73,10 @@ VS Code does not install all plugins automatically. To install a specific plugin
 2. Locate the plugin under the **Agent Plugins** section
 3. Click **Install** on the plugin you want
 
+If your **Extensions** tab does not show the **Agent Plugins** section
+1. right click your **Extensions** tab header and select to show the **Agent Plugins** section.
+![Alt Text](docs/assets/agent-plugins.gif)
+
 For more details on agent plugins, see the [VS Code Agent Plugins documentation](https://code.visualstudio.com/docs/copilot/customization/agent-plugins).
 
 ---
