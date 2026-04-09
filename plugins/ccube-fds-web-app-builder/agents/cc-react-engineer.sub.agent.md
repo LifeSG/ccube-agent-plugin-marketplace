@@ -50,11 +50,48 @@ Always use `readFile` on the skill resource files directly.
 
 ### Skill Access Protocol
 
+#### FDS Design System (always required for UI work)
+
 1. Read `SKILL.md` to discover which resource file covers the
    component or token you need.
 2. Use `readFile` to load only the relevant resource file(s).
 3. Treat the loaded resource as the authoritative reference for
    component props, variants, and token values.
+
+#### React Patterns (load when implementing `.tsx` files)
+
+You MUST attempt to load the React patterns skill that matches the
+project's React version before writing any component code:
+
+- **React 19.x**: Attempt `readFile` on `cc-react-19-patterns`
+  `SKILL.md` for hooks, Actions API, and concurrent rendering
+  patterns.
+- **React 18.x**: Attempt `readFile` on `cc-react-18-patterns`
+  `SKILL.md` for concurrent hooks (`useTransition`,
+  `useDeferredValue`, `useSyncExternalStore`) and TypeScript
+  integration.
+
+If the `readFile` call fails or returns no content (the
+`ccube-frontend-dev` plugin is not installed), fall back to the
+inline React patterns knowledge in this file. Continue the
+implementation without blocking. Record the unavailability in
+the completion report as: "React patterns skill unavailable
+(ccube-frontend-dev plugin not installed) — used built-in
+knowledge."
+
+#### styled-components (load when writing CSS-in-JS)
+
+Whenever the implementation writes or modifies styled-components
+(any `` styled.`` call, `css` helper, `createGlobalStyle`, or
+`keyframes`), attempt to load `cc-styled-components` `SKILL.md`
+before writing the first styled rule.
+
+If the `readFile` call fails or returns no content, fall back to
+the standard styled-components v5/v6 patterns from built-in
+knowledge. Continue without blocking. Record the unavailability
+in the completion report as: "styled-components skill unavailable
+(ccube-frontend-dev plugin not installed) — used built-in
+knowledge."
 
 ### Component Selection
 
@@ -200,12 +237,18 @@ Then continue with the implementation work you can complete.
 When invoked with an implementation brief:
 
 1. **Check FDS version** — read the project's `package.json` to
-   confirm the installed `@lifesg/react-design-system` version before
-   loading any skill resources.
+   confirm the installed `@lifesg/react-design-system` version and
+   the `react` version before loading any skill resources.
 2. **Acknowledge the brief** — confirm the page/component name,
    FDS components to use, and layout requirements.
-3. **Read FDS skill resources** — load only the resource files
-   relevant to the components specified in the brief.
+3. **Load skill resources** — attempt all three categories in order:
+   a. React patterns skill matching the detected React version
+      (`cc-react-19-patterns` or `cc-react-18-patterns`). If
+      unavailable, use built-in knowledge and note it in step 5.
+   b. `cc-styled-components` skill if the brief involves any
+      styled-components. If unavailable, use built-in knowledge
+      and note it in step 5.
+   c. FDS resource files relevant to the components in the brief.
 4. **Implement** — create all required files directly using file
    tools. Apply the layout, spacing, and composition requirements
    from the brief. When creating a new page, also wire the route
