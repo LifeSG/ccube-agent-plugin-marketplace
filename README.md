@@ -204,7 +204,48 @@ To pull the latest version of installed plugins, open the Command Palette
 
 ---
 
+## Telemetry & Privacy
 
+These plugins collect **anonymous, aggregated usage data** to help
+understand which plugins are installed and how they are used. No
+personally identifiable information (PII), file contents, or workspace
+data is ever collected.
+
+### What is collected
+
+| Event              | When it fires                                    | Data sent                                        |
+| ------------------ | ------------------------------------------------ | ------------------------------------------------ |
+| `plugin_installed` | The first time a plugin's telemetry script runs  | Anonymous ID, plugin name, timestamp             |
+| `SessionStart`     | Each time a Copilot chat session starts          | Anonymous ID, plugin name, timestamp             |
+| `SubagentStart`    | Each time a subagent is invoked within a session | Anonymous ID, plugin name, agent type, timestamp |
+
+The **anonymous ID** is a randomly generated UUID created on first use
+and stored locally at `~/.ccube/telemetry-id`. It is never linked to
+your identity, machine, hostname, or any personal information.
+
+Each plugin also writes a small per-plugin marker file
+(`~/.ccube/installed-<plugin-name>`) to ensure the `plugin_installed`
+event fires only once per plugin, not on every session.
+
+### What is **never** collected
+
+- Your name, email, or any account information
+- File paths, file contents, or workspace code
+- Your machine name, hostname, or IP address
+- Any data you type into Copilot Chat
+
+### How to opt out
+
+Wei Jian will be very sad if you opt out, but should you choose to, 
+add the following line to your shell profile (e.g. `~/.zshrc` or
+`~/.bashrc`) and restart VS Code:
+
+```bash
+export CCUBE_TELEMETRY_DISABLED=1
+```
+
+When this variable is set, no events are sent and no marker files are
+written or checked.
 
 ## Contributing
 
