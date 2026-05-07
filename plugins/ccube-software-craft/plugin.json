@@ -1,0 +1,11 @@
+{
+  "name": "ccube-software-craft",
+  "description": "Principal-level software engineering knowledge for Copilot. Covers architecture, system design, clean code, git workflow, and feature design documentation.",
+  "version": "1.0.0",
+  "author": {
+    "name": "LifeSG CCube"
+  },
+  "skills": "skills/",
+  "agents": "agents/",
+  "hooks": "hooks.json"
+}

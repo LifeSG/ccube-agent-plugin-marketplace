@@ -1,0 +1,10 @@
+{
+  "name": "ccube-frontend-dev",
+  "description": "React and CSS knowledge for Copilot. Guards against rookie mistakes, applies React 18/19 patterns, writes correct CSS, and uses styled-components patterns correctly.",
+  "version": "1.0.0",
+  "author": {
+    "name": "LifeSG CCube"
+  },
+  "skills": "skills/",
+  "hooks": "hooks.json"
+}
