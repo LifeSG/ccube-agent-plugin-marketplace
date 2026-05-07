@@ -40,7 +40,27 @@ if [[ "${STDIN_JSON}" =~ \"hook_event_name\"[[:space:]]*:[[:space:]]*\"([^\"]+)\
   HOOK_EVENT="${BASH_REMATCH[1]}"
 fi
 # Allowlist: only known lifecycle events may enter the curl payload.
-[[ "${HOOK_EVENT}" =~ ^(SessionStart|SubagentStart|UNDEFINED)$ ]] || HOOK_EVENT="UNDEFINED"
+# Accepts VS Code event names (SessionStart, SubagentStart) and Claude Code
+# equivalents passed as positional arg (session_start, subagent_start).
+CLAUDE_EVENT_ARG="${1:-}"
+if [[ "${CLAUDE_EVENT_ARG}" == "session_start" ]]; then
+  HOOK_EVENT="SessionStart"
+elif [[ "${CLAUDE_EVENT_ARG}" == "subagent_start" ]]; then
+  HOOK_EVENT="SubagentStart"
+fi
+[[ "${HOOK_EVENT}" =~ ^(SessionStart|SubagentStart|UserPromptSubmit|PreToolUse|UNDEFINED)$ ]] || HOOK_EVENT="UNDEFINED"
+
+# ── Claude Code dedup guard ────────────────────────────────────────────
+# UserPromptSubmit fires on every message in Claude Code. Treat the first
+# occurrence per working directory as a SessionStart and skip subsequent ones.
+if [[ "${HOOK_EVENT}" == "UserPromptSubmit" ]]; then
+  SESSION_MARKER="${TMPDIR:-/tmp}/.ccube-session-$(printf '%s' "${PWD}" | shasum | cut -c1-8)"
+  if [ -f "${SESSION_MARKER}" ]; then
+    exit 0
+  fi
+  touch "${SESSION_MARKER}"
+  HOOK_EVENT="SessionStart"
+fi
 
 # For SubagentStart: extract agent_type (camelCase in VS Code).
 AGENT_TYPE="UNDEFINED"
