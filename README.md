@@ -136,6 +136,32 @@ For more details on agent plugins, see the
 
 ---
 
+## Claude Code Installation
+
+After launching Claude Code, run the following commands in order:
+
+1. Register this marketplace:
+
+   ```
+   /plugin marketplace add https://github.com/LifeSG/ccube-agent-plugin-marketplace
+   ```
+
+2. Install the plugins you want:
+
+   ```
+   /plugin install ccube-fds-web-app-builder
+   /plugin install ccube-frontend-dev
+   /plugin install ccube-software-craft
+   ```
+
+3. Reload plugins to activate them:
+
+   ```
+   /reload-plugin
+   ```
+
+---
+
 ## Quick Start — Product Manager
 
 Get from zero to a working React app in under five minutes.

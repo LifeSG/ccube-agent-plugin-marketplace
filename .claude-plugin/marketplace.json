@@ -76,12 +76,7 @@
       "author": {
         "name": "LifeSG CCube"
       },
-      "keywords": [
-        "ux",
-        "design-system",
-        "design-md",
-        "skills"
-      ],
+      "keywords": ["ux", "design-system", "design-md", "skills"],
       "category": "productivity",
       "strict": false
     }

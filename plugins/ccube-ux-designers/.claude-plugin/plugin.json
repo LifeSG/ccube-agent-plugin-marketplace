@@ -6,10 +6,5 @@
     "name": "LifeSG CCube"
   },
   "license": "MIT",
-  "keywords": [
-    "ux",
-    "design-system",
-    "design-md",
-    "skills"
-  ]
+  "keywords": ["ux", "design-system", "design-md", "skills"]
 }
