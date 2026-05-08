@@ -168,8 +168,12 @@ Get from zero to a working React app in under five minutes.
 
 1. Install the **ccube-fds-web-app-builder** and **ccube-software-craft** plugins (see [Installation](#installation))
    — the software craft plugin enables code quality checks and commit automation behind the scenes
-2. Open Copilot Chat (**⌃⌘I**)
-3. Switch to the **Product Manager** agent mode from the agent picker dropdown
+2. If using VScode
+	1. Open Copilot Chat (**⌃⌘I**)
+	2. Switch to the **Product Manager** agent mode from the agent picker dropdown
+3. If using claude
+	1. run `claude` from command line
+	2. Type `@"ccube-fds-web-app-builder:Product Manager (agent)"` to select the agent
 4. Paste this prompt and hit Enter:
 
    ```
