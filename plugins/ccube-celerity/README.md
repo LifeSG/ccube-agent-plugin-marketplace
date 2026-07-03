@@ -25,10 +25,11 @@ project-specific identifiers (Jira / GitLab / Confluence IDs, hostnames) appear
 as `<PLACEHOLDERS>` configured per deployment — see the release skill's
 **Configuration** section before first use.
 
-> **Portability note.** These skills reach Jira, Confluence, and GitLab through
-> CLIs today, not approved MCP servers. See
+> **Integrations.** These skills reach Jira, Confluence, and GitLab through **MCP
+> servers** (capability-level, so they work with your approved servers); only
+> `git` and `psql` stay local. Declare the servers per your catalogue, see
 > [`references/govtech-mcp-migration.md`](references/govtech-mcp-migration.md)
-> for the CLI to approved-MCP migration path.
+> and the release skill's **Integrations** section.
 
 ---
 

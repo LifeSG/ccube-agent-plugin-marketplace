@@ -1,33 +1,46 @@
-# CLI → approved-MCP migration (portability note)
+# MCP integrations (Jira / Confluence / GitLab)
 
-These skills were authored to be harness-agnostic (they run under any agent
-runner that reads a `SKILL.md` and can execute shell), but they reach external
-systems — Jira, Confluence, GitLab — through **CLIs** (`glab`, `jira`, `curl`
-against REST APIs) rather than through **approved MCP servers**. On a locked-down
-GovTech setup the sanctioned integration path is an approved MCP server, so the
-CLI dependency is the one thing that is not portable to that environment as-is.
+These skills reach external systems through **MCP servers**, not CLIs. The skill
+bodies are written at the capability level (`jira.*`, `confluence.*`, `gitlab.*`)
+so they work with whichever approved MCP servers your environment provides. Only
+`git` (version control) and `psql` (DB migration) remain as local commands.
 
-## What needs to change per external system
+## Servers to declare
 
-| System | Skill uses today | Approved-MCP target |
+| System | MCP server | Notes |
 | --- | --- | --- |
-| GitLab | `glab api ...`, `glab ci ...` | GitLab MCP server (issues, MRs, pipelines, releases) |
-| Jira | `curl` REST `/rest/api/3/...` | Atlassian/Jira MCP server (versions, issues, JQL) |
-| Confluence | `curl` REST `/rest/api/content/...` | Atlassian/Confluence MCP server (page read/edit) |
+| Jira | Atlassian MCP (or SHIP-HATS-hosted equivalent) | versions, JQL search, release |
+| Confluence | Atlassian MCP (same server) | page read / create / update (storage body) |
+| GitLab | GitLab-native MCP, or the SHIP-HATS GitLab MCP | pipelines, jobs, releases |
 
-The skill bodies keep the REST **shapes** (endpoints, payloads, the storage-XHTML
-edit method) documented, so swapping the transport from a CLI call to the
-equivalent MCP tool call is a mechanical substitution, not a rewrite.
+On a GovTech / SHIP-HATS setup, the exact endpoints and the auth method come from
+the approved-MCP catalogue (the "sign up for agentic tools with MCP" docs,
+login-gated). Point your project's copy of this file at that page and fill in the
+endpoints. Getting the list:
 
-## Plugin-declared MCPs
+- SHIP-HATS docs → *AI coding assistants* → *MCP servers* / *sign-up-for-agentic-tools-with-mcp*.
+- In VS Code: Command Palette → **MCP: Add Server** → Browse (your org gallery).
+- If SHIP-HATS ships a gateway, the catalogue usually gives a ready `mcpServers` block.
+
+## Example manifest block
+
+```jsonc
+{
+  "mcpServers": {
+    "atlassian": { "type": "http", "url": "<ATLASSIAN_MCP_URL>" },
+    "gitlab":    { "type": "http", "url": "<GITLAB_MCP_URL>" }
+  }
+}
+```
 
 The plugin standard allows a plugin to declare the MCP servers it needs so they
-are installed alongside the skills. When approved MCP definitions for GitLab /
-Jira / Confluence are available for this marketplace, add them to this plugin's
-manifest and update each skill to call the MCP tools instead of the CLIs. Until
-then, a consumer must have the CLIs configured locally for these skills to reach
-those systems.
+install alongside the skills. When the approved endpoints for this marketplace
+are confirmed, add them here so `ccube-celerity` installs its integrations too.
 
-Reference: GovTech Claude Code setup and the list of approved MCP servers are
-documented internally (SHIP-HATS AI coding assistants docs, login-gated). Point
-your project's own copy of this file at that page.
+## Capability → tool → REST reference
+
+The `celerity-deploy-release` SKILL has the full capability table (each
+`jira.*` / `confluence.*` / `gitlab.*` label plus the REST shape it maps to).
+Confirm the actual tool names your MCP servers expose and use those; if a
+capability has no tool, fall back to the REST shape over an authenticated
+transport and log the gap for the catalogue.

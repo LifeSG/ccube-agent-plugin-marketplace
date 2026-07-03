@@ -18,9 +18,43 @@ inherently-manual gates (clicking deploy in the pipeline UI, file scans).
 > environment variables listed in **Configuration** below, before running any
 > step. Do not commit real internal IDs back to a public plugin.
 
-## Configuration
+## Integrations (MCP-first)
 
-Set these once per project (shell env, a local `.env`, or your MCP/CLI config):
+This skill reaches Jira, Confluence, and GitLab through **MCP servers**, not
+CLIs. It is written at the capability level ("use the Jira MCP to rename the
+version") so it works with whichever approved MCP servers your environment
+provides; the REST shapes are kept only as a reference for what each capability
+maps to. Only `git` and `psql` remain as local commands (version control and DB
+migration are not integration concerns).
+
+Declare the servers your environment approves. On a GovTech / SHIP-HATS setup
+these come from the approved-MCP catalogue (the sign-up-for-agentic-tools-with-MCP
+docs). A plugin can ship this block in its manifest so the servers install with
+it. Example shape (fill in the endpoints your catalogue gives you):
+
+```jsonc
+{
+  "mcpServers": {
+    // Jira + Confluence — Atlassian MCP (or your SHIP-HATS-hosted equivalent)
+    "atlassian": {
+      "type": "http",
+      "url": "<ATLASSIAN_MCP_URL>"        // e.g. https://mcp.atlassian.com/v1/sse
+    },
+    // GitLab — GitLab-native MCP, or the SHIP-HATS GitLab MCP endpoint
+    "gitlab": {
+      "type": "http",
+      "url": "<GITLAB_MCP_URL>"           // e.g. https://<GITLAB_HOST>/api/v4/mcp
+    }
+  }
+}
+```
+
+Auth is handled by the MCP server (OAuth / token per your catalogue), not by
+this skill. Confirm the exact server ids and tool names your servers expose and
+use those; the capability names below (`jira.*`, `confluence.*`, `gitlab.*`) are
+generic labels for "the tool on that server that does X".
+
+Set these project values once (shell env, a local `.env`, or MCP config):
 
 | Variable | Meaning | Example shape |
 | --- | --- | --- |
@@ -36,6 +70,24 @@ Set these once per project (shell env, a local `.env`, or your MCP/CLI config):
 The two Confluence guides that this process must stay consistent with (the
 Release Management Guide and the Combined Release Management tracker) live in
 your project's Confluence space; link them at the top of your own copy.
+
+### Capability → MCP tool → REST reference
+
+| Capability | MCP server | REST shape it maps to (reference only) |
+| --- | --- | --- |
+| `jira.listVersions` | Atlassian/Jira | `GET /rest/api/3/project/<KEY>/versions` |
+| `jira.renameVersion` / `jira.createVersion` | Atlassian/Jira | `PUT` / `POST /rest/api/3/version/<id>` |
+| `jira.searchByFixVersion` | Atlassian/Jira | `GET /rest/api/3/search/jql?jql=fixVersion=<id>` |
+| `jira.releaseVersion` | Atlassian/Jira | `PUT /rest/api/3/version/<id>` `{released,releaseDate}` |
+| `confluence.getPage` (storage) | Atlassian/Confluence | `GET /rest/api/content/<id>?expand=body.storage,version` |
+| `confluence.createPage` / `confluence.updatePage` | Atlassian/Confluence | `POST` / `PUT /rest/api/content` |
+| `gitlab.listPipelines` | GitLab | `GET /projects/<pid>/pipelines?ref=<branch>` |
+| `gitlab.getPipelineJobs` | GitLab | `GET /projects/<pid>/pipelines/<id>/jobs` |
+| `gitlab.createRelease` | GitLab | `POST /projects/<pid>/releases` |
+
+If a tool for a capability is not exposed by your MCP server, fall back to the
+REST shape via whatever authenticated transport your environment allows, and log
+the gap so it can be raised for the catalogue.
 
 ## Concepts (read first)
 
@@ -66,17 +118,19 @@ your project's Confluence space; link them at the top of your own copy.
   (check the tracker / recent doc titles; e.g. 177 -> 178). Titles the Confluence
   doc.
 - **Fruit**: pick one NOT currently in use in Jira releases (a long-discarded one
-  is fine to reuse). Verify via `GET /rest/api/3/project/<JIRA_PROJECT_KEY>/versions`
-  and grep names.
+  is fine to reuse). Verify with `jira.listVersions` on `JIRA_PROJECT_KEY` and
+  scan the names.
 
 ## Step 2 — Jira release
 
 Create (or, if a matching version already exists, **rename**) the Jira version to
 `[<Fruit>] <Description>` form, e.g. `[Rose Apple] Digital Lobby 1.1.1`.
 
-- Rename: `PUT /rest/api/3/version/<id>` body `{"name":"..."}`.
-- Find issues in a version with `/rest/api/3/search/jql?jql=fixVersion=<id>`
-  (the old `/search` is deprecated and returns empty).
+- Rename with `jira.renameVersion` (set the new `name`), or `jira.createVersion`
+  if none exists.
+- Find issues in a version with `jira.searchByFixVersion` (a JQL
+  `fixVersion=<id>` search; the old non-JQL search endpoint is deprecated and
+  returns empty).
 
 ## Step 3 — GitLab release branch + pipelines
 
@@ -103,8 +157,9 @@ Create (or, if a matching version already exists, **rename**) the Jira version t
 - Pushing a `release/*` branch triggers CI. Typically `release/*` and `master`
   get build + UAT-track deploy jobs; prod jobs are `when: manual`. Deploys to UAT
   unless instructed otherwise. Release ALL packages unless told otherwise.
-- Check a pipeline via API (the `glab ci list -b <branch>` flag is unreliable):
-  `glab api "projects/<GITLAB_PID_WEB>/pipelines?ref=<branch>&per_page=3"`.
+- Check a pipeline with `gitlab.listPipelines` on `GITLAB_PID_WEB` filtered by
+  `ref=<branch>` (take the most recent). Get its failed jobs with
+  `gitlab.getPipelineJobs`.
 - When UAT deploy is green, run regression on UAT (async; QE may own it). Asking a
   person is an external message in the user's identity: get exact wording approval
   first, do not auto-send.
@@ -123,10 +178,10 @@ SAST create call is non-blocking, loop then poll.
   `CONFLUENCE_RELEASES_PARENT_ID` ("<YEAR> Releases"). **Title by release NUMBER:
   `<Project> Release <NNN>`.** Only use a fruit-titled doc as a fallback when no
   number is assigned yet; rename it once the number is allocated.
-- Procedure that works: fetch the model doc's storage XHTML
-  (`GET /rest/api/content/<id>?expand=body.storage`), do targeted string
-  replacements (description/tickets, Jira `versions/<id>`, version-change cells
-  prev/new, branch, pipeline id), POST to `/rest/api/content`.
+- Procedure that works: read the model doc's storage XHTML with
+  `confluence.getPage` (storage body), do targeted string replacements
+  (description/tickets, Jira `versions/<id>`, version-change cells prev/new,
+  branch, pipeline id), then `confluence.createPage` the new doc.
   - GOTCHA: version-change cells are `vX.Y.Z</p>`. Replace the **new-version**
     value before the **previous-version** value (or use ordered placeholders) so
     you don't collapse both cells to the same number.
@@ -140,9 +195,10 @@ The master tracker (`CONFLUENCE_TRACKER_ID`) is an 8-column table:
 Versioning | Status`. Add a row in date order (a hotfix goes right after the
 release it patches).
 
-- Fetch storage XHTML (`GET /rest/api/content/<CONFLUENCE_TRACKER_ID>?expand=body.storage,version`),
-  insert a `<tr>` right after the closing `</tr>` of the row you're following, PUT
-  back with `version.number + 1`.
+- Read the tracker storage XHTML with `confluence.getPage` on
+  `CONFLUENCE_TRACKER_ID`, insert a `<tr>` right after the closing `</tr>` of the
+  row you're following, and write it back with `confluence.updatePage`
+  (`version.number + 1`).
 - Cell 1 holds the release number AND fruit on separate `<p>` lines; features as
   `<strong>REPO</strong>` + `<ul><li>` ticket lines; release-doc cell links the
   Confluence doc; versioning like `web v8.69.2`.
@@ -186,12 +242,11 @@ it `Agent:` — never assert a human verified it.
 
 ## Step 7 — GitLab release
 
-On release day (or backdate `released_at` to the Jira/Confluence date): existing
-tag, blank/default title (= tag), notes from the Jira fix version, links to the
-Jira release + Confluence doc. `glab api POST .../releases` needs
-`--header "Content-Type: application/json"`. Then mark the Jira fix version
-released (`PUT /rest/api/3/version/<id>` body
-`{"released":true,"releaseDate":"YYYY-MM-DD"}`).
+On release day (or backdate `released_at` to the Jira/Confluence date): use
+`gitlab.createRelease` on the existing tag, blank/default title (= tag), notes
+from the Jira fix version, links to the Jira release + Confluence doc. Then mark
+the Jira fix version released with `jira.releaseVersion` (`released: true`,
+`releaseDate: YYYY-MM-DD`).
 
 ## Worked example (shape, IDs redacted)
 

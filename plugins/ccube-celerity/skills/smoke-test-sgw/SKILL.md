@@ -132,9 +132,10 @@ pass.
 - The Deployment-Summary **"Tagged"** checkbox is ticked once the git tag + GitLab
   release exist (a release-step fact, not a smoke result).
 
-Editing the checkboxes: fetch
-`GET /rest/api/content/<id>?expand=body.storage,version`, string-replace the
-`<ac:task-status>` inside the target `<ac:task>` block, PUT back with
-`version.number + 1`. When filling a "Verified by" cell from an automated run,
+Editing the checkboxes (via the Confluence MCP, same server the
+`celerity-deploy-release` skill uses): read the page storage body with
+`confluence.getPage`, string-replace the `<ac:task-status>` inside the target
+`<ac:task>` block, and write it back with `confluence.updatePage`
+(`version.number + 1`). When filling a "Verified by" cell from an automated run,
 prefix the note with `Agent:` per the identity rule, never assert a human
 verified it.
