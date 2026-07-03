@@ -1,0 +1,18 @@
+{
+  "name": "ccube-celerity",
+  "description": "Release, deploy, and smoke-test knowledge for the Celerity pillar (SupportGoWhere). Covers the end-to-end deploy/release process and a read-only site health check. Sanitised for public use — project IDs are configured per deployment.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Celerity / Digital Lobby"
+  },
+  "license": "MIT",
+  "keywords": [
+    "release",
+    "deploy",
+    "smoke-test",
+    "gitlab",
+    "celerity",
+    "supportgowhere",
+    "skills"
+  ]
+}
