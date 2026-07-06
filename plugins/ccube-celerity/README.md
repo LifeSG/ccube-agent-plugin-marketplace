@@ -22,7 +22,7 @@ verification.
 
 The skills were generalised from an internal SupportGoWhere runbook. Any
 project-specific identifiers (Jira / GitLab / Confluence IDs, hostnames) appear
-as `<PLACEHOLDERS>` configured per deployment — see the release skill's
+as `<PLACEHOLDERS>` configured per deployment. See the release skill's
 **Configuration** section before first use.
 
 > **Integrations.** These skills reach Jira, Confluence, and GitLab through **MCP

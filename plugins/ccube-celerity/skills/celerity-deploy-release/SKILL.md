@@ -1,6 +1,6 @@
 ---
 name: celerity-deploy-release
-description: 'Use when: the user says "do the release", "deploy <fruit>", "release management", or names a fruit / DL version to ship for a Celerity / SupportGoWhere-style repo set. Provides the end-to-end deploy + release process — release numbering, Jira release, GitLab release branch + pipelines, security scans, Confluence release doc, deploy, and the GitLab release.'
+description: 'Use when: the user says "do the release", "deploy <fruit>", "release management", or names a fruit / DL version to ship for a Celerity / SupportGoWhere-style repo set. Provides the end-to-end deploy + release process: release numbering, Jira release, GitLab release branch + pipelines, security scans, Confluence release doc, deploy, and the GitLab release.'
 user-invocable: true
 ---
 
@@ -35,12 +35,12 @@ it. Example shape (fill in the endpoints your catalogue gives you):
 ```jsonc
 {
   "mcpServers": {
-    // Jira + Confluence — Atlassian MCP (or your SHIP-HATS-hosted equivalent)
+    // Jira + Confluence: Atlassian MCP (or your SHIP-HATS-hosted equivalent)
     "atlassian": {
       "type": "http",
       "url": "<ATLASSIAN_MCP_URL>"        // e.g. https://mcp.atlassian.com/v1/sse
     },
-    // GitLab — GitLab-native MCP, or the SHIP-HATS GitLab MCP endpoint
+    // GitLab: GitLab-native MCP, or the SHIP-HATS GitLab MCP endpoint
     "gitlab": {
       "type": "http",
       "url": "<GITLAB_MCP_URL>"           // e.g. https://<GITLAB_HOST>/api/v4/mcp
@@ -112,7 +112,7 @@ the gap so it can be raised for the catalogue.
    versions following semver as needed).
 2. Work is Done.
 
-## Step 1 — Choose release number + fruit name
+## Step 1: Choose release number + fruit name
 
 - **Release number**: the next monotonic integer after the last released number
   (check the tracker / recent doc titles; e.g. 177 -> 178). Titles the Confluence
@@ -121,7 +121,7 @@ the gap so it can be raised for the catalogue.
   is fine to reuse). Verify with `jira.listVersions` on `JIRA_PROJECT_KEY` and
   scan the names.
 
-## Step 2 — Jira release
+## Step 2: Jira release
 
 Create (or, if a matching version already exists, **rename**) the Jira version to
 `[<Fruit>] <Description>` form, e.g. `[Rose Apple] Digital Lobby 1.1.1`.
@@ -132,7 +132,7 @@ Create (or, if a matching version already exists, **rename**) the Jira version t
   `fixVersion=<id>` search; the old non-JQL search endpoint is deprecated and
   returns empty).
 
-## Step 3 — GitLab release branch + pipelines
+## Step 3: GitLab release branch + pipelines
 
 - **Branch naming is versioned, NOT fruit**: `release/v<semver>` (e.g.
   `release/v8.69.2`). The fruit lives in Jira/Confluence, not the branch.
@@ -164,14 +164,14 @@ Create (or, if a matching version already exists, **rename**) the Jira version t
   person is an external message in the user's identity: get exact wording approval
   first, do not auto-send.
 
-## Step 4 — Security scans (skip if already done for the base release today)
+## Step 4: Security scans (skip if already done for the base release today)
 
 Per release, before release: SAST (e.g. Fortify) + OSS/dependency scan (e.g.
 Nexus IQ), results into the OSS/SAST Reports Log (`CONFLUENCE_SCAN_LOG_ID`).
 Report name `YYYYMMDD-reponame`, "Static Issue Detail" template, PDF. If your
 SAST create call is non-blocking, loop then poll.
 
-## Step 5 — Confluence release document
+## Step 5: Confluence release document
 
 - Clone the most recent comparable release doc (a single-repo release is the
   cleanest template). Space `CONFLUENCE_SPACE`, parent
@@ -188,7 +188,7 @@ SAST create call is non-blocking, loop then poll.
 - Fill: which repos to deploy, pre/deploy/post details, db migrations if appgen,
   release branch, pipelines, Jira release link, Jira tickets + descriptions.
 
-### Step 5b — Add a row to the Combined Release Management tracker
+### Step 5b: Add a row to the Combined Release Management tracker
 
 The master tracker (`CONFLUENCE_TRACKER_ID`) is an 8-column table:
 `Release no./Fruit | Year | Release Date | Features | Release document | PIC |
@@ -206,7 +206,7 @@ release it patches).
   `IN PROGRESS`/`Blue` while deploying, `PLANNING`/`Purple` when future.
 - Leave PIC empty unless told who it is (do not assert an identity unasked).
 
-## Step 6 — Deploy
+## Step 6: Deploy
 
 **CRITICAL (web): the deploy must run from a UI ("Run pipeline") pipeline, NOT
 the auto push pipeline.** Deploy jobs are typically gated
@@ -215,10 +215,10 @@ the auto push pipeline.** Deploy jobs are typically gated
 pipeline" UI preselects the deploy vars to `"false"`; set the right one(s) to
 `"true"`, e.g.:
 
-- `DEPLOY_WEB` — main web app
-- `DEPLOY_DIGITAL_LOBBY` — the kiosk app (easy to miss when shipping a DL release)
-- `DEPLOY_DIGITAL_LOBBY_SCANNER` — the softcopy-upload scanner app
-- `RUN_SECURITY_SCANS` — official SAST + OSS scan on a manual pipeline
+- `DEPLOY_WEB`: main web app
+- `DEPLOY_DIGITAL_LOBBY`: the kiosk app (easy to miss when shipping a DL release)
+- `DEPLOY_DIGITAL_LOBBY_SCANNER`: the softcopy-upload scanner app
+- `RUN_SECURITY_SCANS`: official SAST + OSS scan on a manual pipeline
 
 Flow: Build > Pipelines > Run pipeline > pick `release/v<semver>` > flip the
 needed `DEPLOY_*` var(s) to `true` > Run. Prod jobs are then `when: manual` (press
@@ -227,20 +227,20 @@ Ensure the image-push job completed before deploy; on a registry 403, rerun the
 get-token job. DB migrations are manual on the deploy tooling server
 (`cat file.sql | psql -h <host> -p <port> -U <user> -d <db>`).
 
-## Step 6b — Post-deploy verification (smoke test + tick release-doc checkboxes)
+## Step 6b: Post-deploy verification (smoke test + tick release-doc checkboxes)
 
 After prod is live, run the **[[smoke-test-sgw]]** skill against the deployed
 sites (routes enumerated from the codebase, not guessed). A green run (0 failing;
 AUTH-GATE and clean 404 both count as PASS) lets you tick the release doc's
-"Deployment verification" checkboxes that smoke actually proves — availability +
+"Deployment verification" checkboxes that smoke actually proves: availability +
 render only. Do NOT tick checks that bundle interactive QE (Singpass login,
 happy-flows, MyInfo, file upload, accessibility scan); leave those for the human
 QE pass. Checkboxes are `<ac:task>` items: flip
 `<ac:task-status>incomplete</ac:task-status>` to `complete` via storage-edit + PUT
 (`version + 1`). When filling a "Verified by" cell from an automated run, prefix
-it `Agent:` — never assert a human verified it.
+it `Agent:`, never assert a human verified it.
 
-## Step 7 — GitLab release
+## Step 7: GitLab release
 
 On release day (or backdate `released_at` to the Jira/Confluence date): use
 `gitlab.createRelease` on the existing tag, blank/default title (= tag), notes

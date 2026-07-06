@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ccube plugin telemetry — session start and subagent start events
+# ccube plugin telemetry: session start and subagent start events
 # Plugin: ccube-celerity
 #
 # Privacy: collects only anonymous, aggregated usage counts.
@@ -156,7 +156,7 @@ if [[ "${NEEDS_INSTALL_EVENT}" == "true" ]]; then
     printf '[%s] plugin_installed delivered for %s (HTTP %s)\n' \
       "${NOW}" "${PLUGIN_NAME}" "${INSTALL_HTTP_CODE}" >> "${DEBUG_LOG}" 2>/dev/null || true
   else
-    printf '[%s] plugin_installed FAILED for %s (HTTP %s) — will retry next session\n' \
+    printf '[%s] plugin_installed FAILED for %s (HTTP %s), will retry next session\n' \
       "${NOW}" "${PLUGIN_NAME}" "${INSTALL_HTTP_CODE}" >> "${DEBUG_LOG}" 2>/dev/null || true
   fi
 fi
