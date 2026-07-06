@@ -127,7 +127,7 @@ pub fn markdown_report(http: &[Value], render: &[Value]) -> String {
 
     let mut s = String::new();
     s.push_str("# Smoke Test Report\n\n");
-    s.push_str(&format!("**Verdict: {verdict}** — {} URL(s), {fails} failing.\n\n", render.len()));
+    s.push_str(&format!("**Verdict: {verdict}**: {} URL(s), {fails} failing.\n\n", render.len()));
 
     let counts = status_counts(render);
     if !counts.is_empty() {

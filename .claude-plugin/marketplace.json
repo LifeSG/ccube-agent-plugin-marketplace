@@ -46,10 +46,10 @@
     {
       "name": "ccube-celerity",
       "source": "./plugins/ccube-celerity",
-      "description": "Release, deploy, and smoke-test knowledge for the Celerity pillar (SupportGoWhere) — an end-to-end deploy/release runbook and a read-only site health check. Sanitised for public use; project IDs are configured per deployment.",
+      "description": "Release, deploy, and smoke-test knowledge for the Celerity pillar (SupportGoWhere): an end-to-end deploy/release runbook and a read-only site health check. Sanitised for public use; project IDs are configured per deployment.",
       "version": "1.0.0",
       "author": {
-        "name": "Celerity / Digital Lobby"
+        "name": "Miguel Parramón Teixidó"
       },
       "keywords": [
         "release",
