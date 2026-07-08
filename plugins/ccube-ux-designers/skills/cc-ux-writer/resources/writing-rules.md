@@ -32,7 +32,7 @@ section here.
 ### Tone (adapts by context)
 
 | Context | Tone |
-|---|---|
+| --- | --- |
 | Onboarding / first-time flows | Warm, casual, a little enthusiastic |
 | Transactional flows (forms, uploads) | Calm, matter-of-fact, efficient |
 | Errors and warnings | Clear, reassuring — never blame the user |
@@ -239,7 +239,7 @@ legal terms) and ask the user to confirm the correct form before finalising. Don
 ### Universal vocabulary rules (apply always)
 
 | Principle | Rule |
-|---|---|
+| --- | --- |
 | Product names | Always match the official casing exactly. If unsure, ask. |
 | Login vs log in | "Log in" (verb), "login" (noun/adjective) |
 | Sign in vs log in | Use whichever the product standardises. Be consistent. |

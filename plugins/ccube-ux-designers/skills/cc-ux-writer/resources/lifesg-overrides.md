@@ -5,8 +5,7 @@ whenever the product is LifeSG, OneService, MyLegacy, or any other SG government
 service (see "Detect the product context" in `SKILL.md` for the trigger conditions). Where a
 rule here conflicts with `writing-rules.md`, **this file takes precedence**.
 
-Source of truth: LifeSG Consolidated Content Guidelines
-(https://dcubeux.gitbook.io/lifesg-consolidated-content-guidelines)
+Source of truth: [LifeSG Consolidated Content Guidelines](https://dcubeux.gitbook.io/lifesg-consolidated-content-guidelines)
 
 ## Contents
 
@@ -48,7 +47,7 @@ inclusive), with these additions:
 ### Tone by content type (LifeSG-specific additions)
 
 | Content type | Tone |
-|---|---|
+| --- | --- |
 | Onboarding | Casual, enthusiastic |
 | Transactional flow | Casual, matter-of-fact |
 | Confirmation modal | Serious, matter-of-fact, respectful |
@@ -80,7 +79,7 @@ Use simple positive contractions to sound human:
 Avoid all of the following:
 
 | Type | Examples | Reason |
-|---|---|---|
+| --- | --- | --- |
 | Negative | shouldn't, can't, don't | Some users misread them |
 | Conditional | should've, would've, could've | Harder to understand |
 | Awkward | you'd, they'd, there'd | Not used in everyday conversation |
@@ -138,7 +137,7 @@ Use spaces, no dashes, no country code unless for overseas users.
 - Remove minutes when they don't apply in running text
 
 | ✅ Use | ❌ Avoid |
-|---|---|
+| --- | --- |
 | 9:15pm | 09:15pm |
 | 8:30pm | 8.30pm |
 | 4pm | 4:00pm (in running text) |
@@ -155,7 +154,7 @@ In UI components, you may add minutes for emphasis (e.g. "Time remaining: 1 hour
 Format: `19 April 2022` — day, full month name, full year. No commas, no ordinals, no leading zeros.
 
 | ✅ Use | ❌ Avoid |
-|---|---|
+| --- | --- |
 | 19 April 2022 | April 19, 2022 |
 | 3 April 2022 | 03 April 2022 |
 | 19 Apr 2022 (space-constrained UI) | 19/04/2022 |
@@ -177,7 +176,7 @@ Default pronoun for addressing the user. Do not mix `you` and `my` in the same i
 Use `I` (first person) only in these specific contexts:
 
 | Context | ✅ Use | ❌ Avoid |
-|---|---|---|
+| --- | --- | --- |
 | Consent / T&C checkbox | I agree to the terms and conditions. | You agree to the terms and conditions. |
 | Form options the user selects | I work at least 56 hours a month | You work at least 56 hours a month |
 | FAQ questions | Can I use LifeSG to register my child's birth? | Can you use LifeSG to register your child's birth? |
@@ -209,7 +208,7 @@ Use singular `they/their` as the gender-neutral pronoun — endorsed by Merriam-
 - Do not capitalise entire words (reads as shouting; exception: badges/labels for wayfinding)
 
 | ✅ Proper noun (title case) | ❌ Common noun (sentence case) |
-|---|---|
+| --- | --- |
 | Baby Bonus | birth certificate |
 | Family Support Calculator | government (as adjective) |
 | Help Neighbour | citizen |
@@ -227,7 +226,7 @@ Use singular `they/their` as the gender-neutral pronoun — endorsed by Merriam-
 ### Approved button copy (use exactly as listed)
 
 | Copy | Usage |
-|---|---|
+| --- | --- |
 | Accept | Legal confirmation before continuing. If no legal confirmation needed, use OK. |
 | Add | Bring something existing into the product. Use Create if from scratch. |
 | Back | Return to previous screen. Secondary button from step 2 onwards in form wizards. |
@@ -262,7 +261,7 @@ The user's data is never wrong — what they entered may be. Use "the" not "your
 referring to the value in error.
 
 | ✅ Use | ❌ Avoid |
-|---|---|
+| --- | --- |
 | Invalid mobile number. Enter numbers only. | Your mobile number is invalid. |
 | The NRIC number entered is invalid. | You entered an invalid NRIC number. |
 
@@ -276,7 +275,7 @@ referring to the value in error.
 ### Approved error copy
 
 | Field | Error |
-|---|---|
+| --- | --- |
 | NRIC or FIN | Enter NRIC or FIN number / Invalid NRIC or FIN number. Try again. |
 | Mobile number | Enter mobile number / Invalid mobile number. Try again. |
 | Local mobile number | Enter local mobile number / Invalid local mobile number. Enter a Singapore mobile number that begins with 8 or 9. |
@@ -295,7 +294,7 @@ When asking a user to confirm a risky action, the verb in the header and the pri
 (destructive) button must match. This removes ambiguity about what will happen.
 
 | ✅ Use | ❌ Avoid |
-|---|---|
+| --- | --- |
 | Header: "Leave and lose changes?" → Button: [Leave] | Header: "Confirm navigation" → Button: [Proceed] |
 
 ### Frame around the user, not the system
@@ -307,21 +306,21 @@ When asking a user to confirm a risky action, the verb in the header and the pri
 **Unsaved changes**
 
 | Scenario | Copy |
-|---|---|
+| --- | --- |
 | Changes will not be saved | **Leave and lose changes?** You have unsaved changes. If you leave this page, you will lose the changes you've made. [Leave] [Stay] |
 | Changes lost + user logged out | **Leave and lose changes?** You have unsaved changes. If you leave this page, you'll be logged out and will lose the changes you've made. [Leave] [Stay] |
 
 **Session timeout — form closed**
 
 | Scenario | Copy |
-|---|---|
+| --- | --- |
 | Session expiring | **Continue with the form?** You've been inactive for a while. Let us know if you wish to continue, or we'll close this form in X minutes YY seconds. You'll lose any unsaved changes. [Continue] |
 | Session expired | **Your form has been closed.** It looks like you've left, so we closed the form to protect your privacy. [Back to service] |
 
 **Session timeout — user logged out**
 
 | Scenario | Copy |
-|---|---|
+| --- | --- |
 | About to be signed out | **You're about to be signed out.** You've been inactive for a while. To protect your privacy, you'll be signed out in X minutes YY seconds. [Stay logged in] [Sign out now] |
 | Signed out | **You've been signed out.** Looks like you've left, so we signed you out to keep your information safe. [Back to home] |
 
@@ -336,7 +335,7 @@ When asking a user to confirm a risky action, the verb in the header and the pri
 **Replaces the universal push notification rule.**
 
 | Constraint | Limit |
-|---|---|
+| --- | --- |
 | Title | Max 30 characters (including spaces) |
 | Message | Max 120 characters (including spaces) — anything longer is truncated in the LifeSG inbox |
 
@@ -364,7 +363,7 @@ When asking a user to confirm a risky action, the verb in the header and the pri
 ### Approved empty state copy
 
 | Feature | Copy |
-|---|---|
+| --- | --- |
 | Inbox (overall) | **Your inbox is empty.** Here's where you can find your messages and application updates for selected services. |
 | Inbox (applications) | **No applications yet.** Here's where you can find application updates for selected services on LifeSG. |
 | No results (filters) | **No results found.** Try changing or removing your filters to find what you're looking for. [Change filters] |
@@ -401,8 +400,15 @@ multiple sentences or other punctuation (e.g. a comma).
 
 Use these exactly. Do not vary casing or spelling.
 
+**For any Singapore government scheme or service name** (e.g. Baby Bonus, CPF LIFE, Family
+Service Centre, Lasting Power of Attorney), check `resources/schemes-services-multilingual.csv`
+first — it is the authoritative source for official English titles, abbreviations, category,
+and administering agency, and is more comprehensive than the table below. Look up by term or by
+its listed CSV Alias. Where the CSV and the table below overlap, the CSV wins. The table below
+covers a small set of other high-frequency vocabulary not tied to a specific scheme/service.
+
 | Term | Rule |
-|---|---|
+| --- | --- |
 | LifeSG | Not: lifeSG, Lifesg |
 | Singpass | Not: SingPass, singpass. Always "Log in with Singpass" not "Sign in" |
 | Myinfo | Not: MyInfo, myinfo. Use when referring to Singpass Myinfo data retrieval |
@@ -445,10 +451,24 @@ be translated:
 - Keep text separate from images
 - Add text labels to icons (icons have different meanings across cultures)
 - Do not combine UI elements with surrounding copy to form a sentence
-- Maintain a translation glossary; use [Government Terms Translated](https://www.translatedterms.gov.sg/)
-  for approved terms
 - Naming convention for translation keys: `Feature_space_purpose`
   (e.g. `benefits_landingpage_header`, `deathcert_popupmodal_helpertext`)
+
+### Scheme and service name glossary
+
+For any Singapore government scheme or service name that needs a Malay, Chinese, or Tamil
+rendering, check `resources/schemes-services-multilingual.csv` before writing or reviewing:
+
+1. Look up the term by its English name or its listed CSV Alias.
+2. If found with status `CSV-verified`, `Research-verified`, or `Research-verified (partial)`,
+   use the listed translation for the language(s) available. For a "(partial)" entry, only the
+   languages actually populated in the row are verified — treat any blank language cell as
+   unsourced, not as "no translation needed".
+3. If the term is not in the CSV, or its status is `Needs sourcing` or `No official
+   translation found`, **do not invent a translation.** Tell the user no verified translation
+   exists and ask them to confirm or supply one before finalising the copy.
+4. For general UI vocabulary that isn't a named scheme or service, use
+   [Government Terms Translated](https://www.translatedterms.gov.sg/) instead.
 
 ---
 
@@ -469,11 +489,14 @@ be translated:
 Run these after the standard universal review checklist (in `writing-rules.md`):
 
 10. **LifeSG vocabulary** — check all product names, scheme names, and government agency
-    names against the approved terms list above
+    names against the approved terms list above and, for scheme/service names specifically,
+    against `resources/schemes-services-multilingual.csv`
 11. **Pronoun consistency** — verify you/my are not mixed; I is used correctly for consent
     and FAQs; we does not refer to the Singapore Government
 12. **Translations** — if copy will be localised, flag idioms, text that's embedded in
-    images, and constructions that combine UI elements with surrounding copy
+    images, and constructions that combine UI elements with surrounding copy. Check any
+    scheme/service names against `resources/schemes-services-multilingual.csv` and flag any
+    without a verified translation for the target language(s)
 13. **Date / time / number formatting** — verify these follow LifeSG conventions (not the
     universal defaults)
 

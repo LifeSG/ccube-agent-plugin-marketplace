@@ -161,6 +161,11 @@ The user is a content designer, not a student. Apply the rules; don't lecture ab
   error copy libraries, alert/confirmation copy library, push notification limits, empty-state
   extensions, full stops, links, approved vocabulary, translation guidance, content-type
   structures (scheme pages, application pages, FAQs, release notes), additional review checks
+- `resources/schemes-services-multilingual.csv` — glossary of Singapore government schemes and
+  services: official English term, abbreviation, Malay/Chinese/Tamil translations, category,
+  administering agency, source URL, and translation status. Consult it whenever copy names a
+  specific scheme or service, or needs translation into Malay/Chinese/Tamil — see "Vocabulary"
+  and "Translations" in `resources/lifesg-overrides.md`
 
 ## Scripts
 
