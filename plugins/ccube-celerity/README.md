@@ -27,9 +27,10 @@ as `<PLACEHOLDERS>` configured per deployment. See the release skill's
 
 > **Integrations.** These skills reach Jira, Confluence, and GitLab through **MCP
 > servers** (capability-level, so they work with your approved servers); only
-> `git` and `psql` stay local. Declare the servers per your catalogue, see
-> [`references/govtech-mcp-migration.md`](references/govtech-mcp-migration.md)
-> and the release skill's **Integrations** section.
+> `git` and `psql` stay local. On GovTech, a single managed server covers all
+> three; declare it per your catalogue, see
+> [`references/mcp-setup.md`](references/mcp-setup.md) and the release skill's
+> **Integrations** section.
 
 ---
 
