@@ -75,5 +75,6 @@ functional QE stays with a human).
 - "Is production up after the deploy?"
 - "Health check these URLs and screenshot anything broken."
 
-Build the binary once (`cd smoke-rs && CARGO_HOME=.cargo-home cargo build
---release`); requires Google Chrome or Chromium installed.
+Ships a prebuilt universal-macOS binary (`bin/smoke`), so no Rust is needed to
+use it; requires Google Chrome or Chromium installed. Source and a rebuild script
+live in this repo under `sources/ccube-celerity/smoke-test-sgw/`.
