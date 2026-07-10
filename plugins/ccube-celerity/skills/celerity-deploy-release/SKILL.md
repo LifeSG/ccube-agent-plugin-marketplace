@@ -21,38 +21,28 @@ inherently-manual gates (clicking deploy in the pipeline UI, file scans).
 ## Integrations (MCP-first)
 
 This skill reaches Jira, Confluence, and GitLab through **MCP servers**, not
-CLIs. It is written at the capability level ("use the Jira MCP to rename the
-version") so it works with whichever approved MCP servers your environment
-provides; the REST shapes are kept only as a reference for what each capability
-maps to. Only `git` and `psql` remain as local commands (version control and DB
-migration are not integration concerns).
+CLIs. It calls at the capability level (`jira.*`, `confluence.*`, `gitlab.*`), so
+it runs against whichever approved server(s) your environment provides; the REST
+shapes in the table below are kept only as a reference for what each capability
+maps to. Only `git` and `psql` remain as local commands.
 
-Declare the servers your environment approves. On a GovTech / SHIP-HATS setup
-these come from the approved-MCP catalogue (the sign-up-for-agentic-tools-with-MCP
-docs). A plugin can ship this block in its manifest so the servers install with
-it. Example shape (fill in the endpoints your catalogue gives you):
+On the GovTech managed setup a **single** server provides all three systems.
+Declare just it:
 
 ```jsonc
 {
-  "mcpServers": {
-    // Jira + Confluence: Atlassian MCP (or your SHIP-HATS-hosted equivalent)
-    "atlassian": {
-      "type": "http",
-      "url": "<ATLASSIAN_MCP_URL>"        // e.g. https://mcp.atlassian.com/v1/sse
-    },
-    // GitLab: GitLab-native MCP, or the SHIP-HATS GitLab MCP endpoint
-    "gitlab": {
-      "type": "http",
-      "url": "<GITLAB_MCP_URL>"           // e.g. https://<GITLAB_HOST>/api/v4/mcp
-    }
+  "govtech-mcp": {
+    "url": "https://mcp-gw.seed.tech.gov.sg/mcp",
+    "type": "http"
   }
 }
 ```
 
-Auth is handled by the MCP server (OAuth / token per your catalogue), not by
-this skill. Confirm the exact server ids and tool names your servers expose and
-use those; the capability names below (`jira.*`, `confluence.*`, `gitlab.*`) are
-generic labels for "the tool on that server that does X".
+Off that setup, declare whatever approved servers cover the three systems (e.g.
+an Atlassian MCP for Jira + Confluence and a GitLab-native MCP). Auth is handled
+by the server, not by this skill. Confirm the tool names your server exposes and
+use those; the `jira.*` / `confluence.*` / `gitlab.*` labels below are generic
+names for "the tool that does X". Full setup: `references/mcp-setup.md`.
 
 Set these project values once (shell env, a local `.env`, or MCP config):
 
