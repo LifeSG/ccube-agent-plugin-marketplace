@@ -6,35 +6,29 @@ user-invocable: true
 
 # Skill: Smoke Test (read-only)
 
-A single self-contained Rust binary does everything. It launches and manages its
-own headless Chrome via **chromiumoxide** (the Rust equivalent of Playwright:
-same Chrome DevTools Protocol architecture), so there is no external webdriver,
-no Firefox, no Python, no manual orchestration. **Do not** hand-drive a browser
-or parse JSON yourself: run the binary and read the printed summary.
+A single self-contained binary does everything. It launches and manages its own
+headless Chrome via **chromiumoxide** (the Rust equivalent of Playwright: same
+Chrome DevTools Protocol architecture), so there is no external webdriver, no
+Firefox, no Python, no manual orchestration. **Do not** hand-drive a browser or
+parse JSON yourself: run the binary and read the printed summary.
 
-Crate: `smoke-rs/` (bin name `smoke`). HTTP via `ureq` (native-tls, so it trusts
-the OS store incl. any corporate proxy CA); render via `chromiumoxide`; pure
-logic in `src/logic.rs` is unit-tested.
+The plugin **ships the prebuilt binary at `bin/smoke`**, so you do not need Rust
+installed to use the skill. HTTP goes via `ureq` (native-tls, so it trusts the OS
+store incl. any corporate proxy CA); render via `chromiumoxide`. The only runtime
+requirement is Google Chrome (or Chromium); chromiumoxide auto-detects it.
 
-## Build (once; cached thereafter)
-
-```bash
-cd <skill>/smoke-rs
-CARGO_HOME=.cargo-home cargo build --release      # produces target/release/smoke
-CARGO_HOME=.cargo-home cargo test --lib           # unit tests: classify, asset-extraction, report
-```
-
-Cache `CARGO_HOME=.cargo-home` and `target/` so only the first build pays the
-compile cost. Requires Google Chrome (or Chromium) installed; chromiumoxide
-auto-detects it.
+The shipped `bin/smoke` is a universal macOS binary (arm64 + x86_64). The source
+lives in this repo under `sources/ccube-celerity/smoke-test-sgw/`, not in the
+plugin; rebuild it with that folder's `build.sh` (which recompiles and refreshes
+`bin/smoke`) if you change the crate or need a Linux/Windows build.
 
 ## Run
 
 ```bash
-<skill>/smoke-rs/target/release/smoke \
-  https://example.gov.sg/ https://example.gov.sg/about
+<skill>/bin/smoke \
+  https://supportgowhere.life.gov.sg/ https://kiosk.supportgowhere.life.gov.sg/
 # or from a file (one URL per line, # comments allowed):
-<skill>/smoke-rs/target/release/smoke --file routes.txt
+<skill>/bin/smoke --file routes.txt
 ```
 
 Exit code is `0` when every URL is OK / a clean 404 / an auth gate, `1` if any
