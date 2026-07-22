@@ -4,7 +4,8 @@
   "scripts": {
     "setup": "npm install && git config core.hooksPath .githooks",
     "changelog": "git-cliff --unreleased --prepend CHANGELOG.md",
-    "changelog:init": "git-cliff -o CHANGELOG.md"
+    "changelog:init": "git-cliff -o CHANGELOG.md",
+    "release": "scripts/release.sh"
   },
   "devDependencies": {
     "git-cliff": "^2.12.0"
