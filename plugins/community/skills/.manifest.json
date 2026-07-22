@@ -1,0 +1,22 @@
+{
+  "skills": {
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "path": "skills/productivity/grill-me",
+      "updated": "2026-05-03T13:21:02Z",
+      "added": "2026-05-03T13:21:02Z"
+    },
+    "grill-with-docs": {
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/grill-with-docs",
+      "updated": "2026-06-02T02:39:00Z",
+      "added": "2026-06-02T02:39:00Z"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "path": ".github/skills/impeccable",
+      "updated": "2026-06-02T04:02:51Z",
+      "added": "2026-06-02T04:02:51Z"
+    }
+  }
+}

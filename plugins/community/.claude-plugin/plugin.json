@@ -1,0 +1,10 @@
+{
+  "name": "community",
+  "description": "Curated open-source community skills — vendored for zero-friction access across all projects.",
+  "version": "1.2.0",
+  "author": {
+    "name": "LifeSG CCube"
+  },
+  "license": "MIT",
+  "keywords": ["community", "skills", "productivity", "open-source"]
+}

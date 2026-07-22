@@ -10,7 +10,7 @@
 <img src="docs/assets/hero.jpg" alt="CCube mascots" width="280">
 
 <p align="center">
-  <a href="plugins/"><img src="https://img.shields.io/badge/Plugins-4-555?style=for-the-badge&logo=visualstudiocode&logoColor=white&labelColor=3c873a" alt="Plugins"></a>
+  <a href="plugins/"><img src="https://img.shields.io/badge/Plugins-2-555?style=for-the-badge&logo=visualstudiocode&logoColor=white&labelColor=3c873a" alt="Plugins"></a>
 </p>
 
 </div>
@@ -19,7 +19,7 @@
 
 ## About
 
-This repository is a marketplace of GitHub Copilot agent plugins. Each plugin
+This repository is a marketplace of agent plugins. Each plugin
 ships a curated set of customization files — agents, instruction files, prompts,
 and skills — that are installed directly into a user's VS Code workspace.
 
@@ -30,12 +30,10 @@ your project.
 
 ## Plugins
 
-| Plugin                                                          | Description                                                                                                                                                                                                                      |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [ccube-fds-web-app-builder](plugins/ccube-fds-web-app-builder/) | Turns Copilot into an AI web app developer that builds React applications strictly following the [Flagship Design System (FDS)](https://designsystem.life.gov.sg/react/index.html?path=/docs/getting-started-installation--docs) |
-| [ccube-frontend-dev](plugins/ccube-frontend-dev/)               | VS Code agent plugin for frontend development knowledge — React 18/19 patterns, React fundamentals, CSS essentials, and styled-components best practices                                                                         |
-| [ccube-software-craft](plugins/ccube-software-craft/)           | Brings principal-level software engineering knowledge into Copilot — architecture decisions, system design, clean code, git workflow, EP authoring, and markdown standards                                                       |
-| [ccube-ux-designers](plugins/ccube-ux-designers/)               | Gives Copilot the knowledge to create validated `DESIGN.md` files by browsing live design system documentation directly in the integrated browser                                                                                |
+| Plugin                          | Description                                                                                       |
+| ------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [wai](plugins/wai/)             | Full-stack web application delivery — from idea to deployed software in one orchestrated workflow |
+| [community](plugins/community/) | Curated open-source community skills — vendored for zero-friction access across all projects      |
 
 ---
 
@@ -46,7 +44,7 @@ your project.
 **Do you work at GovTech?**
 
 If yes, you must complete the Copilot licence signup before continuing:
-[Sign up for agentic AI coding tools (without MCP)](https://docs.developer.tech.gov.sg/docs/ai-coding-assistants/sign-up-for-agentic-tools-without-mcp)
+[Sign up for agentic AI coding tools (agentic access)](https://docs.developer.tech.gov.sg/docs/ai-coding-assistants/github-copilot?product=SHIP-HATS)
 
 If you do not work at GovTech, skip this and go straight to Step 1.
 
@@ -128,8 +126,7 @@ Type `@agentPlugins ccube` in the search bar
 
 ![alt text](docs/assets/search.png)
 
-You should now see the plugin listed as installed. Repeat for any
-other plugins you want.
+You should now see the plugins listed. Repeat for any other plugins you want.
 
 For more details on agent plugins, see the
 [VS Code Agent Plugins documentation](https://code.visualstudio.com/docs/copilot/customization/agent-plugins).
@@ -149,9 +146,8 @@ After launching Claude Code, run the following commands in order:
 2. Install the plugins you want:
 
    ```
-   /plugin install ccube-fds-web-app-builder
-   /plugin install ccube-frontend-dev
-   /plugin install ccube-software-craft
+   /plugin install wai
+   /plugin install community
    ```
 
 3. Reload plugins to activate them:
@@ -162,55 +158,45 @@ After launching Claude Code, run the following commands in order:
 
 ---
 
-## Quick Start — Product Manager
+## Quick Start — WAI Full-Stack Delivery
 
-Get from zero to a working React app in under five minutes.
+Get from zero to a working full-stack React app in one orchestrated
+workflow.
 
-1. Install the **ccube-fds-web-app-builder** and **ccube-software-craft** plugins (see [Installation](#installation))
-   — the software craft plugin enables code quality checks and commit automation behind the scenes
-2. If using VScode
-	1. Open Copilot Chat (**⌃⌘I**)
-	2. Switch to the **Product Manager** agent mode from the agent picker dropdown
-3. If using claude
-	1. run `claude` from command line
-	2. Type `@"ccube-fds-web-app-builder:Product Manager (agent)"` to select the agent
+1. Install the **wai** plugin (see [Installation](#installation))
+2. If using VS Code:
+   1. Open Copilot Chat (**⌃⌘I**)
+   2. Switch to the **WAI Maestro** agent mode from the agent picker
+      dropdown
+3. If using Claude Code:
+   1. Run `claude` from the command line
+   2. Type `@"wai:WAI Maestro (agent)"` to select the agent
 4. Paste this prompt and hit Enter:
 
    ```
-   I want to build a citizen feedback portal. It should have a home page
-   and a feedback form page. This is a new project.
+   I want to build a citizen feedback portal. It should have a home
+   page and a feedback form page. This is a new project.
    ```
 
-5. The agent will ask a few clarifying questions, scaffold the project, and build the pages — all using the [Flagship Design System](https://designsystem.life.gov.sg)
+5. The orchestrator will guide you through requirements, architecture,
+   implementation, and review — all using the
+   [Flagship Design System](https://designsystem.life.gov.sg)
 
-No coding knowledge required. The agent explains every decision in plain language.
+No coding knowledge required. The agent explains every decision in
+plain language.
 
 ---
 
-## Quick Start — Software Engineer
+## Quick Start — Architecture & Code Review
 
 Add principal-level engineering knowledge to your Copilot workflow.
 
-1. Install the **ccube-software-craft** and **ccube-frontend-dev** plugins (see [Installation](#installation))
+1. Install the **wai** plugin (see [Installation](#installation))
 2. Open Copilot Chat (**⌃⌘I**) in any project
-3. Switch to the **CC Software Engineer** agent mode from the agent picker dropdown
+3. Switch to the **WAI Software Engineer** agent mode from the agent
+   picker dropdown
 
-
-**Draft an Enhancement Proposal** — use the `/cc-create-ep` slash command:
-
-```
-/cc-create-ep Add a notification service that sends email and push
-notifications when a citizen's application status changes.
-```
-
-**Plan an implementation** — use the `/cc-plan-implementation` slash command:
-
-```
-/cc-plan-implementation Plan the implementation for the notification
-service EP.
-```
-
-**Get architecture advice** — switch to the **CC Software Engineer** agent mode, then paste:
+**Get architecture advice:**
 
 ```
 We're scaling from 1k to 100k users — what needs to change
@@ -223,7 +209,9 @@ in our current monolith?
 /cc-git-commit
 ```
 
-The skill groups your changed files into logical atomic commits and proposes Conventional Commit messages — nothing is staged without your approval.
+The skill groups your changed files into logical atomic commits and
+proposes Conventional Commit messages — nothing is staged without
+your approval.
 
 ---
 
@@ -331,18 +319,19 @@ To regenerate the full `CHANGELOG.md` from scratch:
 npm run changelog:init
 ```
 
-Changelog entries are grouped by plugin scope (e.g. `ccube-software-craft`).
+Changelog entries are grouped by plugin scope (e.g. `wai`).
 This works automatically when commits follow the
-[scope conventions in AGENT.md](AGENT.md#git-commit-conventions).
+[scope conventions in AGENTS.md](AGENTS.md#git-commit-conventions).
 
 ### Adding a new plugin
 
-See the step-by-step guide in [AGENT.md](AGENT.md#adding-a-new-plugin).
+See the step-by-step guide in [AGENTS.md](AGENTS.md#adding-a-new-plugin).
 
 ### Submitting changes
 
 1. Clone the repository and create a feature branch
-2. Author or update the relevant customization files following the standards in [AGENT.md](AGENT.md)
+2. Author or update the relevant customization files following the
+   standards in [AGENTS.md](AGENTS.md)
 3. Open a pull request with a clear description of what changed and why
 
 ---
@@ -350,8 +339,8 @@ See the step-by-step guide in [AGENT.md](AGENT.md#adding-a-new-plugin).
 ## Repository Governance
 
 Detailed authoring rules, canonical front matter templates, and AI agent
-guidance live in [AGENT.md](AGENT.md). That file is the authoritative source of
-truth for anyone (human or AI) contributing to this marketplace.
+guidance live in [AGENTS.md](AGENTS.md). That file is the authoritative
+source of truth for anyone (human or AI) contributing to this marketplace.
 
 ---
 

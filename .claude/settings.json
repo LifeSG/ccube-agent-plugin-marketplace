@@ -9,19 +9,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "bash \"$(git rev-parse --show-toplevel)/plugins/ccube-fds-web-app-builder/scripts/session-telemetry.sh\" session_start"
-					},
-					{
-						"type": "command",
-						"command": "bash \"$(git rev-parse --show-toplevel)/plugins/ccube-frontend-dev/scripts/session-telemetry.sh\" session_start"
-					},
-					{
-						"type": "command",
-						"command": "bash \"$(git rev-parse --show-toplevel)/plugins/ccube-software-craft/scripts/session-telemetry.sh\" session_start"
-					},
-					{
-						"type": "command",
-						"command": "bash \"$(git rev-parse --show-toplevel)/plugins/ccube-ux-designers/scripts/session-telemetry.sh\" session_start"
+						"command": "bash \"$(git rev-parse --show-toplevel)/plugins/wai/scripts/session-telemetry.sh\" session_start"
 					}
 				]
 			}
@@ -32,19 +20,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "bash \"$(git rev-parse --show-toplevel)/plugins/ccube-fds-web-app-builder/scripts/session-telemetry.sh\" subagent_start"
-					},
-					{
-						"type": "command",
-						"command": "bash \"$(git rev-parse --show-toplevel)/plugins/ccube-frontend-dev/scripts/session-telemetry.sh\" subagent_start"
-					},
-					{
-						"type": "command",
-						"command": "bash \"$(git rev-parse --show-toplevel)/plugins/ccube-software-craft/scripts/session-telemetry.sh\" subagent_start"
-					},
-					{
-						"type": "command",
-						"command": "bash \"$(git rev-parse --show-toplevel)/plugins/ccube-ux-designers/scripts/session-telemetry.sh\" subagent_start"
+						"command": "bash \"$(git rev-parse --show-toplevel)/plugins/wai/scripts/session-telemetry.sh\" subagent_start"
 					}
 				]
 			}

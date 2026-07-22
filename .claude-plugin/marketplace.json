@@ -5,78 +5,41 @@
     "name": "ccubesg"
   },
   "metadata": {
-    "description": "curated set of GitHub Copilot and Claude Code customization plugins for LifeSG web application development.",
-    "version": "1.0.0"
+    "description": "Full-stack web application delivery platform with specialist agents for requirements, design, frontend (FDS), backend (Koa + PostgreSQL), review, and deployment.",
+    "version": "1.5.0"
   },
   "plugins": [
     {
-      "name": "ccube-fds-web-app-builder",
-      "source": "./plugins/ccube-fds-web-app-builder",
-      "description": "VS Code agent plugin that builds web applications strictly following the Flagship Design System — enforces FDS components, tokens, and accessibility patterns across every Copilot suggestion.",
-      "version": "1.0.0",
+      "name": "wai",
+      "source": "./plugins/wai",
+      "description": "Full-stack web application delivery platform. Orchestrates requirements, architecture review, frontend (FDS), backend (Koa + PostgreSQL), build verification, testing, code review, and deployment across a team of specialist agents.",
+      "version": "1.5.0",
       "author": {
         "name": "LifeSG CCube"
       },
       "keywords": [
+        "full-stack",
+        "agents",
+        "skills",
+        "sdlc",
+        "react",
+        "koa",
+        "postgresql",
         "fds",
-        "react",
-        "vite",
-        "design-system",
-        "lifesg",
-        "agents",
-        "skills"
+        "lifesg"
       ],
       "category": "productivity",
       "strict": false
     },
     {
-      "name": "ccube-software-craft",
-      "source": "./plugins/ccube-software-craft",
-      "description": "VS Code agent plugin for software engineering knowledge — SOLID principles, design patterns, clean code, architecture styles, git workflow, testing strategy, and debugging methodology.",
-      "version": "1.0.0",
+      "name": "community",
+      "source": "./plugins/community",
+      "description": "Curated open-source community skills \u2014 vendored for zero-friction access across all projects.",
+      "version": "1.2.0",
       "author": {
         "name": "LifeSG CCube"
       },
-      "keywords": [
-        "software-engineering",
-        "architecture",
-        "git",
-        "code-quality",
-        "agents",
-        "skills"
-      ],
-      "category": "productivity",
-      "strict": false
-    },
-    {
-      "name": "ccube-frontend-dev",
-      "source": "./plugins/ccube-frontend-dev",
-      "description": "VS Code agent plugin for frontend development knowledge — React 18/19 patterns, React fundamentals, CSS essentials, and styled-components best practices.",
-      "version": "1.0.0",
-      "author": {
-        "name": "LifeSG CCube"
-      },
-      "keywords": [
-        "react",
-        "css",
-        "styled-components",
-        "frontend",
-        "react-18",
-        "react-19",
-        "skills"
-      ],
-      "category": "productivity",
-      "strict": false
-    },
-    {
-      "name": "ccube-ux-designers",
-      "source": "./plugins/ccube-ux-designers",
-      "description": "VS Code agent plugin for UX designers — creates and validates DESIGN.md files by browsing live design system documentation directly in the integrated browser.",
-      "version": "1.0.0",
-      "author": {
-        "name": "LifeSG CCube"
-      },
-      "keywords": ["ux", "design-system", "design-md", "skills"],
+      "keywords": ["community", "skills", "productivity", "open-source"],
       "category": "productivity",
       "strict": false
     }
