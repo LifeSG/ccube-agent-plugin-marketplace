@@ -7,7 +7,7 @@ extra tooling or setup*
 
 <p align="center">
   <img src="https://img.shields.io/badge/Agents-0-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents">
-  <img src="https://img.shields.io/badge/Skills-3-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills">
+  <img src="https://img.shields.io/badge/Skills-5-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills">
 </p>
 
 </div>
@@ -35,22 +35,43 @@ upstream skills update, a new plugin version is cut with the synced content.
 
 ## Skills
 
+### domain-modeling
+
+Build and sharpen a project's domain model. Challenges terminology
+against code, maintains a CONTEXT.md glossary with opinionated term
+definitions and "avoid" lists, and records architectural decisions as
+lightweight ADRs. Activates when the user wants to pin down domain
+terminology, maintain a ubiquitous language, or record an
+architectural decision.
+
+**Source**: `mattpocock/skills` — vendored via `manage-skills.sh`.
+
 ### grill-me
 
 Interviews the user relentlessly about a plan or design until reaching
 shared understanding, resolving each branch of the decision tree one
-question at a time. Activates when the user wants to stress-test a
-plan, get grilled on their design, or explicitly says "grill me".
+question at a time. Thin wrapper that delegates to `/grilling`.
+Activates when the user wants to stress-test a plan, get grilled on
+their design, or explicitly says "grill me".
 
 **Source**: `mattpocock/skills` — vendored via `manage-skills.sh`.
 
 ### grill-with-docs
 
-Grilling session that challenges a plan against the existing domain
-model, sharpens terminology, and updates documentation (CONTEXT.md,
-ADRs) inline as decisions crystallise. Activates when the user wants
-to stress-test a plan against their project's language and documented
+Grilling session that combines `/grilling` with `/domain-modeling` —
+challenges a plan while simultaneously maintaining CONTEXT.md and
+ADRs as decisions crystallise. Activates when the user wants to
+stress-test a plan against their project's language and documented
 decisions.
+
+**Source**: `mattpocock/skills` — vendored via `manage-skills.sh`.
+
+### grilling
+
+Core interview loop — asks questions one at a time, walks down each
+branch of the decision tree, and provides recommended answers.
+Explores the codebase for facts rather than asking, but puts
+decisions to the user. Used by `/grill-me` and `/grill-with-docs`.
 
 **Source**: `mattpocock/skills` — vendored via `manage-skills.sh`.
 
