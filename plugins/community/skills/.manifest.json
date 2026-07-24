@@ -17,6 +17,18 @@
       "path": ".github/skills/impeccable",
       "updated": "2026-07-24T03:35:07Z",
       "added": "2026-06-02T04:02:51Z"
+    },
+    "grilling": {
+      "source": "mattpocock/skills",
+      "path": "skills/productivity/grilling",
+      "updated": "2026-07-24T05:19:13Z",
+      "added": "2026-07-24T05:19:13Z"
+    },
+    "domain-modeling": {
+      "source": "mattpocock/skills",
+      "path": "skills/engineering/domain-modeling",
+      "updated": "2026-07-24T05:21:16Z",
+      "added": "2026-07-24T05:21:16Z"
     }
   }
 }
