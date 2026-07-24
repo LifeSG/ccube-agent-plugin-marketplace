@@ -3,12 +3,13 @@
  * Extracted for unit testing (insert mode rules).
  */
 
-import { canCreateInsert } from './live-insert-ui.mjs';
+import { canCreateInsert } from './insert-ui.mjs';
 
-export const VISUAL_ACTIONS = [
-  'impeccable', 'bolder', 'quieter', 'distill', 'polish', 'typeset',
-  'colorize', 'layout', 'adapt', 'animate', 'delight', 'overdrive',
-];
+// The accepted visual action values come from the canonical vocabulary so the
+// validator, the picker UI, and the marketing demo never drift. Imported (not
+// just re-exported) so it is also in scope for the validators below.
+import { VISUAL_ACTIONS } from './vocabulary.mjs';
+export { VISUAL_ACTIONS };
 
 const ID_PATTERN = /^[0-9a-f]{8}$/;
 const VARIANT_ID_PATTERN = /^[0-9]{1,3}$/;
@@ -117,6 +118,15 @@ export function validateEvent(msg) {
         return 'checkpoint: paramValues must be an object';
       }
       return null;
+    case 'agent_phase':
+      if (!isValidId(msg.id)) return 'agent_phase: missing or malformed id';
+      if (typeof msg.phase !== 'string' || !/^[a-z][a-z0-9_]{1,63}$/.test(msg.phase)) {
+        return 'agent_phase: missing or malformed phase';
+      }
+      if (msg.durationMs !== undefined && (!Number.isFinite(msg.durationMs) || msg.durationMs < 0)) {
+        return 'agent_phase: durationMs must be a non-negative number';
+      }
+      return null;
     case 'exit':
       return null;
     case 'prefetch':
@@ -129,6 +139,12 @@ export function validateEvent(msg) {
       if (typeof msg.message !== 'string' || !msg.message.trim()) return 'steer: message required';
       if (msg.message.length > 4000) return 'steer: message too long';
       if (msg.pageUrl !== undefined && typeof msg.pageUrl !== 'string') return 'steer: pageUrl must be string';
+      return null;
+    case 'carbonize_cleanup':
+      if (!isValidId(msg.id)) return 'carbonize_cleanup: missing or malformed id';
+      if (!isValidId(msg.sessionId)) return 'carbonize_cleanup: missing or malformed sessionId';
+      if (!msg.file || typeof msg.file !== 'string') return 'carbonize_cleanup: missing file';
+      if (!isValidVariantId(String(msg.variantId))) return 'carbonize_cleanup: missing or malformed variantId';
       return null;
     default:
       return 'Unknown event type: ' + msg.type;

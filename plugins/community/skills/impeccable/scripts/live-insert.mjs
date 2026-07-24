@@ -9,7 +9,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { isGeneratedFile } from './is-generated.mjs';
+import { isGeneratedFile } from './lib/is-generated.mjs';
 import {
   buildSearchQueries,
   findElement,
@@ -21,6 +21,11 @@ import {
   buildCssAuthoring,
   buildCssSelectorPrefixExamples,
 } from './live-wrap.mjs';
+import {
+  buildSvelteComponentCssAuthoring,
+  scaffoldSvelteComponentInsertSession,
+  shouldUseSvelteComponentInjection,
+} from './live/svelte-component.mjs';
 
 const INSERT_POSITIONS = new Set(['before', 'after']);
 
@@ -126,6 +131,9 @@ Output (JSON):
   const query = argVal(args, '--query');
   const filePath = argVal(args, '--file');
   const text = argVal(args, '--text');
+  // See live-wrap.mjs: preflight computes the scaffold but leaves source
+  // untouched so the agent's single edit is the only framework reload.
+  const deferSourceWrite = args.includes('--defer-source-write');
 
   if (!id) { console.error('Missing --id'); process.exit(1); }
   if (!position) { console.error('Missing --position (before | after)'); process.exit(1); }
@@ -192,6 +200,41 @@ Output (JSON):
   const styleMode = detectStyleMode(targetFile);
   const isJsx = commentSyntax.open === '{/*';
   const spliceIndex = computeInsertLine(startLine, endLine, position);
+  const relTargetFile = path.relative(process.cwd(), targetFile).split(path.sep).join('/');
+
+  if (shouldUseSvelteComponentInjection(targetFile)) {
+    const session = scaffoldSvelteComponentInsertSession({
+      id,
+      count,
+      sourceFile: relTargetFile,
+      insertLine: spliceIndex + 1,
+      position,
+      anchorStartLine: startLine + 1,
+      anchorEndLine: endLine + 1,
+      anchorLines: lines.slice(startLine, endLine + 1),
+      cwd: process.cwd(),
+    });
+    console.log(JSON.stringify({
+      mode: 'insert',
+      position,
+      file: session.manifestFile,
+      sourceFile: relTargetFile,
+      previewMode: 'svelte-component',
+      componentDir: session.componentDir,
+      propContract: session.propContract,
+      insertLine: 1,
+      sourceInsertLine: spliceIndex + 1,
+      anchorStartLine: startLine + 1,
+      anchorEndLine: endLine + 1,
+      commentSyntax,
+      styleMode: 'svelte-component',
+      styleTag: null,
+      cssSelectorPrefixExamples: [],
+      cssAuthoring: buildSvelteComponentCssAuthoring(count),
+    }));
+    return;
+  }
+
   const indent = lines[spliceIndex]?.match(/^(\s*)/)?.[1]
     ?? lines[startLine]?.match(/^(\s*)/)?.[1]
     ?? '';
@@ -204,19 +247,34 @@ Output (JSON):
     isJsx,
   });
 
-  const newLines = [
-    ...lines.slice(0, spliceIndex),
-    ...wrapperLines,
-    ...lines.slice(spliceIndex),
-  ];
-  fs.writeFileSync(targetFile, newLines.join('\n'), 'utf-8');
+  let deferredWrapper = null;
+  if (deferSourceWrite) {
+    // Insert-as-empty-range: the agent inserts `wrapperBlock` (variants spliced
+    // at the marker) at spliceIndex without removing any source line.
+    deferredWrapper = {
+      block: wrapperLines.join('\n'),
+      replaceStartLine: spliceIndex + 1,
+      replaceEndLine: spliceIndex, // empty range (endLine < startLine) => insertion
+    };
+  } else {
+    const newLines = [
+      ...lines.slice(0, spliceIndex),
+      ...wrapperLines,
+      ...lines.slice(spliceIndex),
+    ];
+    fs.writeFileSync(targetFile, newLines.join('\n'), 'utf-8');
+  }
 
   const insertLine = spliceIndex + 3;
 
   console.log(JSON.stringify({
     mode: 'insert',
     position,
-    file: path.relative(process.cwd(), targetFile),
+    file: relTargetFile,
+    sourceWritten: deferredWrapper ? false : undefined,
+    wrapperBlock: deferredWrapper ? deferredWrapper.block : undefined,
+    replaceStartLine: deferredWrapper ? deferredWrapper.replaceStartLine : undefined,
+    replaceEndLine: deferredWrapper ? deferredWrapper.replaceEndLine : undefined,
     insertLine: insertLine + 1,
     commentSyntax,
     styleMode: styleMode.mode,
