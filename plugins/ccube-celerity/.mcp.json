@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "govtech-mcp": {
+      "url": "https://mcp-gw.seed.tech.gov.sg/mcp",
+      "type": "http"
+    }
+  }
+}
