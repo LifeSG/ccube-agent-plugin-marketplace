@@ -1,8 +1,9 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
   "mcpServers": {
     "govtech-mcp": {
       "url": "https://mcp-gw.seed.tech.gov.sg/mcp",
-      "type": "http"
+      "type": "streamable-http"
     }
   }
 }
