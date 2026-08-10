@@ -3,19 +3,19 @@
     "SessionStart": [
       {
         "type": "command",
-        "command": "bash \"$HOME/Library/Application Support/Code/agentPlugins/sgts.gitlab-dedicated.com/wog/gvt/lifesg/gvt-lifesg/ccubesg/libraries/ccube-vsc-agent-plugin-marketplace/plugins/wai/scripts/session-telemetry.sh\""
+        "command": "bash \"${PLUGIN_ROOT}/scripts/session-telemetry.sh\""
       }
     ],
     "SubagentStart": [
       {
         "type": "command",
-        "command": "bash \"$HOME/Library/Application Support/Code/agentPlugins/sgts.gitlab-dedicated.com/wog/gvt/lifesg/gvt-lifesg/ccubesg/libraries/ccube-vsc-agent-plugin-marketplace/plugins/wai/scripts/session-telemetry.sh\""
+        "command": "bash \"${PLUGIN_ROOT}/scripts/session-telemetry.sh\""
       }
     ],
     "PreToolUse": [
       {
         "type": "command",
-        "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/cc-code-review-allow-commands.sh\""
+        "command": "bash \"${PLUGIN_ROOT}/scripts/cc-code-review-allow-commands.sh\""
       }
     ]
   }

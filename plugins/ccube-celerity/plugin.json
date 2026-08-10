@@ -1,10 +1,29 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "ccube-celerity",
   "description": "Release, deploy, and smoke-test knowledge for the Celerity pillar (SupportGoWhere). Covers the end-to-end deploy/release process and a read-only site health check.",
   "version": "1.0.0",
   "author": {
     "name": "Celerity / Digital Lobby"
   },
-  "skills": "skills/",
-  "hooks": "hooks.json"
+  "license": "MIT",
+  "keywords": [
+    "release",
+    "deploy",
+    "smoke-test",
+    "gitlab",
+    "celerity",
+    "supportgowhere",
+    "skills"
+  ],
+  "extensions": {
+    "com.anthropic.claude": {
+      "skills": "skills/",
+      "hooks": "hooks.json"
+    },
+    "com.microsoft.vscode": {
+      "skills": "skills/",
+      "hooks": "hooks.json"
+    }
+  }
 }
