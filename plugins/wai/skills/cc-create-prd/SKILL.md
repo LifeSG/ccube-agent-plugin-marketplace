@@ -6,7 +6,7 @@ description: >-
   generation, and sprint-ready work breakdown. Use when writing
   feature requirements, creating JIRA tickets, or decomposing a
   feature into deliverable chunks. Integrates as optional Phase 0
-  of the WAI Maestro workflow.
+  before implementation.
 argument-hint: >-
   Describe the feature or problem you want to define. Include who
   the users are, what problem exists, and any constraints or
@@ -36,13 +36,13 @@ Use this skill when:
   feature description
 - You want to break a feature into sprint-ready tasks with
   dependencies and sequencing
-- You are handing a feature off to the WAI Maestro workflow and
+- You are handing a feature off to implementation agents and
   want to provide structured input (Phase 0)
 
 Do NOT use when:
 
-- You want to build the feature immediately — use WAI Maestro
-  directly and skip Phase 0
+- You want to build the feature immediately — describe it to
+  the harness directly and skip Phase 0
 - You need an engineering design document — use `cc-create-ep`
   instead
 - You already have a fully defined PRD and just want to build
@@ -73,7 +73,7 @@ generates a reference ID and displays it."
 
 You MUST NOT include implementation details (framework choices,
 API contracts, database schema) in the PRD body. Those belong in
-the WAI Maestro workflow downstream.
+the implementation workflow downstream.
 
 You WILL produce output in three sequential phases. Each phase
 requires explicit user confirmation before the next phase begins.
@@ -185,10 +185,11 @@ matters now.]
 
 ---
 
-## WAI Maestro Handoff
+## Implementation Handoff
 
-> Use this block to start WAI Maestro Phase 1 with this PRD as
-> input. Paste it directly into a WAI Maestro session.
+> Use this block to start implementation with this PRD as input.
+> Paste it directly into a new session or use it as context for
+> the WAI Product Manager agent.
 
 **Goal:** [one-sentence goal extracted from Problem Statement]
 **Context:** PRD at [file path]. Key constraints: [constraints
@@ -279,8 +280,8 @@ Output in chat — do not create a file.
 
 After generating the work breakdown, tell the user:
 
-> "Work breakdown complete. You can now start WAI Maestro using
-> the handoff block at the bottom of your PRD."
+> "Work breakdown complete. You can now start implementation
+> using the handoff block at the bottom of your PRD."
 
 ---
 
@@ -292,7 +293,7 @@ are self-checking.
 
 1. **All required sections present** — Problem Statement, Target
    Users, Success Metrics, Out of Scope, MVP Scope, User Stories,
-   Constraints, WAI Maestro Handoff.
+   Constraints, Implementation Handoff.
 2. **Acceptance criteria are testable** — Every user story has at
    least one binary, objective criterion.
 3. **No technical leakage** — PRD body contains no framework
@@ -305,23 +306,21 @@ are self-checking.
 
 ---
 
-## WAI Maestro Integration
+## Implementation Integration
 
-This skill acts as **optional Phase 0** in the WAI Maestro
-workflow. No changes to WAI Maestro or WAI Product Manager are
-required to use it.
+This skill acts as **optional Phase 0** before implementation.
+No changes to WAI Product Manager are required to use it.
 
-After completing Phase 1, the PRD file contains a
-`## WAI Maestro Handoff` section with `Goal:` and `Context:`
-fields pre-formatted to match WAI Maestro's Phase 1 delegation
-template exactly.
+After completing Phase 1, the PRD file contains an
+`## Implementation Handoff` section with `Goal:` and `Context:`
+fields pre-formatted for the WAI Product Manager agent.
 
 To use:
 
-1. Open a new WAI Maestro session.
-2. Copy the `Goal:` and `Context:` lines from the PRD's
-   WAI Maestro Handoff section.
-3. Paste them as your opening message to WAI Maestro.
+1. Copy the `Goal:` and `Context:` lines from the PRD's
+   Implementation Handoff section.
+2. Paste them as your message to start the implementation
+   workflow.
 
 WAI Product Manager will receive the PRD file path in the
 `Context:` field, read the file with `readFile`, and produce
@@ -341,8 +340,8 @@ discovery questions.
 - `## MVP Scope` with numbered, prioritised features
 - `## User Stories` with binary acceptance criteria checkboxes
   for every MVP feature
-- `## WAI Maestro Handoff` block with `Goal:` and `Context:`
-  fields matching WAI Maestro's Phase 1 delegation template
+- `## Implementation Handoff` block with `Goal:` and `Context:`
+  fields matching the WAI Product Manager delegation template
 
 **JIRA Tickets MUST contain (each story):**
 - `As a [user], I want to [action], so that [outcome]` format
@@ -354,7 +353,7 @@ discovery questions.
 
 **PRD File MUST NOT contain:**
 - Framework or library names (e.g. React, Koa, PostgreSQL)
-  outside the WAI Maestro Handoff block
+  outside the Implementation Handoff block
 - Database schema definitions
 - API endpoint definitions
 - Code snippets of any kind
@@ -390,7 +389,7 @@ directory in the workspace.
 - MUST ask discovery questions before generating any content
 - MUST ask for PRD output directory since none exists
 - MUST produce a file containing all 6 required sections
-- MUST include a WAI Maestro Handoff block with correctly
+- MUST include an Implementation Handoff block with correctly
   formatted `Goal:` and `Context:` fields
 - MUST NOT contain any framework, library, or database mention
   in the PRD body
