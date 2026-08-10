@@ -377,7 +377,7 @@ description: >
 name: "<Agent Display Name>"
 argument-hint: "<Hint text shown in the chat input when the agent is selected>"
 agents:
-  - "Prompt Refiner"
+  - "<Subagent Name>"
 handoffs:
   - label: "<Handoff label>"
     agent: "<Target agent name>"
