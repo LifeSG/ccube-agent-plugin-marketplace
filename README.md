@@ -169,8 +169,7 @@ workflow.
    2. Switch to the **WAI Maestro** agent mode from the agent picker
       dropdown
 3. If using Claude Code:
-   1. Run `claude` from the command line
-   2. Type `@"wai:WAI Maestro (agent)"` to select the agent
+   1. Run `claude --agent wai:Maestro` from the command line
 4. Paste this prompt and hit Enter:
 
    ```
@@ -187,26 +186,21 @@ plain language.
 
 ---
 
-## Quick Start — Architecture & Code Review
+## Quick Start — Code Review
 
-Add principal-level engineering knowledge to your Copilot workflow.
+Add principal-level code review to your workflow.
 
 1. Install the **wai** plugin (see [Installation](#installation))
-2. Open Copilot Chat (**⌃⌘I**) in any project
-3. Switch to the **WAI Software Engineer** agent mode from the agent
-   picker dropdown
+2. Run the `/wai:cc-code-review` skill on any branch or diff:
 
-**Get architecture advice:**
+   ```
+   /wai:cc-code-review
+   ```
 
-```
-We're scaling from 1k to 100k users — what needs to change
-in our current monolith?
-```
-
-**Commit your work** — use the `/cc-git-commit` slash command:
+**Commit your work** — use the `/wai:cc-git-commit` slash command:
 
 ```
-/cc-git-commit
+/wai:cc-git-commit
 ```
 
 The skill groups your changed files into logical atomic commits and
