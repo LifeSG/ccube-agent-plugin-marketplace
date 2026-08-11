@@ -23,16 +23,15 @@ orchestrated workflow*
 
 ## What This Plugin Does
 
-This plugin turns GitHub Copilot into a **full-stack delivery team** that takes
-a product goal from requirements to deployed software. A WAI Maestro
-orchestrates a fleet of specialist agents — requirements, architecture, frontend,
-backend, and review — across a structured 8-phase SDLC.
+This plugin turns your AI coding assistant into a **full-stack delivery
+team**. A lightweight Maestro router classifies your intent and dispatches
+to specialist agents — product thinking, visual design, frontend (FDS),
+and backend (Koa + PostgreSQL) — each self-verifying with build and test.
 
-The result: An AI team that can frame requirements, produce an architecture
-decision record, scaffold a production-ready Vite + Koa + PostgreSQL project,
-implement frontend and backend in parallel, run build and test verification,
-conduct a principal-level code review, and deploy to GCC via Rabbit Deploy —
-with explicit handoff gates between every phase.
+The result: Say "build me a feedback form" and the right specialist
+activates, scaffolds the project if needed, implements with the Flagship
+Design System, and verifies the build passes — no manual agent selection
+required.
 
 ---
 
@@ -47,99 +46,33 @@ with explicit handoff gates between every phase.
 
 ## Agents
 
-### WAI Maestro
+### Maestro
 
-Delivery orchestrator that coordinates all 8 SDLC phases. Routes incoming
-requests through a **Request Routing** classifier — informational questions
-are answered directly, bugs go through diagnosis before fix, trivial changes
-skip PM and architecture review, and standard features run the full pipeline.
-Delegates to the right specialist at the right time, enforces phase gates,
-runs automated build and test verification, and produces a git commit after
-each phase.
+Lightweight routing agent that classifies user intent and dispatches
+to the correct specialist. Does NOT generate briefs, review code, or
+add workflow phases — it classifies and delegates.
 
-**SDLC phases:**
+**Activation:**
 
-| Phase | Name                      | Owner                     |
-| ----- | ------------------------- | ------------------------- |
-| 1     | Requirements              | WAI Product Manager       |
-| 1.3   | Design Translation        | WAI Designer              |
-| 1.5   | Backend & Security Review | WAI Software Engineer     |
-| 2     | Scaffold                  | `cc-fullstack-vite` skill |
-| 3     | Frontend                  | WAI FDS Engineer          |
-| 4     | Backend                   | WAI Backend Engineer      |
-| 5     | Build Verification        | WAI Maestro (automated)   |
-| 6     | Test Execution            | WAI Maestro (automated)   |
-| 7     | Code Review               | WAI Software Engineer     |
-| 8     | Deploy                    | `cc-rabbit-deploy` skill  |
+- VS Code: Select **Maestro** from the agent picker dropdown
+- Claude Code: `claude --agent wai:Maestro`
 
-**Orchestration flow:**
+**Routing categories:**
 
-```mermaid
-flowchart LR
-    START(["🎯 Goal"])
-
-    ROUTE{"Request\nRouting"}:::route
-
-    %% Informational path
-    INFO["Informational\nAnswer directly\n(read configs, seed, logs)"]:::info
-    INFO_DONE(["✅ Answered"])
-
-    %% Bug path
-    DIAG["Bug Diagnosis\n[agent] WAI Software Engineer"]:::agent
-    FIX["Bug Fix\n[agent] FDS / Backend Engineer"]:::agent
-
-    %% Standard change path
-    P1["Phase 1 · Requirements\n[agent] WAI Product Manager\nOutput: Product Brief"]:::agent
-    P12["Phase 1.2 · Design Translation\n[agent] WAI Designer\nOutput: Implementation Brief"]:::agent
-    P15["Phase 1.5 · Backend & Security Review\n[agent] WAI Software Engineer\nOutput: ADR"]:::agent
-    P2["Phase 2 · Scaffold\n[skill] cc-fullstack-vite\nOutput: Project structure"]:::skill
-
-    %% Trivial change path
-    IMPL["Trivial Change\n[agent] FDS / Backend Engineer"]:::agent
-
-    %% Shared implementation + verification
-    P3["Phase 3 · Frontend\n[agent] WAI FDS Engineer\n[skill] cc-design-system"]:::agent
-    P4["Phase 4 · Backend\n[agent] WAI Backend Engineer"]:::agent
-    P5["Phase 5 · Build Verification\n[agent] WAI Maestro\nnpm run build"]:::auto
-    P6["Phase 6 · Test Execution\n[agent] WAI Maestro\nnpm test"]:::auto
-    P7["Phase 7 · Code Review\n[agent] WAI Software Engineer\nOutput: Technical Review Report"]:::agent
-    P8["Phase 8 · Deploy\n[skill] cc-rabbit-deploy\nOutput: Live on GCC"]:::skill
-    DONE(["✅ Shipped"])
-
-    GIT(["[skill] cc-git-commit\nafter each phase"]):::skill
-
-    START --> ROUTE
-
-    %% Informational — no phases
-    ROUTE -->|"Informational\nquestion"| INFO --> INFO_DONE
-
-    %% Bug — diagnose then fix then verify
-    ROUTE -->|"Bug\nreport"| DIAG --> FIX --> P5
-
-    %% Trivial — skip PM & arch review
-    ROUTE -->|"Trivial\nchange"| IMPL --> P5
-
-    %% Standard — full SDLC
-    ROUTE -->|"Standard\nchange"| P1 --> P12 --> P15 --> P2
-    P2 --> P3 & P4
-    P3 & P4 --> P5
-
-    P5 --> P6 --> P7 --> P8 --> DONE
-
-    P1 & P12 & P15 & P3 & P4 & P7 -.-> GIT
-
-    classDef agent fill:#1e3a5f,color:#fff,stroke:#3b7dd8,stroke-width:2px
-    classDef skill fill:#7c4d00,color:#fff,stroke:#f6a623,stroke-width:2px
-    classDef auto fill:#1a3a1a,color:#fff,stroke:#5a9e5a,stroke-width:2px
-    classDef route fill:#4a1942,color:#fff,stroke:#9b59b6,stroke-width:2px
-    classDef info fill:#2c3e50,color:#fff,stroke:#95a5a6,stroke-width:2px
-```
+| Category | Dispatches to |
+| -------- | ------------- |
+| FRONTEND | WAI FDS Engineer |
+| BACKEND | WAI Backend Engineer |
+| DESIGN | WAI Designer |
+| PRODUCT | WAI Product Manager |
+| SCAFFOLD | `cc-vite-react-ds` / `cc-fullstack-vite` skill |
+| GENERAL | Handles directly (pass-through) |
 
 **Example prompts:**
 
-- "Build me a task management app with a React frontend and REST API."
-- "Take this product brief and deliver a working prototype."
-- "Scaffold, build, and deploy a PostgreSQL-backed dashboard."
+- "Build me a user profile page with avatar upload and settings form."
+- "Create an API endpoint for user authentication."
+- "Help me scope an MVP for a feedback portal."
 
 ### WAI Product Manager
 
@@ -153,47 +86,31 @@ directly into Phase 1.5 Architecture Review.
 - "Turn these user needs into a product brief."
 - "What features should be in v1 vs. a later release?"
 
-### WAI Software Engineer
+### WAI FDS Engineer
 
-Principal-level engineer operating at the two highest-leverage points in
-the SDLC: architecture review (Phase 1.5) and code review (Phase 7). Also
-available standalone for EP authoring and implementation planning.
+Frontend implementation specialist using Flagship Design System (FDS).
+Translates raw user prompts or structured briefs into working React
+pages and components. Self-verifies with `npm run build` and `npm test`.
 
-**Phase 1.5 — Architecture Review:**
+Requires an existing FDS project (scaffolded via `cc-vite-react-ds` or
+`cc-fullstack-vite`). Maestro handles this automatically.
 
-- Evaluates the Product Brief and produces an Architecture Decision Record
-  (ADR) covering stack, data model, API design, security posture, and
-  deployment constraints.
-- ADR modifications are applied to implementation briefs before Phases 3
-  and 4 begin.
+**Example prompts:**
 
-**Phase 7 — Code Review:**
+- "Build a user profile page with avatar upload and settings form."
+- "Fix the TypeScript error in the login component."
+- "Add a data table page at /users with pagination."
 
-- Runs a principal-level technical review covering correctness, FDS
-  compliance, security (OWASP Top 10), performance, and test coverage.
-- Produces a structured Technical Review Report.
+### WAI Backend Engineer
 
-**Standalone skills:**
+Backend specialist that implements Koa routes, database migrations,
+and middleware. Self-verifies with `npm run build` and `npm test`.
 
-- `cc-create-ep` — EP authoring with parallel codebase research subagents
-- `cc-plan-implementation` — parallelised workplan with Mermaid dependency
-  graph and per-task agent prompts
+**Example prompts:**
 
-### WAI FDS Engineer *(subagent)*
-
-Frontend specialist that implements pages and components using FDS components,
-tokens, and theming patterns. Operates in Phase 3 under Maestro direction.
-
-### WAI Backend Engineer *(subagent)*
-
-Backend specialist that implements Koa routes, database migrations, and
-middleware. Operates in Phase 4 under Maestro direction.
-
-### Prompt Refiner *(subagent)*
-
-Rewrites vague prompts into specific, execution-ready instructions and
-explains the prompt-engineering improvements applied. Invoked automatically
-by user-facing agents — not user-facing itself.
+- "Create a REST endpoint for user registration."
+- "Add a migration for the comments table."
+- "Fix the 500 error on POST /api/feedback."
 
 ---
 
