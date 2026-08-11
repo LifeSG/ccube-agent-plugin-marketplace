@@ -3,6 +3,58 @@
 All notable changes to this marketplace are documented here.
 Entries are grouped by plugin.
 
+## 2.0.0 — 2026-08-11
+### wai `v2.0.0`
+
+**BREAKING**: Replaced the 650-line Maestro orchestrator with a
+lightweight routing architecture (EP-0002). The old multi-phase
+workflow (brief generation, review cycles, SWE delegation) is
+removed. Users now interact with specialist agents directly via
+a thin intent-classification router.
+
+#### Added
+
+- **feat**: Lightweight Maestro router agent — classifies intent
+  and dispatches to specialists without generating briefs or
+  adding workflow phases
+- **feat**: Scaffold type disambiguation — Maestro asks
+  frontend-only vs full-stack when persistence is implied
+- **feat**: CSP dev-server headers in both scaffold templates —
+  fixes HMR preamble blocked by strict proxy CSP
+- **feat**: FDS Engineer promoted to user-invocable with direct
+  prompt handling (no upstream brief required)
+- **feat**: Backend Engineer promoted to user-invocable with
+  direct prompt handling
+
+#### Changed
+
+- **refactor**: All agents aligned for Maestro dispatch
+  compatibility (descriptions enriched with routing signals)
+- **refactor**: Backend Engineer slimmed — generic OWASP rules
+  deferred to `cc-code-review` skill
+- **refactor**: Backend Engineer brief handling removed (accepts
+  plain-language prompts only)
+- **fix**: Scaffold switched from `@vitejs/plugin-react` to
+  `@vitejs/plugin-react-swc` (avoids CSP inline script issues)
+- **fix**: Added `server.allowedHosts: true` to scaffold configs
+  (fixes Vite host-check blocking in proxy environments)
+- **fix**: Corrected `Text.H1`/`Text.Body` references to
+  `Typography.HeadingXL`/`Typography.BodyBL` (FDS v3)
+
+#### Removed
+
+- **breaking**: Removed WAI Designer agent (Figma-to-FDS spec
+  workflow unused; DESIGN prompts handled by Maestro directly)
+- **breaking**: Removed `docs/cc-designer-integration.md`
+- **breaking**: Removed WAI SWE agent (replaced by direct
+  specialist dispatch)
+- **breaking**: Removed Prompt Refiner subagent
+- **breaking**: Removed multi-phase orchestration workflow
+  (brief generation, brief review, architecture review phases)
+- **refactor**: Removed `plugins/wai/settings.json` (users
+  activate Maestro via `claude --agent wai:Maestro`)
+- **docs**: Removed stale phase and SWE references from README
+
 ## 1.5.0 — 2026-05-05
 ### wai `v1.5.0`
 
