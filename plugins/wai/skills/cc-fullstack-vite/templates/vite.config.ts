@@ -17,6 +17,16 @@ export default defineConfig({
   },
   server: {
     allowedHosts: true,
+    headers: {
+      'Content-Security-Policy': [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline'",
+        "style-src 'self' 'unsafe-inline' https://assets.life.gov.sg",
+        "font-src 'self' https://assets.life.gov.sg",
+        "connect-src 'self' ws: wss:",
+        "img-src 'self' data:",
+      ].join('; '),
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:__BACKEND_PORT__',

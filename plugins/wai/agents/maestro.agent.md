@@ -60,6 +60,24 @@ Read `package.json` in the workspace root.
 
 Skip this step for DESIGN, PRODUCT, SCAFFOLD, and GENERAL.
 
+### Step 2b: Disambiguate Scaffold Type
+
+When reclassified as SCAFFOLD and the prompt implies stateful
+data (e.g., users, todos, bookings, forms that persist, CRUD)
+but does NOT explicitly state "frontend only" or "full-stack":
+
+Ask the user ONE question before dispatching:
+
+> Your app seems to need persistent data. Which scaffold?
+> 1. **Frontend only** — client-side React app (no server, no DB)
+> 2. **Full-stack** — Vite + React frontend with Koa + PostgreSQL
+>    backend
+
+If the prompt explicitly says "frontend", "client-side", "no
+backend", or "static" → FRONTEND-ONLY without asking.
+If the prompt explicitly says "full-stack", "with API", "with
+database", or "with backend" → FULLSTACK without asking.
+
 ### Step 3: Dispatch
 
 | Category | Action |
@@ -78,6 +96,8 @@ intent and dispatch to the appropriate implementation agent.
 ## Rules
 
 - NEVER ask the user which agent to use. Classify and dispatch.
+- The ONLY question you may ask is the scaffold type
+  disambiguation in Step 2b. All other routing is silent.
 - NEVER generate implementation briefs or design specs yourself.
 - NEVER add workflow phases between the user and the specialist.
 - When dispatching, pass the user's COMPLETE original message.
