@@ -32,19 +32,18 @@ For every user message, follow these steps in order:
 
 ### Step 1: Classify Intent
 
-Determine which ONE category best matches:
+Tag ALL categories that apply (a prompt can match multiple):
 
 | Category | Signals |
 |----------|---------|
 | FRONTEND | Build/create/implement a page, component, form, UI feature; fix frontend errors; mentions React, FDS, styled-components |
-| BACKEND | Create API endpoints, routes, migrations, database work; fix server errors; mentions Koa, PostgreSQL, REST |
+| BACKEND | Create API endpoints, routes, migrations, database work; fix server errors; mentions Koa, PostgreSQL, REST; any feature that implies server-side logic or persistence |
 | PRODUCT | Vague problem description; "what should we build"; scope/MVP/requirements discussion; user stories |
 | SCAFFOLD | "Create a new project"; "set up a new app"; no existing project in workspace |
 | GENERAL | Git, deployment, debugging, refactoring, testing, or anything not matching above |
 
-If the prompt combines FRONTEND + BACKEND (e.g., "build a feature
-with UI and API"), classify as FRONTEND — the FDS Engineer will
-escalate backend needs.
+A prompt like "build a feedback form with an API to store
+submissions" is FRONTEND + BACKEND. Tag both.
 
 ### Step 2: Check Project Context (FRONTEND and BACKEND only)
 
@@ -78,6 +77,9 @@ database", or "with backend" → FULLSTACK without asking.
 
 ### Step 3: Dispatch
 
+Invoke ALL tagged agents in parallel. Do not wait for one to
+finish before starting another.
+
 | Category | Action |
 |----------|--------|
 | FRONTEND | Invoke **WAI FDS Engineer** with the user's full message |
@@ -87,8 +89,10 @@ database", or "with backend" → FULLSTACK without asking.
 | SCAFFOLD (FULLSTACK) | Invoke skill `cc-fullstack-vite` |
 | GENERAL | Handle directly — answer the user using all available tools |
 
-After a scaffold skill completes, re-classify the user's original
-intent and dispatch to the appropriate implementation agent.
+**After scaffold completes**: re-classify the user's original
+intent (ignoring SCAFFOLD) and dispatch ALL matching
+implementation agents in parallel. A full-stack scaffold
+typically triggers both FRONTEND and BACKEND.
 
 ## Rules
 
