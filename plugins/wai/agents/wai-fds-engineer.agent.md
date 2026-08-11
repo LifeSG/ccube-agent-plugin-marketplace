@@ -13,7 +13,11 @@ description: >-
   Design, shadcn). Do NOT invoke if the project has no
   package.json with @lifesg/react-design-system — the
   cc-vite-react-ds or cc-fullstack-vite skill must scaffold the
-  project first. Accepts structured design specs, plain-language
+  project first. This agent is the mandatory next step after
+  cc-vite-react-ds or cc-fullstack-vite scaffolding completes —
+  always invoke it for the UI implementation phase rather than
+  building components inline. Accepts structured design specs,
+  plain-language
   descriptions, or error context. Self-verifies with npm run
   build and npm test before reporting done.
 name: "WAI FDS Engineer"
