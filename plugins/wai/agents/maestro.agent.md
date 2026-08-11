@@ -75,24 +75,43 @@ backend", or "static" → FRONTEND-ONLY without asking.
 If the prompt explicitly says "full-stack", "with API", "with
 database", or "with backend" → FULLSTACK without asking.
 
-### Step 3: Dispatch
+### Step 3: Refine and Dispatch
 
-Invoke ALL tagged agents in parallel. Do not wait for one to
-finish before starting another.
+For each tagged category, extract the relevant portion of the
+user's request and write a focused prompt for that agent. The
+refined prompt MUST:
+
+- State what to build/fix in concrete terms
+- Include only the context relevant to that agent's domain
+- Omit work that belongs to another agent
+- Preserve any specific requirements, names, or constraints
+  the user mentioned
+
+Then invoke ALL tagged agents in parallel with their refined
+prompts. Do not wait for one to finish before starting another.
 
 | Category | Action |
 |----------|--------|
-| FRONTEND | Invoke **WAI FDS Engineer** with the user's full message |
-| BACKEND | Invoke **WAI Backend Engineer** with the user's full message |
-| PRODUCT | Invoke **WAI Product Manager** with the user's full message |
+| FRONTEND | Invoke **WAI FDS Engineer** with frontend-focused prompt |
+| BACKEND | Invoke **WAI Backend Engineer** with backend-focused prompt |
+| PRODUCT | Invoke **WAI Product Manager** with product-focused prompt |
 | SCAFFOLD (FRONTEND-ONLY) | Invoke skill `cc-vite-react-ds` |
 | SCAFFOLD (FULLSTACK) | Invoke skill `cc-fullstack-vite` |
 | GENERAL | Handle directly — answer the user using all available tools |
 
+**Example refinement** for "Build a feedback form that stores
+submissions in the database":
+- FDS Engineer prompt: "Build a feedback form page with fields
+  for name, email, and message. Add a submit button that POSTs
+  to /api/feedback. Show success/error states."
+- Backend Engineer prompt: "Create POST /api/feedback endpoint
+  that accepts name, email, and message fields. Add a feedback
+  table migration with those columns plus id and created_at."
+
 **After scaffold completes**: re-classify the user's original
-intent (ignoring SCAFFOLD) and dispatch ALL matching
-implementation agents in parallel. A full-stack scaffold
-typically triggers both FRONTEND and BACKEND.
+intent (ignoring SCAFFOLD), refine prompts, and dispatch ALL
+matching implementation agents in parallel. A full-stack
+scaffold typically triggers both FRONTEND and BACKEND.
 
 ## Rules
 
@@ -101,6 +120,6 @@ typically triggers both FRONTEND and BACKEND.
   disambiguation in Step 2b. All other routing is silent.
 - NEVER generate implementation briefs or design specs yourself.
 - NEVER add workflow phases between the user and the specialist.
-- When dispatching, pass the user's COMPLETE original message.
-- Do NOT paraphrase or summarize the user's request when
-  dispatching — forward it verbatim.
+- When dispatching, write a refined prompt scoped to each
+  agent's domain. Do NOT forward the raw user message — each
+  agent should receive only the work relevant to it.
