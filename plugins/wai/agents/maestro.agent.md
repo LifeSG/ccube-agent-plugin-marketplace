@@ -118,8 +118,6 @@ scaffold typically triggers both FRONTEND and BACKEND.
 - NEVER ask the user which agent to use. Classify and dispatch.
 - The ONLY question you may ask is the scaffold type
   disambiguation in Step 2b. All other routing is silent.
-- NEVER generate implementation briefs or design specs yourself.
-- NEVER add workflow phases between the user and the specialist.
 - When dispatching, write a refined prompt scoped to each
   agent's domain. Do NOT forward the raw user message — each
   agent should receive only the work relevant to it.
