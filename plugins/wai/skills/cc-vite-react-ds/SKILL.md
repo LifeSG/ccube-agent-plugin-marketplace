@@ -238,6 +238,26 @@ This project uses LifeSG's Flagship Design System. See:
 - [Storybook](https://react.designsystem.life.gov.sg/)
 ```
 
+## CSP (Content-Security-Policy) for Dev Server
+
+The scaffold's `vite.config.ts` includes a permissive CSP header
+for the dev server. This is required because proxy environments
+(e.g., airlift) inject a strict CSP that blocks the inline
+`<script>` preamble used by `@vitejs/plugin-react-swc` for Fast
+Refresh / HMR.
+
+The header allows:
+- `script-src 'self' 'unsafe-inline'` — for HMR preamble
+- `style-src 'self' 'unsafe-inline' https://assets.life.gov.sg`
+  — for styled-components and FDS font CSS
+- `font-src 'self' https://assets.life.gov.sg` — FDS web fonts
+- `connect-src 'self' ws: wss:` — Vite HMR WebSocket
+- `img-src 'self' data:` — inline images and SVG data URIs
+
+This header applies ONLY to the Vite dev server. Production
+builds serve static files and should use a stricter CSP
+configured at the hosting/ingress layer.
+
 ## Verification Steps
 
 After project creation, verify:
