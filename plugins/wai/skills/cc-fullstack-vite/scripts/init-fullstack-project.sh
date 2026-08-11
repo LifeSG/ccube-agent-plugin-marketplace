@@ -118,17 +118,25 @@ cp "$TEMPLATE_DIR/.pre-commit-config.yaml" .
 
 # ── Step 6: Replace placeholder tokens ─────────────────────────
 echo "Step 6/9: Substituting project values..."
-# Note: sed -i '' is macOS (BSD) syntax. For Linux, use sed -i without ''.
+
+# Cross-platform in-place sed (BSD vs GNU)
+sedi() {
+  if sed --version 2>/dev/null | grep -q GNU; then
+    sed -i "$@"
+  else
+    sed -i '' "$@"
+  fi
+}
 
 # Files with __BACKEND_PORT__
-sed -i '' "s/__BACKEND_PORT__/${BACKEND_PORT}/g" \
+sedi "s/__BACKEND_PORT__/${BACKEND_PORT}/g" \
   vite.config.ts \
   server/index.ts \
   .env.example \
   Dockerfile.local
 
 # Files with __DB_NAME__
-sed -i '' "s/__DB_NAME__/${DB_NAME}/g" \
+sedi "s/__DB_NAME__/${DB_NAME}/g" \
   docker-compose.local.yml \
   .env.example
 
