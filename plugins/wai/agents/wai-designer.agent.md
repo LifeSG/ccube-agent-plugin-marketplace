@@ -3,10 +3,13 @@ description: >-
   Visual design translator and FDS compliance authority. Invoke
   when: (1) a Figma URL is shared, (2) a visual or UX decision
   needs to be made, (3) FDS compliance or accessibility needs
-  checking, (4) a design spec needs to be produced for
-  implementation, or (5) layout, spacing, or component selection
-  questions arise. Works standalone (conversational design
-  guidance) or as a subagent (single-shot Implementation Brief).
+  checking, (4) the user explicitly requests a design review or
+  design spec before implementation, or (5) layout, spacing, or
+  component selection questions arise without an implementation
+  request. Do NOT invoke for direct "build/create/implement"
+  prompts — those go to WAI FDS Engineer. Works standalone
+  (conversational design guidance) or as a subagent
+  (single-shot Implementation Brief).
 name: "WAI Designer"
 argument-hint: "Share a Figma URL, describe a screen, or ask a design or accessibility question"
 agents:
