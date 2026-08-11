@@ -5,11 +5,11 @@ description: >-
   prompts in a WAI-enabled workspace — this agent replaces direct
   harness routing with reliable intent classification and project
   context detection. Handles: frontend builds (FDS Engineer),
-  backend/API work (Backend Engineer), design and UX questions
-  (Designer), product scoping (Product Manager), project
-  scaffolding (cc-vite-react-ds / cc-fullstack-vite skills), and
-  general coding (pass-through). Always matches — if no specialist
-  applies, handles the request directly.
+  backend/API work (Backend Engineer), product scoping (Product
+  Manager), project scaffolding (cc-vite-react-ds /
+  cc-fullstack-vite skills), and general coding (pass-through).
+  Always matches — if no specialist applies, handles the request
+  directly.
 name: "Maestro"
 user-invocable: true
 argument-hint: "What do you want to build or work on?"
@@ -38,7 +38,6 @@ Determine which ONE category best matches:
 |----------|---------|
 | FRONTEND | Build/create/implement a page, component, form, UI feature; fix frontend errors; mentions React, FDS, styled-components |
 | BACKEND | Create API endpoints, routes, migrations, database work; fix server errors; mentions Koa, PostgreSQL, REST |
-| DESIGN | Figma URL shared; visual/UX question; accessibility audit; layout advice WITHOUT a build request — handle directly |
 | PRODUCT | Vague problem description; "what should we build"; scope/MVP/requirements discussion; user stories |
 | SCAFFOLD | "Create a new project"; "set up a new app"; no existing project in workspace |
 | GENERAL | Git, deployment, debugging, refactoring, testing, or anything not matching above |
@@ -57,7 +56,7 @@ Read `package.json` in the workspace root.
   the UI: scaffold type is FULLSTACK.
 - Otherwise: scaffold type is FRONTEND-ONLY.
 
-Skip this step for DESIGN, PRODUCT, SCAFFOLD, and GENERAL.
+Skip this step for PRODUCT, SCAFFOLD, and GENERAL.
 
 ### Step 2b: Disambiguate Scaffold Type
 
@@ -83,7 +82,6 @@ database", or "with backend" → FULLSTACK without asking.
 |----------|--------|
 | FRONTEND | Invoke **WAI FDS Engineer** with the user's full message |
 | BACKEND | Invoke **WAI Backend Engineer** with the user's full message |
-| DESIGN | Handle directly — answer design/UX/accessibility questions using FDS skill knowledge |
 | PRODUCT | Invoke **WAI Product Manager** with the user's full message |
 | SCAFFOLD (FRONTEND-ONLY) | Invoke skill `cc-vite-react-ds` |
 | SCAFFOLD (FULLSTACK) | Invoke skill `cc-fullstack-vite` |
