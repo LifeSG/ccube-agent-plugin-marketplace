@@ -25,8 +25,8 @@ orchestrated workflow*
 
 This plugin turns your AI coding assistant into a **full-stack delivery
 team**. A lightweight Maestro router classifies your intent and dispatches
-to specialist agents — product thinking, visual design, frontend (FDS),
-and backend (Koa + PostgreSQL) — each self-verifying with build and test.
+to specialist agents — product thinking, frontend (FDS), and backend
+(Koa + PostgreSQL) — each self-verifying with build and test.
 
 The result: Say "build me a feedback form" and the right specialist
 activates, scaffolds the project if needed, implements with the Flagship
@@ -63,7 +63,7 @@ add workflow phases — it classifies and delegates.
 | -------- | ------------- |
 | FRONTEND | WAI FDS Engineer |
 | BACKEND | WAI Backend Engineer |
-| DESIGN | WAI Designer |
+| DESIGN | Handles directly (FDS knowledge) |
 | PRODUCT | WAI Product Manager |
 | SCAFFOLD | `cc-vite-react-ds` / `cc-fullstack-vite` skill |
 | GENERAL | Handles directly (pass-through) |
