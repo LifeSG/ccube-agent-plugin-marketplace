@@ -45,6 +45,25 @@ cd "$PROJECT_NAME"
 echo "Installing dependencies..."
 npm install
 
+# Switch from @vitejs/plugin-react (Babel — injects inline script blocked by
+# CSP) to @vitejs/plugin-react-swc (SWC — no inline preamble).
+echo "Switching to @vitejs/plugin-react-swc..."
+npm uninstall @vitejs/plugin-react
+npm install --save-dev @vitejs/plugin-react-swc
+
+# Rewrite vite.config.ts with allowedHosts and SWC plugin
+cat > vite.config.ts << 'VITECONF'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    allowedHosts: true,
+  },
+});
+VITECONF
+
 # Install Flagship Design System and dependencies
 # Pinned to ^3 — v4 is alpha and has breaking ThemeProvider API changes.
 # Remove the @^3 pin once v4 reaches stable and resources-v4/ is populated.

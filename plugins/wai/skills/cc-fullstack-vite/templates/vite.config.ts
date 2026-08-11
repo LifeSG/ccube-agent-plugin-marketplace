@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -16,6 +16,7 @@ export default defineConfig({
     outDir: 'dist/client',
   },
   server: {
+    allowedHosts: true,
     proxy: {
       '/api': {
         target: 'http://localhost:__BACKEND_PORT__',

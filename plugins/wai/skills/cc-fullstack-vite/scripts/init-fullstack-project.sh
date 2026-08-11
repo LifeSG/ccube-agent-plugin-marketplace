@@ -84,6 +84,12 @@ cd "$PROJECT_NAME"
 echo "Step 2/9: Installing base dependencies..."
 npm install
 
+# Switch from @vitejs/plugin-react (Babel — injects inline script blocked by
+# CSP) to @vitejs/plugin-react-swc (SWC — no inline preamble).
+echo "  Switching to @vitejs/plugin-react-swc..."
+npm uninstall @vitejs/plugin-react
+npm install --save-dev @vitejs/plugin-react-swc
+
 echo "Step 3/9: Installing Flagship Design System..."
 npm install @lifesg/react-design-system@^3 @lifesg/react-icons styled-components
 npm install --save-dev @types/styled-components

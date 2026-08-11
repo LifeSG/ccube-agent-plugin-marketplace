@@ -238,8 +238,8 @@ export async function fetchHealth(): Promise<{ status: string }> {
 
 Replace the default Vite App with a layout that demonstrates the
 frontend-to-backend connection (e.g., displays health status or
-a data list from the API). Use FDS components (`Layout`, `Text`,
-etc.) for the UI.
+a data list from the API). Use FDS components (`Layout`,
+`Typography`, etc.) for the UI.
 
 ### 4. `README.md`
 
