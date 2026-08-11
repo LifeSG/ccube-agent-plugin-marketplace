@@ -664,7 +664,7 @@ Every Implementation Brief MUST NOT contain:
 >
 > Output: Implementation Brief includes `Form.Input` (maps from
 > "Name Input" layer), `Button` (maps from "Submit" layer),
-> `Text.H1` (maps from "Page Title" layer). All spacing values
+> `Typography.HeadingXL` (maps from "Page Title" layer). All spacing values
 > reference `Spacing.XXS`–`Spacing.XXL` tokens. WCAG section: Tier
 > 1 Failures: None. Tier 2 Warnings: Submit button has no
 > `aria-label` — recommend adding descriptive label. Open questions:
@@ -682,7 +682,7 @@ Every Implementation Brief MUST NOT contain:
 | ---------------- | ------------------------------------------------ | ------------------------- | --------------------------------------------------------------------------------------- |
 | FDS mapping      | Figma button layer named "Primary CTA"           | WAI FDS Engineer          | Maps to FDS `Button` with `variant="primary"`; token reference for all style properties |
 | WCAG check       | Form without labels on inputs                    | Accessibility auditor     | Tier 1 Failure flagged: missing `aria-label`; spec blocks advancement until resolved    |
-| Token compliance | Designer brief references colour "#3B82F6"       | Harness (delegator)   | Brief rejected; designer re-reads token file and substitutes nearest color token        |
+| Token compliance | Designer brief references colour "#3B82F6"       | the caller            | Brief rejected; designer re-reads token file and substitutes nearest color token        |
 | No FDS coverage  | Figma uses a custom date-picker not in FDS       | the caller     | "No FDS Coverage" gap flag raised; routed to caller for resolution                      |
 | Phase 7 review   | Implementation has raw `<button>` instead of FDS | WAI FDS Engineer (review) | Regression flagged as HIGH; delta report produced with file reference                   |
 

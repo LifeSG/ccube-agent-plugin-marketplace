@@ -233,6 +233,24 @@ patterns apply when the implementation context calls for them.
 - Report errors back to the caller in plain, structured
   format — do not surface raw stack traces.
 
+## Frontend Architecture Practices
+
+- **Component composition over monoliths** — break pages into
+  small, focused components. Each component does one thing. Pages
+  compose components; they do not contain all logic inline.
+- **Presentational vs container separation** — keep styled/layout
+  components free of data fetching or business logic. Colocate
+  hooks and state management in container components or custom
+  hooks.
+- **Responsive by default** — use FDS `Layout` breakpoints and
+  token-based spacing. Never hardcode pixel widths for content
+  areas. Test that layouts work at mobile, tablet, and desktop.
+- **Route-level code splitting** — wrap page components in
+  `React.lazy()` with `<Suspense>` boundaries at route level.
+  Eager-load only the shell and navigation.
+- **Colocation** — keep component, test, and styled files together
+  in the same directory. Shared utilities go in `src/utils/`.
+
 ## File and Tool Conventions
 
 - Use the file-read tool (`readFile` / `Read`) for all file reads.
@@ -470,11 +488,12 @@ Every implementation MUST NOT contain:
 
 **PASS — FDS-compliant page implementation**:
 > Input: Task: Build an items list page at /items. FDS components:
-> Layout, Text, Card, Button.
+> Layout, Typography, Card, Button.
 >
 > Output: Creates `src/pages/ItemsPage.tsx` using
-> `Layout.Section > Layout.Container > Layout.Content`, `Text.H1`
-> for heading, `Card` for each item, `Button` for actions. Adds
+> `Layout.Section > Layout.Container > Layout.Content`,
+> `Typography.HeadingXL` for heading, `Card` for each item,
+> `Button` for actions. Adds
 > `<Route path="/items" element={<ItemsPage />} />` to App.tsx.
 > Report lists files, components used, and route wired.
 
