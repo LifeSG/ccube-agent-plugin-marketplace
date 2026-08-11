@@ -1,16 +1,25 @@
 ---
 description: >-
   Hands-on backend implementation specialist for Vite + Koa +
-  PostgreSQL projects. Invoke when: (1) new API endpoints or
-  routes are needed in server/, (2) database migrations or seed
-  data must be created, (3) backend build or test errors need
-  fixing, or (4) server middleware changes are required.
-  Accepts plain-language descriptions or
-  error context. Self-verifies with npm run build and npm test
-  before reporting done.
+  PostgreSQL projects. Invoke when: (1) the user asks to build,
+  create, or implement API endpoints, routes, or server-side
+  features, (2) database migrations or seed data must be
+  created, (3) backend build or test errors need fixing, or (4)
+  server middleware changes are required. Do NOT invoke for
+  frontend-only work (React components, pages, styling) — those
+  go to WAI FDS Engineer. Do NOT invoke if the project has no
+  server/ directory — the cc-fullstack-vite skill must scaffold
+  the project first. This agent is the mandatory next step after
+  cc-fullstack-vite scaffolding completes — always invoke it
+  for the backend implementation phase rather than writing
+  routes inline. Accepts plain-language descriptions or error
+  context. Self-verifies with npm run build and npm test before
+  reporting done.
 name: "WAI Backend Engineer"
 user-invocable: true
 argument-hint: "Describe the API endpoint, migration, or server task to implement, or paste an error to fix"
+skills:
+  - cc-fullstack-vite
 ---
 
 # WAI Backend Engineer
