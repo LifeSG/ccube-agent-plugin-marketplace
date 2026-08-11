@@ -49,8 +49,9 @@ required.
 ### Maestro
 
 Lightweight routing agent that classifies user intent and dispatches
-to the correct specialist. Does NOT generate briefs, review code, or
-add workflow phases — it classifies and delegates.
+to specialists. A single prompt can trigger multiple agents in
+parallel (e.g., FRONTEND + BACKEND). Does NOT generate briefs,
+review code, or add workflow phases — it classifies and delegates.
 
 **Activation:**
 
