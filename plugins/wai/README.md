@@ -77,8 +77,7 @@ add workflow phases — it classifies and delegates.
 ### WAI Product Manager
 
 Guides requirements gathering, MVP scoping, and user story writing for
-non-technical users. Produces a structured Product Brief that feeds
-directly into Phase 1.5 Architecture Review.
+non-technical users. Produces a structured Product Brief.
 
 **Example prompts:**
 
@@ -122,8 +121,8 @@ No manual loading is needed.
 ### `cc-fullstack-vite`
 
 Scaffolds a complete Vite + React + FDS frontend with Koa + TypeScript
-backend and PostgreSQL database in a single project folder. Used by
-WAI Maestro in Phase 2.
+backend and PostgreSQL database in a single project folder. Invoked by
+Maestro when SCAFFOLD (FULLSTACK) is detected.
 
 **Key capabilities:**
 
@@ -150,26 +149,25 @@ Engineer when a backend is not required.
 
 Covers GCC deployment via Rabbit Deploy — git initialisation, Project
 Access Token setup, configuring the GitLab remote, and pushing to trigger
-automatic CI/CD. Used by WAI Maestro in Phase 8.
+automatic CI/CD.
 
 ### `cc-git-commit`
 
 Atomic commit workflow that groups changed files into logical commits and
 produces Conventional Commit messages prefixed with branch name and author
-initials. Used by WAI Maestro after each SDLC phase.
+initials.
 
 ### `cc-create-ep`
 
 Stepwise Enhancement Proposal (EP) creation following KEP-style
-documentation standards. Fires 5 specialist research subagents in parallel
-to gather codebase context. Used by WAI Software Engineer in standalone
-mode.
+documentation standards. Fires specialist research subagents in parallel
+to gather codebase context.
 
 ### `cc-plan-implementation`
 
 Decomposes an EP or task description into a parallelised, phase-based
 workplan with a Mermaid dependency graph, critical path analysis, and
-per-task agent prompts. Used by WAI Software Engineer in standalone mode.
+per-task agent prompts.
 
 ### `cc-contribute-wai`
 
