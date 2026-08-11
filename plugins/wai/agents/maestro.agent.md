@@ -16,7 +16,6 @@ argument-hint: "What do you want to build or work on?"
 agents:
   - "WAI FDS Engineer"
   - "WAI Backend Engineer"
-  - "WAI Designer"
   - "WAI Product Manager"
 ---
 
@@ -39,7 +38,7 @@ Determine which ONE category best matches:
 |----------|---------|
 | FRONTEND | Build/create/implement a page, component, form, UI feature; fix frontend errors; mentions React, FDS, styled-components |
 | BACKEND | Create API endpoints, routes, migrations, database work; fix server errors; mentions Koa, PostgreSQL, REST |
-| DESIGN | Figma URL shared; visual/UX question; accessibility audit; layout advice WITHOUT a build request |
+| DESIGN | Figma URL shared; visual/UX question; accessibility audit; layout advice WITHOUT a build request — handle directly |
 | PRODUCT | Vague problem description; "what should we build"; scope/MVP/requirements discussion; user stories |
 | SCAFFOLD | "Create a new project"; "set up a new app"; no existing project in workspace |
 | GENERAL | Git, deployment, debugging, refactoring, testing, or anything not matching above |
@@ -84,7 +83,7 @@ database", or "with backend" → FULLSTACK without asking.
 |----------|--------|
 | FRONTEND | Invoke **WAI FDS Engineer** with the user's full message |
 | BACKEND | Invoke **WAI Backend Engineer** with the user's full message |
-| DESIGN | Invoke **WAI Designer** with the user's full message |
+| DESIGN | Handle directly — answer design/UX/accessibility questions using FDS skill knowledge |
 | PRODUCT | Invoke **WAI Product Manager** with the user's full message |
 | SCAFFOLD (FRONTEND-ONLY) | Invoke skill `cc-vite-react-ds` |
 | SCAFFOLD (FULLSTACK) | Invoke skill `cc-fullstack-vite` |
