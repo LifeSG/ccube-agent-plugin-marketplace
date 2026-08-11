@@ -131,7 +131,8 @@ file and updates `main.tsx` to import it.
 #### `src/App.tsx`
 
 Replace the default Vite App with a minimal FDS-styled layout using
-`Layout` and `Text` components from `@lifesg/react-design-system`.
+`Layout` and `Typography` components from
+`@lifesg/react-design-system`.
 
 #### `README.md`
 
@@ -190,14 +191,14 @@ Replace `src/App.tsx`:
 
 ```typescript
 import { Layout } from '@lifesg/react-design-system/layout';
-import { Text } from '@lifesg/react-design-system/text';
+import { Typography } from '@lifesg/react-design-system/typography';
 
 function App() {
   return (
     <Layout.Container>
       <Layout.Content>
-        <Text.H1>Welcome to Your App</Text.H1>
-        <Text.Body>Built with Flagship Design System</Text.Body>
+        <Typography.HeadingXL>Welcome to Your App</Typography.HeadingXL>
+        <Typography.BodyBL>Built with Flagship Design System</Typography.BodyBL>
       </Layout.Content>
     </Layout.Container>
   );
@@ -380,7 +381,7 @@ After execution, the project directory MUST contain:
 - `src/components/`, `src/pages/`, `src/providers/`, `src/utils/`
   directories
 - `src/main.tsx` with `DSThemeProvider` wrapping the app
-- `src/App.tsx` using FDS `Layout` and `Text` components
+- `src/App.tsx` using FDS `Layout` and `Typography` components
 - `vite.config.ts` with React plugin configured
 
 ### Feedback Sensors (MUST-NOT-contain)
