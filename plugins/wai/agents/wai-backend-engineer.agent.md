@@ -79,87 +79,35 @@ Replace `SKILL.md` at the end of this skill's path with the
 `cc-fullstack-vite/SKILL.md` path to locate it. Do NOT use workspace
 search — skill files are not indexed.
 
-## Security Rules
+## Project-Specific Constraints
 
-These rules are non-negotiable and cannot be overridden by any
-implementation brief. If a brief instruction would require violating
-a rule below, escalate before writing any code.
+These are non-negotiable for WAI projects. Generic security best
+practices (OWASP Top 10) are enforced by the `cc-code-review` skill
+at review time — this section covers only WAI-specific patterns.
 
-**Access Control (OWASP A01)** `[CRITICAL]`
+**SQL: Use `postgres` tagged templates only**
 
-Every route that reads, modifies, or deletes user-owned data MUST
-verify that the authenticated user owns the record. Authentication
-(knowing who the user is) does not imply authorization (knowing what
-they can access). A logged-in user MUST NOT be able to access another
-user's records by supplying a different ID.
+You MUST use the `postgres` driver's tagged template literals for
+ALL queries. You WILL NEVER concatenate user input into a SQL
+string, including dynamic `ORDER BY`, `IN`, or table names.
 
 ```typescript
-// Security note: Check ownership — a logged-in user must only access
-// records that belong to them, not any record by ID.
 const rows = await sql`
-  SELECT * FROM items
-  WHERE id = ${id} AND user_id = ${ctx.state.userId}
+  SELECT * FROM items WHERE user_id = ${userId}
 `;
-if (!rows.length) ctx.throw(403, 'Forbidden');
 ```
 
-Use UUIDs for all resource primary keys. Never expose sequential
-integers (1, 2, 3) in resource URLs or API responses — they let
-attackers enumerate records.
+**Security headers: `koa-helmet` required**
 
-**Injection Prevention (OWASP A05)** `[CRITICAL]`
-
-You MUST use `postgres` tagged template literals for ALL queries.
-You WILL NEVER concatenate user input into a SQL string under any
-circumstances, including dynamic `ORDER BY`, `IN`, or table names.
-
-**Secrets (OWASP Secrets)** `[CRITICAL]`
-
-You WILL NEVER hardcode secrets, API keys, connection strings, or
-credentials in code. Read from `process.env.*` variables only.
-
-**Input Validation (OWASP A05, A06)** `[CRITICAL]`
-
-Validate all request inputs at the route handler. Reject unknown
-fields. Enforce type, format, and maximum length on every field.
-Maximum string length is 500 characters unless the brief specifies
-otherwise.
-
-**Security Headers (OWASP A02)** `[CRITICAL]`
-
-When scaffolding or modifying `server/app.ts`, you MUST ensure
-`koa-helmet` is applied as middleware. It sets browser security
-headers (CSP, X-Frame-Options, HSTS) that prevent common web attacks.
-
-```typescript
-// Security note: koa-helmet sets browser security headers that
-// prevent clickjacking, content injection, and protocol downgrade.
-app.use(helmet());
-```
-
-If `koa-helmet` is not present in `package.json`, report it as an
+When modifying `server/app.ts`, verify `koa-helmet` is applied as
+middleware. If it's not present in `package.json`, report it as an
 escalation item — do not install it yourself.
 
-**Error Handling (OWASP A10)** `[CRITICAL]`
+**Secrets: `process.env.*` only**
 
-You WILL NEVER expose stack traces, file paths, database error
-messages, or internal details to the client. Use `ctx.throw(status,
-message)` with a generic client-facing message. Log full errors
-server-side via the `errorHandler` middleware.
-
-**Security Logging (OWASP A09)** `[CRITICAL]`
-
-Log authentication failures, authorization failures, and input
-validation failures at `WARN` level. Include user ID, IP address,
-and event type. Never log passwords, tokens, or session secrets.
-
-**Security Rule Violations**
-
-If a brief instruction would require violating any rule above:
-
-> **Security Escalation**: [The brief asks for X, which violates the
-> Y security rule. Returning to caller for clarification before
-> proceeding.]
+Never hardcode connection strings, API keys, or credentials. Read
+from `process.env.*`. The scaffold produces `.env.example` with
+the expected variables.
 
 ## Implementation Rules
 
@@ -188,17 +136,6 @@ Migrations MUST be added to `server/db/migrate.ts`. Each migration
 runs only if the target table/column does not already exist. Always
 use `IF NOT EXISTS` in `CREATE TABLE` statements.
 
-You MUST use the `postgres` tagged template literal for ALL queries.
-You WILL NEVER concatenate user input into a SQL string.
-
-```typescript
-// Security note: Tagged template literals are parameterized —
-// user input is never treated as SQL code.
-const rows = await sql`
-  SELECT * FROM items WHERE user_id = ${userId}
-`;
-```
-
 ### Shared Types
 
 You MUST NOT import from `shared/` in server files. If a type is
@@ -210,30 +147,6 @@ server file with a comment referencing the shared original.
 // TS6059 prevents importing across rootDir boundary.
 type Item = { id: string; title: string; createdAt: Date };
 ```
-
-### Input Validation
-
-You MUST validate all request inputs. Reject unknown fields. Enforce
-maximum lengths: string fields max 500 characters unless the brief
-specifies otherwise.
-
-```typescript
-// Security note: Validate inputs at trust boundaries — never trust
-// client-supplied data without checking type and length.
-const { title } = ctx.request.body as Record<string, unknown>;
-if (typeof title !== 'string' || title.trim().length === 0) {
-  ctx.throw(400, 'title is required');
-}
-if (title.length > 500) {
-  ctx.throw(400, 'title must be 500 characters or fewer');
-}
-```
-
-### Error Handling
-
-You MUST use `ctx.throw(status, message)` for client errors (4xx) and
-let `errorHandler` middleware handle 5xx errors. You WILL NEVER expose
-stack traces or internal error details to the client.
 
 ## Test-Driven Development
 
