@@ -1,0 +1,26 @@
+[
+  {
+    "id": "clear-frontend",
+    "prompt": "Build a login page with email and password fields using FDS components",
+    "expected_categories": ["FRONTEND"],
+    "expected_dispatch": ["WAI FDS Engineer"],
+    "handle_directly": false,
+    "notes": "Clear FRONTEND signal — mentions building a page with FDS"
+  },
+  {
+    "id": "clear-backend",
+    "prompt": "Create a POST /api/users endpoint that validates email and stores the user in PostgreSQL",
+    "expected_categories": ["BACKEND"],
+    "expected_dispatch": ["WAI Backend Engineer"],
+    "handle_directly": false,
+    "notes": "Clear BACKEND signal — mentions API endpoint, PostgreSQL"
+  },
+  {
+    "id": "handle-directly",
+    "prompt": "How do I run the dev server?",
+    "expected_categories": ["GENERAL"],
+    "expected_dispatch": null,
+    "handle_directly": true,
+    "notes": "Question that Maestro should answer directly without dispatching"
+  }
+]
