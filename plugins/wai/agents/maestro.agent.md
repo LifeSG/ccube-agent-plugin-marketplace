@@ -70,24 +70,29 @@ agent to dispatch to:
 
 **2a. Check for MAI agents (project-local):**
 
-Scan `wai/byoa/` in the workspace root for `*.agent.md` files.
-Read each agent's `description` field. If a project agent's
-description covers the classified category (mentions that
-category's trigger signals — e.g., "pages", "components",
-"frontend" for FRONTEND; "endpoint", "API", "database" for
-BACKEND), use that agent as the dispatch target.
+Look for these exact files in `wai/byoa/`:
 
-**2b. If no MAI agent matches, use WAI defaults:**
+| Category | Filename |
+|----------|----------|
+| FRONTEND | `wai/byoa/mai-frontend.agent.md` |
+| BACKEND | `wai/byoa/mai-backend.agent.md` |
+| PRODUCT | `wai/byoa/mai-product.agent.md` |
 
-Fall back to the WAI plugin specialists directly:
+If the file exists for the classified category, use that MAI
+agent as the dispatch target. No description matching — purely
+filename-based discovery.
 
-- FRONTEND → WAI FDS Engineer
-- BACKEND → WAI Backend Engineer
-- PRODUCT → WAI Product Manager
+**2b. If no MAI agent exists, use WAI defaults:**
 
-No project context check is needed. Do NOT read `package.json`
-to decide whether to use WAI agents — they are the universal
-fallback when no MAI agent exists.
+If the corresponding `mai-<category>.agent.md` file does not
+exist, fall back to the WAI plugin specialist:
+
+- FRONTEND (no `mai-frontend.agent.md`) → WAI FDS Engineer
+- BACKEND (no `mai-backend.agent.md`) → WAI Backend Engineer
+- PRODUCT (no `mai-product.agent.md`) → WAI Product Manager
+
+No project context check is needed. WAI agents are the
+universal fallback when no MAI agent exists.
 
 **2c. Disambiguate scaffold type (SCAFFOLD only):**
 
