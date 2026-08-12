@@ -129,8 +129,8 @@ prompts. Do not wait for one to finish before starting another.
 
 | Category | Action |
 |----------|--------|
-| FRONTEND | Invoke the resolved frontend agent (MAI or WAI FDS Engineer) |
-| BACKEND | Invoke the resolved backend agent (MAI or WAI Backend Engineer) |
+| FRONTEND | Invoke **WAI FDS Engineer** with frontend-focused prompt |
+| BACKEND | Invoke **WAI Backend Engineer** with backend-focused prompt |
 | PRODUCT | Invoke **WAI Product Manager** with product-focused prompt |
 | SCAFFOLD (FRONTEND-ONLY) | Invoke skill `cc-vite-react-ds` |
 | SCAFFOLD (FULLSTACK) | Invoke skill `cc-fullstack-vite` |
@@ -161,8 +161,6 @@ scaffold typically triggers both FRONTEND and BACKEND.
 - The fix is obvious from context (error message + file visible)
 
 **Dispatch to specialist** when:
-- A MAI agent exists that covers the category (always dispatch
-  to project-local agents — they represent the team's intent)
 - Creating new FDS components or pages (needs component catalog
   knowledge)
 - Creating new API endpoints or migrations (needs Koa/PostgreSQL
@@ -182,9 +180,6 @@ when specialist domain knowledge genuinely adds value.
 - When dispatching, write a refined prompt scoped to each
   agent's domain. Do NOT forward the raw user message — each
   agent should receive only the work relevant to it.
-- MAI agents ALWAYS take precedence over WAI agents for the
-  same category. Never skip a MAI agent in favor of a WAI
-  default.
 - After scaffold (whether fully or partially successful):
   ALWAYS re-classify the original intent and dispatch ALL
   matching specialist agents. Do not skip this step. If the
