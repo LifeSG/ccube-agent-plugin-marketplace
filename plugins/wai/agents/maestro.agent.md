@@ -129,9 +129,9 @@ prompts. Do not wait for one to finish before starting another.
 
 | Category | Action |
 |----------|--------|
-| FRONTEND | Invoke **WAI FDS Engineer** with frontend-focused prompt |
-| BACKEND | Invoke **WAI Backend Engineer** with backend-focused prompt |
-| PRODUCT | Invoke **WAI Product Manager** with product-focused prompt |
+| FRONTEND | Invoke the frontend agent resolved in Step 2 |
+| BACKEND | Invoke the backend agent resolved in Step 2 |
+| PRODUCT | Invoke the product agent resolved in Step 2 |
 | SCAFFOLD (FRONTEND-ONLY) | Invoke skill `cc-vite-react-ds` |
 | SCAFFOLD (FULLSTACK) | Invoke skill `cc-fullstack-vite` |
 | GENERAL | Handle directly — answer the user using all available tools |
