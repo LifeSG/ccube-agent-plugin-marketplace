@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "wai",
   "description": "Full-stack web application delivery platform. Orchestrates requirements, architecture review, frontend (FDS), backend (Koa + PostgreSQL), build verification, testing, code review, and deployment across a team of specialist agents.",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "author": {
     "name": "LifeSG CCube"
   },
