@@ -63,7 +63,7 @@ From a technical perspective, the 80% codebase is production-capable at small sc
 - Modular architecture that a team can extend without stepping on each other's work — each route, component, and page is independently modifiable
 - Basic test coverage for routes and components — enough to catch regressions when modifying code
 - ESLint configuration for consistent code style enforcement across the team
-- Docker Compose configuration for reproducible local development (PostgreSQL container)
+- Colima + Docker Compose configuration for reproducible local development (PostgreSQL container)
 - Pre-commit secret scanning (gitleaks) — prevents accidental credential commits
 - End-to-end feature flows that work in a real browser against a real database
 - Deployable to a hosting environment for real user traffic at small scale
