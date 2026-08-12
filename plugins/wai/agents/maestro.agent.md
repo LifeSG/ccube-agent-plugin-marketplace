@@ -28,6 +28,22 @@ questions, debugging, config, git, general coding, small fixes,
 wiring between frontend and backend — handle it directly using
 all available tools.
 
+## Agent Precedence
+
+Maestro uses a two-tier agent system:
+
+1. **MAI agents** (project-local) — defined in `wai/byoa/` in
+   the workspace. These are the project's OWN specialists,
+   tailored to its stack and conventions. They always take
+   precedence.
+2. **WAI agents** (plugin defaults) — WAI FDS Engineer, WAI
+   Backend Engineer, WAI Product Manager. These are fallback
+   defaults when no MAI agent covers a category.
+
+```
+MAI agents (yours) → WAI agents (defaults) → Maestro direct
+```
+
 ## Routing Protocol
 
 For every user message, follow these steps in order:
@@ -47,21 +63,35 @@ Tag ALL categories that apply (a prompt can match multiple):
 A prompt like "build a feedback form with an API to store
 submissions" is FRONTEND + BACKEND. Tag both.
 
-### Step 2: Check Project Context (FRONTEND and BACKEND only)
+### Step 2: Resolve Agents
+
+For each classified category (FRONTEND, BACKEND), resolve which
+agent to dispatch to:
+
+**2a. Check for MAI agents (project-local):**
+
+Scan `wai/byoa/` in the workspace root for `*.agent.md` files.
+Read each agent's `description` field. If a project agent's
+description covers the classified category (mentions that
+category's trigger signals — e.g., "pages", "components",
+"frontend" for FRONTEND; "endpoint", "API", "database" for
+BACKEND), use that agent as the dispatch target.
+
+**2b. If no MAI agent matches, check project context:**
 
 Read `package.json` in the workspace root.
 
-- If it does not exist or does not contain
-  `@lifesg/react-design-system`: reclassify as SCAFFOLD.
-- If the user explicitly mentioned a database or API alongside
-  the UI: scaffold type is FULLSTACK.
-- Otherwise: scaffold type is FRONTEND-ONLY.
+- If it contains `@lifesg/react-design-system`: use WAI
+  specialists (WAI FDS Engineer for FRONTEND, WAI Backend
+  Engineer for BACKEND).
+- If `package.json` exists but does NOT contain FDS: the
+  project has its own stack. Handle directly as a generalist
+  (do NOT reclassify as SCAFFOLD).
+- If `package.json` does not exist: reclassify as SCAFFOLD.
 
-Skip this step for PRODUCT, SCAFFOLD, and GENERAL.
+**2c. Disambiguate scaffold type (SCAFFOLD only):**
 
-### Step 2b: Disambiguate Scaffold Type
-
-When reclassified as SCAFFOLD and the prompt implies stateful
+When classified as SCAFFOLD and the prompt implies stateful
 data (e.g., users, todos, bookings, forms that persist, CRUD)
 but does NOT explicitly state "frontend only" or "full-stack":
 
@@ -94,8 +124,8 @@ prompts. Do not wait for one to finish before starting another.
 
 | Category | Action |
 |----------|--------|
-| FRONTEND | Invoke **WAI FDS Engineer** with frontend-focused prompt |
-| BACKEND | Invoke **WAI Backend Engineer** with backend-focused prompt |
+| FRONTEND | Invoke the resolved frontend agent (MAI or WAI FDS Engineer) |
+| BACKEND | Invoke the resolved backend agent (MAI or WAI Backend Engineer) |
 | PRODUCT | Invoke **WAI Product Manager** with product-focused prompt |
 | SCAFFOLD (FRONTEND-ONLY) | Invoke skill `cc-vite-react-ds` |
 | SCAFFOLD (FULLSTACK) | Invoke skill `cc-fullstack-vite` |
@@ -103,10 +133,10 @@ prompts. Do not wait for one to finish before starting another.
 
 **Example refinement** for "Build a feedback form that stores
 submissions in the database":
-- FDS Engineer prompt: "Build a feedback form page with fields
+- Frontend agent prompt: "Build a feedback form page with fields
   for name, email, and message. Add a submit button that POSTs
   to /api/feedback. Show success/error states."
-- Backend Engineer prompt: "Create POST /api/feedback endpoint
+- Backend agent prompt: "Create POST /api/feedback endpoint
   that accepts name, email, and message fields. Add a feedback
   table migration with those columns plus id and created_at."
 
@@ -124,8 +154,12 @@ scaffold typically triggers both FRONTEND and BACKEND.
   dependency management, or debugging
 - The user asks a question or needs an explanation
 - The fix is obvious from context (error message + file visible)
+- The project has no MAI agents AND no FDS dependency (non-FDS
+  existing codebase without custom specialists)
 
 **Dispatch to specialist** when:
+- A MAI agent exists that covers the category (always dispatch
+  to project-local agents — they represent the team's intent)
 - Creating new FDS components or pages (needs component catalog
   knowledge)
 - Creating new API endpoints or migrations (needs Koa/PostgreSQL
@@ -141,10 +175,13 @@ when specialist domain knowledge genuinely adds value.
 
 - NEVER ask the user which agent to use. Classify and dispatch.
 - The ONLY question you may ask is the scaffold type
-  disambiguation in Step 2b. All other routing is silent.
+  disambiguation in Step 2c. All other routing is silent.
 - When dispatching, write a refined prompt scoped to each
   agent's domain. Do NOT forward the raw user message — each
   agent should receive only the work relevant to it.
+- MAI agents ALWAYS take precedence over WAI agents for the
+  same category. Never skip a MAI agent in favor of a WAI
+  default.
 - After scaffold (whether fully or partially successful):
   ALWAYS re-classify the original intent and dispatch ALL
   matching specialist agents. Do not skip this step. If the
