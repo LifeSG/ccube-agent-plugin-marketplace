@@ -130,8 +130,8 @@ Maestro when SCAFFOLD (FULLSTACK) is detected.
   database name
 - Produces the exact `dist/index.js` and `dist/client/` build outputs
   required by the production Dockerfile
-- Sets up Docker Compose for local PostgreSQL, gitleaks pre-commit hook,
-  and all TypeScript configs
+- Sets up Colima + Docker Compose for local PostgreSQL, gitleaks
+  pre-commit hook, and all TypeScript configs
 
 ### `cc-design-system`
 
@@ -211,6 +211,6 @@ the full privacy and data schema documentation.
 ## Requirements
 
 - Node.js 18+
-- Docker + Docker Compose (for local PostgreSQL)
+- Colima + Docker CLI (for local PostgreSQL)
 - gitleaks (`brew install gitleaks`)
 - pre-commit (`brew install pre-commit`)

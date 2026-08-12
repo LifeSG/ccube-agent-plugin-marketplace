@@ -56,8 +56,9 @@ Do NOT use when:
 ## Prerequisites
 
 - **Node.js 18+** and **npm** — verify with `node -v` before executing
-- **Docker** and **Docker Compose** — required for the local PostgreSQL
-  container. Verify with `docker --version` and
+- **Colima** and **Docker CLI** — required for the local PostgreSQL
+  container. Install via `brew install colima docker docker-compose`.
+  Start with `colima start`. Verify with `docker --version` and
   `docker compose version`.
 - **gitleaks** — pre-commit secret scanner. Install via
   `brew install gitleaks` (macOS) or download from
@@ -245,7 +246,7 @@ a data list from the API). Use FDS components (`Layout`,
 
 Create a README documenting:
 - Stack overview (Vite + React + FDS + Koa + PostgreSQL)
-- Prerequisites (Node.js, Docker)
+- Prerequisites (Node.js, Colima)
 - Quick start (`docker compose -f docker-compose.local.yml up -d`,
   copy `.env.example` to `.env`, `npm run dev`)
 - Available scripts (`dev`, `dev:frontend`, `dev:server`, `build`,
@@ -281,9 +282,9 @@ After project creation, verify:
 - **Solution**: Install Node.js 18+ from nodejs.org
 
 **Error: "Docker is not running" or "docker compose: command not found"**
-- **Cause**: Docker not installed or Docker daemon not started
-- **Solution**: Install Docker Desktop and start it, or use
-  `brew install docker` on macOS
+- **Cause**: Colima not running or Docker CLI not installed
+- **Solution**: Install via `brew install colima docker docker-compose`,
+  then start with `colima start`
 
 **Error: "port 5555 already in use"**
 - **Cause**: Another PostgreSQL instance or process using port 5555
@@ -329,6 +330,7 @@ After project creation, verify:
 - Vite documentation: https://vite.dev/
 - Koa documentation: https://koajs.com/
 - postgres (driver) documentation: https://github.com/porsager/postgres
+- Colima documentation: https://github.com/abiosoft/colima
 - Docker Compose documentation:
   https://docs.docker.com/compose/
 - Flagship Design System:

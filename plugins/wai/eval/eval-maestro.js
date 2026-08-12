@@ -1,3 +1,9 @@
+// Usage: In a Claude Code session, ask:
+//   "run the maestro eval"
+// Or explicitly:
+//   "run the workflow at plugins/wai/eval/eval-maestro.js
+//    with args from plugins/wai/eval/maestro-test-cases.json"
+
 export const meta = {
   name: 'eval-maestro',
   description: 'Classification smoke test for Maestro routing agent',
