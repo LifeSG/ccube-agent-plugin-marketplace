@@ -27,7 +27,7 @@ trigger on demand when iterating on maestro.agent.md."
 - [Design Details](#design-details)
   - [Test Fixture Schema](#test-fixture-schema)
   - [Workflow Script](#workflow-script)
-  - [Eval Skill](#eval-skill)
+  - [Invocation](#invocation)
 - [Alternatives](#alternatives)
 - [Infrastructure Needed (Optional)](#infrastructure-needed-optional)
 - [Review & Acceptance Checklist](#review--acceptance-checklist)
@@ -70,7 +70,7 @@ the test runner.
 
 1. Catch catastrophic routing regressions — Maestro must still
    route obvious cases correctly after any change.
-2. Provide a fast local feedback loop — run `/eval-maestro`
+2. Provide a fast local feedback loop — run the eval workflow
    during development to verify routing before committing.
 3. Use a ratcheting threshold that tightens as accuracy improves,
    preventing gradual quality drift.
@@ -226,12 +226,14 @@ produces an incorrect classification.
 #### AC 4: Deterministic Grading
 
 Grading uses pure JSON comparison (set equality for arrays,
-boolean equality for scalars). No grader agent is involved.
+boolean equality for scalars, null/empty-array equivalence).
+No grader agent is involved.
 
 #### AC 5: Machine-Readable Output
 
-`eval-results.json` contains: per-case verdicts, aggregate
-accuracy, execution metadata (duration, case count).
+The workflow returns structured data: per-case verdicts with
+predicted vs. expected values, aggregate accuracy, and
+pass/fail status.
 
 ### Notes/Constraints/Caveats
 
@@ -326,97 +328,47 @@ accuracy, execution metadata (duration, case count).
 
 ### Workflow Script
 
+Located at `plugins/wai/eval/eval-maestro.js`. The source of
+truth is the file itself — the snippet below is illustrative
+of the architecture, not a copy of the implementation.
+
+Key design decisions in the implementation:
+
+- `isEmpty()` helper treats `null` and `[]` as equivalent
+  (both mean "no dispatch") — discovered during first eval run
+  where the model returned `[]` instead of `null`
+- Results include both `predicted` and `expected` objects for
+  easy debugging of failures
+- Failed cases are logged individually with which dimensions
+  mismatched (cat/disp/direct)
+
 ```javascript
-export const meta = {
-  name: 'eval-maestro',
-  description: 'Classification smoke test for Maestro routing',
-  phases: [
-    { title: 'Classify', detail: 'Route each prompt through Maestro logic' },
-    { title: 'Report', detail: 'Compare and aggregate results' }
-  ]
-}
-
-const CLASSIFY_SCHEMA = {
-  type: 'object',
-  required: ['categories', 'dispatch_to', 'handle_directly'],
-  properties: {
-    categories: {
-      type: 'array',
-      items: {
-        enum: ['FRONTEND','BACKEND','PRODUCT','SCAFFOLD','GENERAL']
-      }
-    },
-    dispatch_to: {
-      type: 'array',
-      items: { type: 'string' },
-      nullable: true
-    },
-    handle_directly: { type: 'boolean' }
-  }
-}
-
-const cases = args
-
+// Simplified structure — see eval-maestro.js for full source
 const predictions = await pipeline(
   cases,
-  (c) => agent(
-    `You are the Maestro routing agent. Given this user prompt, classify it into categories and determine dispatch targets. Follow the Maestro routing protocol exactly.\n\nUser prompt: "${c.prompt}"\n\nReturn your classification as structured output. Do NOT actually dispatch.`,
-    { label: `classify:${c.id}`, phase: 'Classify', schema: CLASSIFY_SCHEMA, effort: 'low' }
-  )
+  (c) => agent("Classify...", {
+    schema: CLASSIFY_SCHEMA, effort: 'low'
+  })
 )
 
-phase('Report')
-
+// Deterministic comparison (no grader agent)
+function isEmpty(a) { return !a || a.length === 0 }
 function setsEqual(a, b) {
-  if (!a && !b) return true
-  if (!a || !b) return false
-  const sa = new Set(a.map(x => x.toLowerCase()))
-  const sb = new Set(b.map(x => x.toLowerCase()))
-  if (sa.size !== sb.size) return false
-  for (const item of sa) { if (!sb.has(item)) return false }
-  return true
-}
-
-const results = cases.map((c, i) => {
-  const pred = predictions[i]
-  if (!pred) return { id: c.id, pass: false, reason: 'no prediction' }
-  const catMatch = setsEqual(pred.categories, c.expected_categories)
-  const dispMatch = setsEqual(pred.dispatch_to, c.expected_dispatch)
-  const directMatch = pred.handle_directly === c.handle_directly
-  const pass = catMatch && dispMatch && directMatch
-  return { id: c.id, pass, catMatch, dispMatch, directMatch }
-})
-
-const passed = results.filter(r => r.pass).length
-const total = results.length
-const accuracy = total > 0 ? passed / total : 0
-
-log(`Results: ${passed}/${total} passed (${(accuracy * 100).toFixed(0)}%)`)
-log(passed === total ? 'PASS' : 'FAIL')
-
-return {
-  pass: passed === total,
-  accuracy,
-  total,
-  passed,
-  failed: total - passed,
-  results
+  if (isEmpty(a) && isEmpty(b)) return true
+  if (isEmpty(a) || isEmpty(b)) return false
+  // ... set equality check
 }
 ```
 
-### Eval Skill
+### Invocation
 
-The `/eval-maestro` skill:
+No skill wrapper — invoke the workflow directly in any Claude
+Code session:
 
-1. Reads `plugins/wai/eval/maestro-test-cases.json`
-2. Invokes the workflow with the test cases as args
-3. Prints the pass/fail summary
-4. Writes `plugins/wai/eval/eval-results.json`
-
-Usage:
-- `/eval-maestro` — run the smoke test
-- `/eval-maestro --calibrate` — Phase 2: run 3x per case,
-  classify stability, set baseline threshold
+- Ask: "run the maestro eval"
+- Or explicitly: "run the workflow at
+  `plugins/wai/eval/eval-maestro.js` with args from
+  `plugins/wai/eval/maestro-test-cases.json`"
 
 ## Alternatives
 
@@ -477,12 +429,14 @@ Code session and API key.
 
 ## Review & Acceptance Checklist
 
-- [ ] Test fixture contains 3 smoke-test cases
-- [ ] Workflow executes locally and produces `eval-results.json`
-- [ ] All 3 cases pass against current Maestro (baseline)
-- [ ] `/eval-maestro` skill is invocable
-- [ ] Results JSON contains per-case verdicts and aggregate
-- [ ] Grading is purely deterministic (no grader agent)
+- [x] Test fixture contains 3 smoke-test cases
+- [x] Workflow executes locally and returns structured results
+- [x] All 3 cases pass against current Maestro (baseline
+      verified 2026-08-12)
+- [x] Workflow invocable via natural language in Claude Code
+- [x] Results contain per-case verdicts with predicted/expected
+- [x] Grading is purely deterministic (no grader agent)
+- [x] Null/empty-array equivalence handled
 - [ ] Phase 2 expansion criteria documented
 
 ## Execution Status
@@ -494,5 +448,6 @@ Code session and API key.
 - [x] Ambiguities resolved (grilling session — 7 decisions)
 - [x] Part 1 sections filled
 - [x] Part 2 sections filled
+- [x] Phase 1 implemented and verified (3/3 pass, 2026-08-12)
 
 ---
