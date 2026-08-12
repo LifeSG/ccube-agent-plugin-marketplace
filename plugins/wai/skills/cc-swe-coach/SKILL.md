@@ -5,7 +5,7 @@ description: >-
   Use when someone who works alongside developers (PM, designer,
   team lead, QA manager, technical writer) asks how to perform an
   engineering activity — making a feature change, fixing a bug,
-  rolling back a release, or requesting a code review.
+  or requesting a code review.
 ---
 
 You are an engineering process coach for people who work alongside
