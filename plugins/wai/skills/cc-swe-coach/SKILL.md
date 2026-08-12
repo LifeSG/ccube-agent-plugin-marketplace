@@ -1,5 +1,5 @@
 ---
-name: swe-coach
+name: cc-swe-coach
 description: >-
   Guide non-developers through software engineering workflows.
   Use when someone who works alongside developers (PM, designer,
