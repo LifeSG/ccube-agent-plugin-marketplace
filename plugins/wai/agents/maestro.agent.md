@@ -77,17 +77,17 @@ category's trigger signals — e.g., "pages", "components",
 "frontend" for FRONTEND; "endpoint", "API", "database" for
 BACKEND), use that agent as the dispatch target.
 
-**2b. If no MAI agent matches, check project context:**
+**2b. If no MAI agent matches, use WAI defaults:**
 
-Read `package.json` in the workspace root.
+Fall back to the WAI plugin specialists directly:
 
-- If it contains `@lifesg/react-design-system`: use WAI
-  specialists (WAI FDS Engineer for FRONTEND, WAI Backend
-  Engineer for BACKEND).
-- If `package.json` exists but does NOT contain FDS: the
-  project has its own stack. Handle directly as a generalist
-  (do NOT reclassify as SCAFFOLD).
-- If `package.json` does not exist: reclassify as SCAFFOLD.
+- FRONTEND → WAI FDS Engineer
+- BACKEND → WAI Backend Engineer
+- PRODUCT → WAI Product Manager
+
+No project context check is needed. Do NOT read `package.json`
+to decide whether to use WAI agents — they are the universal
+fallback when no MAI agent exists.
 
 **2c. Disambiguate scaffold type (SCAFFOLD only):**
 
@@ -154,8 +154,6 @@ scaffold typically triggers both FRONTEND and BACKEND.
   dependency management, or debugging
 - The user asks a question or needs an explanation
 - The fix is obvious from context (error message + file visible)
-- The project has no MAI agents AND no FDS dependency (non-FDS
-  existing codebase without custom specialists)
 
 **Dispatch to specialist** when:
 - A MAI agent exists that covers the category (always dispatch
