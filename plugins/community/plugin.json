@@ -1,13 +1,18 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "community",
-  "description": "Curated open-source community skills — vendored for zero-friction access across all projects.",
-  "version": "1.4.0",
+  "description": "Curated open-source community skills \u2014 vendored for zero-friction access across all projects.",
+  "version": "1.4.1",
   "author": {
     "name": "LifeSG CCube"
   },
   "license": "MIT",
-  "keywords": ["community", "skills", "productivity", "open-source"],
+  "keywords": [
+    "community",
+    "skills",
+    "productivity",
+    "open-source"
+  ],
   "extensions": {
     "com.anthropic.claude": {
       "skills": "skills/",
