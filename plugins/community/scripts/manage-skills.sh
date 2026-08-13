@@ -141,7 +141,7 @@ download_skill() {
     "https://github.com/${repo}.git" \
     "${tmp_dir}"
 
-  git -C "${tmp_dir}" sparse-checkout set --no-cone "${skill_path}" --quiet
+  git -C "${tmp_dir}" sparse-checkout set --no-cone "${skill_path}" 2>/dev/null
 
   local src="${tmp_dir}/${skill_path}"
   [[ -d "${src}" ]] || die "Path '${skill_path}' not found in ${repo}. Verify the path exists on the default branch."
