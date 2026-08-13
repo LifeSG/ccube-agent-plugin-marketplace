@@ -3,37 +3,37 @@
     "grill-me": {
       "source": "mattpocock/skills",
       "path": "skills/productivity/grill-me",
-      "updated": "2026-07-24T03:35:01Z",
+      "updated": "2026-08-13T01:34:28Z",
       "added": "2026-05-03T13:21:02Z"
     },
     "grill-with-docs": {
       "source": "mattpocock/skills",
       "path": "skills/engineering/grill-with-docs",
-      "updated": "2026-07-24T03:35:04Z",
+      "updated": "2026-08-13T01:34:29Z",
       "added": "2026-06-02T02:39:00Z"
     },
     "impeccable": {
       "source": "pbakaus/impeccable",
       "path": ".github/skills/impeccable",
-      "updated": "2026-07-24T03:35:07Z",
+      "updated": "2026-08-13T01:34:29Z",
       "added": "2026-06-02T04:02:51Z"
     },
     "grilling": {
       "source": "mattpocock/skills",
       "path": "skills/productivity/grilling",
-      "updated": "2026-07-24T05:19:13Z",
+      "updated": "2026-08-13T01:34:30Z",
       "added": "2026-07-24T05:19:13Z"
     },
     "domain-modeling": {
       "source": "mattpocock/skills",
       "path": "skills/engineering/domain-modeling",
-      "updated": "2026-07-24T05:21:16Z",
+      "updated": "2026-08-13T01:34:31Z",
       "added": "2026-07-24T05:21:16Z"
     },
     "draw-io": {
       "source": "softaworks/agent-toolkit",
       "path": "skills/draw-io",
-      "updated": "2026-08-13T00:25:37Z",
+      "updated": "2026-08-13T01:34:31Z",
       "added": "2026-08-13T00:25:37Z"
     }
   }
