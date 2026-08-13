@@ -8,6 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 SKILLS_DIR="${PLUGIN_DIR}/skills"
 MANIFEST="${SKILLS_DIR}/.manifest.json"
+PLUGIN_JSON="${PLUGIN_DIR}/plugin.json"
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -123,6 +124,47 @@ except Exception as e:
 PYEOF
 }
 
+# ── Version bump ─────────────────────────────────────────────────────────────
+
+bump_minor_version() {
+  [[ -f "${PLUGIN_JSON}" ]] || return
+  python3 - "${PLUGIN_JSON}" <<'PYEOF'
+import json, sys
+plugin_path = sys.argv[1]
+with open(plugin_path) as f:
+    data = json.load(f)
+version = data.get("version", "0.0.0")
+parts = version.split(".")
+major = parts[0] if len(parts) > 0 else "0"
+minor = int(parts[1]) if len(parts) > 1 else 0
+data["version"] = f"{major}.{minor + 1}.0"
+with open(plugin_path, "w") as f:
+    json.dump(data, f, indent=2)
+    f.write("\n")
+print(f"  version: {version} → {data['version']}")
+PYEOF
+}
+
+bump_patch_version() {
+  [[ -f "${PLUGIN_JSON}" ]] || return
+  python3 - "${PLUGIN_JSON}" <<'PYEOF'
+import json, sys
+plugin_path = sys.argv[1]
+with open(plugin_path) as f:
+    data = json.load(f)
+version = data.get("version", "0.0.0")
+parts = version.split(".")
+major = parts[0] if len(parts) > 0 else "0"
+minor = parts[1] if len(parts) > 1 else "0"
+patch = int(parts[2]) if len(parts) > 2 else 0
+data["version"] = f"{major}.{minor}.{patch + 1}"
+with open(plugin_path, "w") as f:
+    json.dump(data, f, indent=2)
+    f.write("\n")
+print(f"  version: {version} → {data['version']}")
+PYEOF
+}
+
 # ── Download ──────────────────────────────────────────────────────────────────
 
 download_skill() {
@@ -173,10 +215,12 @@ cmd_add() {
   now="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
   manifest_set "${skill_name}" "${repo}" "${skill_path}" "${now}"
 
+  bump_minor_version
+
   ok "Added '${skill_name}' from github.com/${repo}/${skill_path}"
   echo ""
   echo "   To commit:"
-  echo "   git add plugins/community/skills/${skill_name} plugins/community/skills/.manifest.json"
+  echo "   git add plugins/community/skills/${skill_name} plugins/community/skills/.manifest.json plugins/community/plugin.json"
   echo "   git commit -m \"feat(community): add ${skill_name} skill\""
 }
 
@@ -190,14 +234,16 @@ cmd_update() {
     while IFS= read -r skill; do
       [[ -n "${skill}" ]] && _update_one "${skill}"
     done <<< "${skills}"
+    bump_patch_version
     echo ""
     echo "   To commit all updates:"
-    echo "   git add plugins/community/skills/ && git commit -m \"chore(community): update all vendored skills\""
+    echo "   git add plugins/community/skills/ plugins/community/plugin.json && git commit -m \"chore(community): update all vendored skills\""
   else
     _update_one "${target}"
+    bump_patch_version
     echo ""
     echo "   To commit:"
-    echo "   git add plugins/community/skills/${target} plugins/community/skills/.manifest.json"
+    echo "   git add plugins/community/skills/${target} plugins/community/skills/.manifest.json plugins/community/plugin.json"
     echo "   git commit -m \"chore(community): update ${target} skill\""
   fi
 }
