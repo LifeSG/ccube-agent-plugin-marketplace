@@ -1,0 +1,60 @@
+name: Scheduled Skill Updates
+
+on:
+  schedule:
+    - cron: '0 1 * * 1-5' # Weekdays at 9am UTC+8 (1am UTC)
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run skill update script
+        run: bash plugins/community/scripts/manage-skills.sh update --all
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          BRANCH="skill-updates-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BRANCH"
+          git add .
+          git commit -m "chore(community): update vendored skills"
+          git push -u origin "$BRANCH"
+          echo "BRANCH_NAME=$BRANCH" >> $GITHUB_ENV
+
+      - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
+        id: pr
+        run: |
+          PR_URL=$(gh pr create \
+            --title "chore(community): scheduled skill updates" \
+            --body "Automated update of vendored community skills." \
+            --head "${{ env.BRANCH_NAME }}" \
+            --base main)
+          echo "PR_URL=$PR_URL" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post to Slack
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          curl -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"url\": \"${{ steps.pr.outputs.PR_URL }}\", \"msg\": \"Automated skill updates — vendored community skills refreshed from upstream.\"}"
