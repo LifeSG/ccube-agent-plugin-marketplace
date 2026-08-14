@@ -22,5 +22,77 @@
     "expected_dispatch": null,
     "handle_directly": true,
     "notes": "Question that Maestro should answer directly without dispatching"
+  },
+  {
+    "id": "multi-frontend-backend",
+    "prompt": "Build a feedback form with an API to store submissions in the database",
+    "expected_categories": ["FRONTEND", "BACKEND"],
+    "expected_dispatch": ["WAI FDS Engineer", "WAI Backend Engineer"],
+    "handle_directly": false,
+    "notes": "Multi-category — mentions building UI form AND database/API persistence"
+  },
+  {
+    "id": "clear-product",
+    "prompt": "I have an idea for a booking app but I'm not sure what to build first",
+    "expected_categories": ["PRODUCT"],
+    "expected_dispatch": ["WAI Product Manager"],
+    "handle_directly": false,
+    "notes": "Vague problem description, 'what should I build' signal"
+  },
+  {
+    "id": "scaffold-fullstack",
+    "prompt": "Create a new full-stack app with a database for tracking expenses",
+    "expected_categories": ["SCAFFOLD"],
+    "expected_dispatch": null,
+    "handle_directly": false,
+    "notes": "Scaffold signal — 'create a new app' + 'with database' implies full-stack"
+  },
+  {
+    "id": "scaffold-frontend-only",
+    "prompt": "Set up a new frontend-only React app for a calculator",
+    "expected_categories": ["SCAFFOLD"],
+    "expected_dispatch": null,
+    "handle_directly": false,
+    "notes": "Scaffold signal — 'set up a new app' + 'frontend-only' explicit"
+  },
+  {
+    "id": "handle-directly-with-keywords",
+    "prompt": "Fix the React import error on line 5 of App.tsx",
+    "expected_categories": ["GENERAL"],
+    "expected_dispatch": null,
+    "handle_directly": true,
+    "notes": "Mentions React but is a simple fix — obvious from context, <=3 files"
+  },
+  {
+    "id": "general-git",
+    "prompt": "How do I rebase this branch onto main?",
+    "expected_categories": ["GENERAL"],
+    "expected_dispatch": null,
+    "handle_directly": true,
+    "notes": "Git question — Maestro handles directly"
+  },
+  {
+    "id": "ambiguous-frontend",
+    "prompt": "Add a loading spinner to the dashboard page",
+    "expected_categories": ["FRONTEND"],
+    "expected_dispatch": ["WAI FDS Engineer"],
+    "handle_directly": false,
+    "notes": "Building a UI component on a page — needs FDS component knowledge"
+  },
+  {
+    "id": "product-scoping",
+    "prompt": "What's the best way to handle user onboarding for our app?",
+    "expected_categories": ["PRODUCT"],
+    "expected_dispatch": ["WAI Product Manager"],
+    "handle_directly": false,
+    "notes": "Scope/requirements discussion — 'what should we build' territory"
+  },
+  {
+    "id": "backend-migration",
+    "prompt": "Add a created_at column to the users table",
+    "expected_categories": ["BACKEND"],
+    "expected_dispatch": ["WAI Backend Engineer"],
+    "handle_directly": false,
+    "notes": "Database migration work — clear BACKEND signal"
   }
 ]

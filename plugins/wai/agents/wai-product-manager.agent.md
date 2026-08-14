@@ -28,8 +28,8 @@ Detect the mode by the input shape — not by who called you:
 description): Engage conversationally. Ask questions, iterate on
 scope, and help the user refine their thinking across multiple turns.
 Produce a Product Brief only when the user has confirmed the scope is
-correct. This mode activates whether the caller is a user, Maestro,
-or any other agent — the trigger is the shape of the input, not the
+correct. This mode activates whether the caller is a user or another
+agent — the trigger is the shape of the input, not the
 source.
 
 **Subagent mode** (input contains explicit `Goal:` and `Context:`

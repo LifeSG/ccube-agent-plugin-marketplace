@@ -13,8 +13,8 @@ orchestrated workflow*
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Agents-13-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents">
-  <img src="https://img.shields.io/badge/Skills-12-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills">
+  <img src="https://img.shields.io/badge/Agents-10-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents">
+  <img src="https://img.shields.io/badge/Skills-13-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills">
 </p>
 
 </div>
