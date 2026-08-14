@@ -21,7 +21,7 @@ Treat each comp as a direction test, not a screenshot specification. Core UI tex
 
 ## One approval point
 
-Show the three together: in the harness when it can display images, otherwise on the decision page (`serve-question.mjs`, one option per comp with the comp as its hero). Ask what should carry forward, what feels false to the world, and whether the selected surface concept should be approved, combined, revised, or rejected. Then stop and wait. A structured simulated user counts as attended and receives the same question.
+Show the three together on the decision page (`serve-question.mjs`, one option per comp with the comp as its hero), or in the harness only when it renders images inline; a text-only surface does not count as display. Ask what should carry forward, what feels false to the world, and whether the selected surface concept should be approved, combined, revised, or rejected. Then stop and wait. A structured simulated user counts as attended and receives the same question.
 
 Do not begin code until the user approves a direction or explicitly delegates the choice. If they delegate, choose using the task brief, PRODUCT.md, and DESIGN.md, and state the evidence. Approval refines the task concept; it does not modify DESIGN.md.
 
