@@ -187,20 +187,20 @@ description: >-
 
 | Agent | Action | Rationale |
 |---|---|---|
-| Maestro | **Delete** | Harness replaces orchestration; workflow logic encoded in descriptions |
+| Maestro | ~~Delete~~ → **Rewrite** | Rewritten as lightweight router (see Design Revision below) |
 | Software Engineer | **Delete** | Brief Gen → deleted (harness chains agents directly); Brief Review → deleted (self-verification replaces); Code Review → `cc-code-review` skill (already exists) |
 | Prompt Refiner | **Delete** | Invocation-gate logic moves to Designer description; refinement logic is training-data knowledge |
 | Product Manager | **Keep as-is** | Already has standalone + subagent modes via description; remains user-invocable for direct product thinking |
-| Designer | **Modify** | Remove Prompt Refiner dependency; enrich description with trigger conditions; remains user-invocable for direct design questions |
+| Designer | ~~Modify~~ → **Delete** | Design/UX capabilities absorbed by FDS Engineer (UI) and Maestro-direct (general design questions); standalone Designer added context overhead without clear value |
 | FDS Engineer | **Modify** | Add self-verification; update description with trigger conditions and flexible input acceptance; strip Maestro references |
 | Backend Engineer | **Modify** | Same as FDS Engineer |
 
-**Note on PM and Designer**: These agents remain
-`user-invocable: true` (or omit the field, defaulting to
-invocable). They already have dual-mode operation (standalone
-for direct user access, subagent mode when dispatched with
-structured input). This preserves Mode B (SME direct access)
-from the 80/20 strategy while also allowing harness composition.
+**Note on PM**: This agent remains `user-invocable: true` (or
+omit the field, defaulting to invocable). It already has
+dual-mode operation (standalone for direct user access, subagent
+mode when dispatched with structured input). This preserves
+Mode B (SME direct access) from the 80/20 strategy while also
+allowing harness composition.
 
 ### Content Redistribution
 
@@ -279,11 +279,12 @@ verification that runs without orchestrator involvement.
 
 ### Acceptance Criteria
 
-#### AC 1: Maestro Deletion
+#### AC 1: Maestro Rewrite
 
-The file `plugins/wai/agents/maestro.agent.md` is deleted. No
-remaining agent references "Maestro", "Phase 1–7", or "SDLC
-Phases" in its body.
+The file `plugins/wai/agents/maestro.agent.md` is rewritten as
+a lightweight intent-classification router (< 200 lines). It no
+longer contains "Phase 1–7" or "SDLC Phases". BYOA discovery
+enables project-local agent overrides via `wai/byoa/`.
 
 #### AC 2: SWE Deletion
 
@@ -300,11 +301,13 @@ Refiner" in its `agents:` frontmatter. The instruction file
 `prompt-refiner-auto-accept.instructions.md` is deleted or
 updated to remove auto-invocation.
 
-#### AC 4: PM and Designer Remain User-Invocable
+#### AC 4: PM Remains User-Invocable
 
-PM and Designer agent files retain their current invocability
-(no `user-invocable: false`). Their descriptions contain clear
-trigger conditions for both standalone and subagent invocation.
+The PM agent file retains its current invocability (no
+`user-invocable: false`). Its description contains clear trigger
+conditions for both standalone and subagent invocation. Designer
+is deleted (design capabilities absorbed by FDS Engineer and
+Maestro-direct handling).
 
 #### AC 5: Implementation Agent Self-Verification
 
@@ -606,6 +609,65 @@ files, and plugin manifests within the existing plugin structure.
 - [ ] Plugin manifests updated and valid (`claude plugin validate`)
 - [ ] No orphaned agent references in any remaining file
 - [ ] Migration phases executed in order with checkpoints passing
+
+## Design Revision
+
+*Added 2026-08-14 — documents deviations from the original
+proposal made during implementation.*
+
+### Why Maestro Was Kept (Not Deleted)
+
+The original proposal assumed the AI harness (Claude Code / VS
+Code Copilot) would natively route to agents by reading their
+`description` fields. In practice:
+
+1. **Platform inconsistency** — Claude Code and VS Code handle
+   agent dispatch differently. Relying on each platform's native
+   routing produced unreliable results.
+2. **Multi-category dispatch** — The harness has no native
+   mechanism to classify a single prompt into multiple categories
+   (e.g., FRONTEND + BACKEND) and dispatch both in parallel.
+3. **BYOA discovery** — Project-local agents need a deterministic
+   lookup mechanism. The harness does not support priority-based
+   agent resolution out of the box.
+
+Maestro was rewritten from a 600+ line SDLC orchestrator into a
+189-line intent router. It classifies → resolves → dispatches
+without generating briefs, reviews, or workflow phases.
+
+### Why Designer Was Deleted (Not Modified)
+
+The Designer agent's responsibilities were:
+- UI/UX design thinking → now handled by FDS Engineer (which
+  owns component selection and layout)
+- General design questions → handled directly by Maestro
+- Prompt Refiner integration → Prompt Refiner itself was deleted
+
+A standalone Designer agent consumed context budget without
+providing capabilities that the FDS Engineer + Maestro-direct
+combination could not cover. Users needing dedicated design
+agents can create `wai/byoa/mai-design.agent.md` via BYOA once
+the category list is expanded.
+
+### What Was Added (Not In Original EP)
+
+**BYOA (Bring Your Own Agent):** Projects can provide their own
+specialist agents in `wai/byoa/` that Maestro discovers by
+strict filename and routes to instead of WAI defaults. This was
+not in the original proposal but emerged as the natural
+extensibility mechanism for projects that do not use FDS/Koa.
+
+**Eval harness:** A Claude Code workflow script
+(`eval/eval-maestro.js`) that validates routing correctness via
+schema-validated structured output. Added per EP-0003.
+
+**cc-create-mai-agent skill:** Guides users through creating
+properly-structured MAI agent files.
+
+**cc-swe-coach skill:** Advisory skill for non-developers
+navigating engineering workflows.
+
+---
 
 ## Execution Status
 

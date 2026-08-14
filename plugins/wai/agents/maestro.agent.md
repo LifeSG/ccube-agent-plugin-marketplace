@@ -82,6 +82,12 @@ If the file exists for the classified category, use that MAI
 agent as the dispatch target. No description matching — purely
 filename-based discovery.
 
+> **V1 limitation:** Only these 3 categories are supported. To
+> add more, update this table AND
+> `cc-create-mai-agent/SKILL.md`. A future version may use
+> glob-based discovery (`mai-*.agent.md` with a frontmatter
+> `category` field).
+
 **2b. If no MAI agent exists, use WAI defaults:**
 
 If the corresponding `mai-<category>.agent.md` file does not

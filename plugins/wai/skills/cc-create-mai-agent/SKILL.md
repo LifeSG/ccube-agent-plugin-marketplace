@@ -29,6 +29,9 @@ description matching. The file MUST be named exactly:
 | BACKEND | `wai/byoa/mai-backend.agent.md` |
 | PRODUCT | `wai/byoa/mai-product.agent.md` |
 
+> **V1 scope:** Only frontend, backend, and product categories
+> are supported. This matches Maestro's current routing table.
+
 ---
 
 ## When to Use
