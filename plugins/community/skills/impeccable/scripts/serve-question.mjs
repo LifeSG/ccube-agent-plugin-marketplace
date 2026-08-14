@@ -161,8 +161,12 @@ function printAnswer(raw) {
       console.log('FOLLOWUP OPEN: the table stays open and the page is showing a loading hand. Deliver the next round now with --update --key <key> --payload <file>, then collect it with --wait; never leave the page waiting on a round you have not sent.');
     }
     if (a.buildPath === 'comp' || a.buildPath === 'code') {
+      // The page never writes the flip itself, but "never write it" overstated
+      // that into a rule the agent then applied to new-work's one-time offer,
+      // which exists for exactly this case: a flip on a project that had no
+      // recorded default is the only moment the preference is ever asked for.
       const origin = a.buildPathFlipped
-        ? 'flipped on the page, so it binds this session only; never write it to settings'
+        ? 'flipped on the page, so it binds this session only, and the page never writes it back; the sole exception is new-work’s one-time offer, on a project that had no recorded default at all, which asks after the round closes and writes the answer to .impeccable/config.json'
         : 'the round’s recorded default';
       console.log(`BUILD PATH: ${a.buildPath} (${origin}). ${a.buildPath === 'comp'
         ? 'Comp-led: the chosen card’s comp is law; generate it before building when it does not exist yet, and the finish review audits the build against it.'
@@ -199,7 +203,7 @@ if (hasFlag('schema')) {
     canonCard: { label: 'The category standard', thesis: 'What this category ships, executed impeccably.', palette: ['#ffffff', '#111827', '#2563eb'], materials: ['clean grid', 'product photography'], viewport: 'The arrangement a visitor expects, at full craft.', risk: 'Indistinguishable from the competition by design.', comp: '.impeccable/mocks/decision/canon.webp' },
     steer: true,
   }, null, 2));
-  console.log('\nOption ids return verbatim in ANSWER; "reroll" and "canon" are reserved. hero/board/comp accept URLs or local paths; comp slots may point at files that do not exist yet (serve first, generate after; the page polls until they land, so never block serving on generation). hero on a challenger is the inspiration it draws from and renders picture-in-picture beside the comp, never as the promise of the build. verdict routes rendering: "wins" and "competitive" challengers keep full cards, "declined" ones render demoted after them (narrow, quiet, art as a labeled thumb, "Adopt anyway"), with their kept line on the front; the page reorders declined cards to the end on its own. raised on the assigned card renders each donation as a named raise line. Salience parity: when the assigned card declares no comp (no image generation this round), catalog art on every card demotes to a labeled thumb, so what looks important is the verdict’s call, never rendering luck. canonCard renders the standing exit as a subordinate card with the same anatomy; without it, canon stays a quiet footer action. Include canon only for visual-direction rounds; never present it as your own recommendation. The pick card is a kicker convention, not a field: kicker "IMPECCABLE’S PICK" on your top-ranked grounded candidate, one at most, never in the lead slot. Every card gets the full anatomy, challengers, canon, and declined included: thesis, palette, materials, viewport, risk; the seed already hands you each challenger’s system rules, so a card with no palette chips is an authoring gap, not a data gap. Keep thesis and each fact to one short sentence: the card front shows thesis, identity, and a two-line risk, while first viewport and the case read on the card back behind the Details chip, so long facts cost the reader a flip, not the page its scanability. A card with no imagery at all has no back; its full read renders on the front, so a text-only round loses nothing. A card may instead declare "wireframe" ({"cols":12,"rows":10,"regions":[{"label":"nav rail","x":0,"y":0,"w":3,"h":10,"accent":true}]}): the page draws it as a layout schematic in the media slot; surface-scope rounds use it on code-led builds, it never counts toward salience, and the card keeps its full read on the front. The comp slot carries the card’s full-fidelity direction comp (the legacy key "sketch" is accepted as an alias). Comp aspect follows the surface: portrait at device viewport for native or mobile-first surfaces, landscape otherwise; the page adapts its cards to either. reroll accepts true or { "registers": ["safer", "bolder"] }: the register buttons steer the next hand along the familiar-to-bold axis, the answer carries "register", and you re-run concept-seed with --register <value> for the next round; offer the registers on direction rounds, and never pre-select one. buildPath rides the payload as { "value": "comp"|"code", "toggle": true }: the value is the recorded default (.impeccable/settings.json, or a PRODUCT.md standing commitment as fallback) and the toggle renders a footer switch whose flip binds that session only; the ANSWER then carries buildPath plus buildPathFlipped. On a code-led round each card still declares its comp path as a flip reserve: wireframes render, and a flip to comp makes --wait return once with BUILD PATH FLIPPED so you generate the comps into the declared slots while the round stays open; a flip back to code is free, and a comp that already landed stays as the critique reference. Offer the toggle only when image generation exists. followup: true keeps the table open after a pick for a second round via --update; send the next payload immediately, the page is waiting on it.');
+  console.log('\nOption ids return verbatim in ANSWER; "reroll" and "canon" are reserved. hero/board/comp accept URLs or local paths; comp slots may point at files that do not exist yet (serve first, generate after; the page polls until they land, so never block serving on generation). hero on a challenger is the inspiration it draws from and renders picture-in-picture beside the comp, never as the promise of the build. verdict routes rendering: "wins" and "competitive" challengers keep full cards, "declined" ones render demoted after them (narrow, quiet, art as a labeled thumb, "Adopt anyway"), with their kept line on the front; the page reorders declined cards to the end on its own. raised on the assigned card renders each donation as a named raise line. Salience parity: when the assigned card declares no comp (no image generation this round), catalog art on every card demotes to a labeled thumb, so what looks important is the verdict’s call, never rendering luck. canonCard renders the standing exit as a subordinate card with the same anatomy; without it, canon stays a quiet footer action. Include canon only for visual-direction rounds; never present it as your own recommendation. The pick card is a kicker convention, not a field: kicker "IMPECCABLE’S PICK" on your top-ranked grounded candidate, one at most, never in the lead slot. Every card gets the full anatomy, challengers, canon, and declined included: thesis, palette, materials, viewport, risk; the seed already hands you each challenger’s system rules, so a card with no palette chips is an authoring gap, not a data gap. Keep thesis and each fact to one short sentence: the card front shows thesis, identity, and a two-line risk, while first viewport and the case read on the card back behind the Details chip, so long facts cost the reader a flip, not the page its scanability. A card with no imagery at all has no back; its full read renders on the front, so a text-only round loses nothing. A card may instead declare "wireframe" ({"cols":12,"rows":10,"regions":[{"label":"nav rail","x":0,"y":0,"w":3,"h":10,"accent":true}]}): the page draws it as a layout schematic in the media slot; surface-scope rounds use it on code-led builds, it never counts toward salience, and the card keeps its full read on the front. The comp slot carries the card’s full-fidelity direction comp (the legacy key "sketch" is accepted as an alias). Comp aspect follows the surface: portrait at device viewport for native or mobile-first surfaces, landscape otherwise; the page adapts its cards to either. reroll accepts true or { "registers": ["safer", "bolder"] }: the register buttons steer the next hand along the familiar-to-bold axis, the answer carries "register", and you re-run concept-seed with --register <value> for the next round; offer the registers on direction rounds, and never pre-select one. buildPath rides the payload as { "value": "comp"|"code", "toggle": true }: the value is the recorded default (.impeccable/config.json buildPath, or .impeccable/config.local.json where one machine differs) and the toggle renders a footer switch whose flip binds that session only; the ANSWER then carries buildPath plus buildPathFlipped. On a code-led round each card still declares its comp path as a flip reserve: wireframes render, and a flip to comp makes --wait return once with BUILD PATH FLIPPED so you generate the comps into the declared slots while the round stays open; a flip back to code is free, and a comp that already landed stays as the critique reference. The toggle may only be offered when image generation exists: a harness with no image tool and no API key never sets toggle: true, so the choice never renders where comps cannot be made, and code-led simply rides as the untoggleable value. followup: true keeps the table open after a pick for a second round via --update; send the next payload immediately, the page is waiting on it.');
   process.exit(0);
 }
 
@@ -483,8 +487,9 @@ function page() {
     option.body && option.thesis ? `<p class="detail more">${esc(option.body)}</p>` : '',
   ].filter(Boolean).join('\n            ');
   const media = (option) => {
-    const inspiration = option.heroSrc ? `<figure class="pip" title="Inspiration: the world this direction draws from. Your page will not look like this image.">
-              <img src="${esc(option.heroSrc)}" alt="">
+    const inspirationSrc = option.heroSrc || option.boardSrc;
+    const inspiration = inspirationSrc ? `<figure class="pip" title="Inspiration: the world this direction draws from. Your page will not look like this image.">
+              <img src="${esc(inspirationSrc)}" alt="">
               <figcaption>inspiration</figcaption>
             </figure>` : '';
     const details = hasBack(option) ? flipChip('Details') : '';
@@ -492,10 +497,12 @@ function page() {
     // and a declined card's comp slot is ignored outright.
     if (thumbOnly(option)) return '';
     if (faceComp(option)) {
+      const textOnlyFacts = backFacts(option);
       return `<div class="media comp-pending" data-comp="${esc(option.compSrc)}">
             <div class="shimmer"><span class="comp-note">rendering&hellip;</span></div>
             <img class="comp" alt="" hidden>
             ${inspiration}
+            <template class="text-only-facts">${textOnlyFacts}</template>
             <div class="chips">${expandChip}${details}</div>
           </div>`;
     }
@@ -605,7 +612,7 @@ function page() {
   .brand { display: flex; align-items: center; gap: .55rem; color: var(--ks-kinpaku); }
   .brand svg { width: 22px; height: 22px; }
   .wordmark { font-family: var(--ks-font-display); font-weight: 400; font-size: 1.125rem; letter-spacing: 0.15em; text-transform: uppercase; line-height: 1; color: var(--ks-kinpaku); }
-  .headline { display: flex; align-items: center; gap: .9rem; }
+  .headline { display: flex; align-items: center; gap: .9rem; flex-wrap: wrap; }
   .headline-die { flex: none; width: 34px; height: 34px; color: var(--ks-kinpaku); }
   h1 { font-family: var(--ks-font-display); font-weight: 100; font-size: clamp(2.6rem, 5vw, 4.2rem); letter-spacing: -0.01em; line-height: 1.02; color: var(--ks-champagne); }
   .question { color: var(--ks-text-muted); margin-top: .7rem; max-width: 52rem; }
@@ -820,16 +827,32 @@ function page() {
   #steer { flex: 1; min-width: 16rem; background: var(--ks-lacquer-raised); color: var(--ks-text); border: 1px solid var(--ks-rule); border-radius: 7px; padding: .6rem .85rem; font: inherit; }
   #steer:focus { outline: none; border-color: var(--ks-patina); }
   /* Build-path toggle: a workflow preference surfaced as a quiet segmented
-     control, its trade stated in one line that changes with the selection.
-     The default comes from the payload (settings); flipping binds this
-     session only, and the agent learns about a code-to-comp flip live. */
-  #build-path { display: flex; flex-direction: column; gap: 4px; }
-  .bp-switch { display: inline-flex; border: 1px solid var(--ks-rule); border-radius: 6px; overflow: hidden; align-self: flex-start; }
+     control on the headline row, right-aligned opposite the title, its trade stated in
+     one line that changes with the selection. The default comes from the
+     payload (settings); flipping binds this session only, and the agent
+     learns about a code-to-comp flip live. Rendered only when the payload
+     offers it, which the agent does only when image generation exists. */
+  #build-path { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; flex: none; margin-left: auto; }
+  .bp-switch { display: inline-flex; border: 1px solid var(--ks-rule); border-radius: 6px; overflow: hidden; }
+  .bp-note { text-align: right; }
   .bp-opt { font-family: var(--ks-mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; padding: 7px 12px; background: transparent; border: 0; color: var(--ks-text-faint); cursor: pointer; transition: color .2s ease, background-color .2s ease; }
   .bp-opt + .bp-opt { border-left: 1px solid var(--ks-rule); }
   .bp-opt.active { color: var(--ks-dark-ink); background: var(--ks-kinpaku-rich); }
   .bp-opt:not(.active):hover { color: var(--ks-text); }
   .bp-note { font-family: var(--ks-mono); font-size: .58rem; letter-spacing: .04em; color: var(--ks-text-faint); max-width: 21rem; line-height: 1.5; }
+  /* Flipping to comp starts billed, minutes-long generation, so it asks
+     first; flipping back is free and never does. */
+  #bp-confirm { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; background: oklch(4% 0.004 95 / 0.72); opacity: 0; transition: opacity .2s ease; }
+  #bp-confirm[hidden] { display: none; }
+  #bp-confirm.open { opacity: 1; }
+  .bp-confirm-panel { max-width: 26rem; margin: 1rem; background: var(--ks-lacquer-raised); border: 1px solid var(--ks-rule); border-radius: 10px; padding: 1.4rem 1.5rem 1.3rem; box-shadow: 0 30px 80px oklch(0% 0 0 / 0.55); }
+  .bp-confirm-panel h2 { font-family: var(--ks-font); font-size: 1.125rem; font-weight: 500; color: var(--ks-champagne); margin-bottom: .55rem; }
+  .bp-confirm-panel p { font-size: .875rem; line-height: 1.55; color: var(--ks-text-muted); }
+  .bp-confirm-actions { display: flex; gap: .6rem; margin-top: 1.1rem; }
+  .bp-confirm-go { background: var(--ks-kinpaku); color: var(--ks-dark-ink); border: 0; font: inherit; font-weight: 500; padding: 9px 22px; border-radius: 6px; cursor: pointer; }
+  .bp-confirm-go:hover { background: var(--ks-kinpaku-pale); }
+  .bp-confirm-stay { background: transparent; color: var(--ks-text-muted); border: 1px solid var(--ks-rule); font: inherit; padding: 9px 18px; border-radius: 6px; cursor: pointer; }
+  .bp-confirm-stay:hover { color: var(--ks-text); border-color: var(--ks-text-faint); }
   .reroll-btn { display: inline-flex; align-items: center; align-self: stretch; gap: 8px; padding: 0 16px; font-family: var(--ks-mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ks-kinpaku); background: transparent; border: 1px solid var(--ks-rule); border-radius: 6px; cursor: pointer; transition: border-color .2s ease, color .2s ease; }
   .reroll-btn:hover { color: var(--ks-kinpaku-pale); border-color: var(--ks-kinpaku-deep); }
   .reroll-btn svg { width: 15px; height: 15px; }
@@ -858,6 +881,16 @@ function page() {
 <div id="ambient" aria-hidden="true"></div>
 <div id="scrim" aria-hidden="true"></div>
 <div id="lightbox" hidden><img alt=""></div>
+${buildPath?.toggle ? `<div id="bp-confirm" role="dialog" aria-modal="true" aria-labelledby="bp-confirm-title" hidden>
+  <div class="bp-confirm-panel">
+    <h2 id="bp-confirm-title">Flip to comp-first?</h2>
+    <p>The agent starts rendering a comp for every open card right away, about a minute or two per card on your image provider, and the images land on the cards as they finish. This flip binds this session only.</p>
+    <div class="bp-confirm-actions">
+      <button type="button" class="bp-confirm-go" data-confirm>Render comps</button>
+      <button type="button" class="bp-confirm-stay" data-cancel>Keep code-first</button>
+    </div>
+  </div>
+</div>` : ''}
 <header>
   <div class="brand">
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 2.5 L13.5 2.5 L5.5 21.5 L5 21.5 Q2.5 21.5 2.5 19 L2.5 5 Q2.5 2.5 5 2.5 Z"/><path d="M16.5 2.5 L19 2.5 Q21.5 2.5 21.5 5 L21.5 19 Q21.5 21.5 19 21.5 L8.5 21.5 Z"/></svg>
@@ -869,6 +902,13 @@ function page() {
     <div class="headline">
       <svg class="headline-die" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.4" cy="8.4" r="1.5" fill="currentColor"/><circle cx="15.6" cy="8.4" r="1.5" fill="currentColor"/><circle cx="8.4" cy="15.6" r="1.5" fill="currentColor"/><circle cx="15.6" cy="15.6" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
       <h1>${esc(payload.title || 'Choose a direction')}</h1>
+      ${buildPath?.toggle ? `<div id="build-path" data-default="${buildPath.value}">
+        <div class="bp-switch" role="radiogroup" aria-label="Build path">
+          <button type="button" class="bp-opt" data-bp="comp" role="radio" aria-checked="false">Comp first</button>
+          <button type="button" class="bp-opt" data-bp="code" role="radio" aria-checked="false">Code first</button>
+        </div>
+        <p class="bp-note" data-bp-note></p>
+      </div>` : ''}
     </div>
     ${payload.question ? `<p class="question">${esc(payload.question)}</p>` : ''}
     <div class="deck-shell">
@@ -882,13 +922,6 @@ function page() {
 </main>
 <footer>
   ${payload.steer ? '<input id="steer" placeholder="Optional steer: what should be different or kept?">' : ''}
-  ${buildPath?.toggle ? `<div id="build-path" data-default="${buildPath.value}">
-    <div class="bp-switch" role="radiogroup" aria-label="Build path">
-      <button type="button" class="bp-opt" data-bp="comp" role="radio" aria-checked="false">Comp first</button>
-      <button type="button" class="bp-opt" data-bp="code" role="radio" aria-checked="false">Code first</button>
-    </div>
-    <p class="bp-note" data-bp-note></p>
-  </div>` : ''}
   ${(() => {
     if (!payload.reroll) return '';
     const die = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="8.4" cy="8.4" r="1.5" fill="currentColor"/><circle cx="15.6" cy="8.4" r="1.5" fill="currentColor"/><circle cx="8.4" cy="15.6" r="1.5" fill="currentColor"/><circle cx="15.6" cy="15.6" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>';
@@ -992,17 +1025,42 @@ function page() {
     // A live elapsed count is the difference between "working" and "frozen".
     const tick = setInterval(() => { if (note) note.textContent = 'rendering · ' + Math.round((Date.now() - started) / 1000) + 's'; }, 1000);
     const settle = () => { clearInterval(tick); m.classList.remove('comp-pending', 'stand-in'); m.querySelector('.shimmer')?.remove(); m.querySelector('.stand-in-label')?.remove(); };
-    const standIn = () => {
+    const fallback = () => {
       const pip = m.querySelector('.pip img');
-      if (!pip || m.classList.contains('stand-in')) return;
-      img.src = pip.getAttribute('src'); img.hidden = false;
-      m.classList.add('stand-in');
-      m.querySelector('.shimmer')?.remove();
-      clearInterval(tick);
-      const label = document.createElement('p');
-      label.className = 'stand-in-label';
-      label.textContent = 'inspiration · comp pending';
-      m.appendChild(label);
+      if (pip) {
+        if (m.classList.contains('stand-in')) return false;
+        img.src = pip.getAttribute('src'); img.hidden = false;
+        m.classList.add('stand-in');
+        m.querySelector('.shimmer')?.remove();
+        clearInterval(tick);
+        const label = document.createElement('p');
+        label.className = 'stand-in-label';
+        label.textContent = 'inspiration · comp pending';
+        m.appendChild(label);
+        return false;
+      }
+
+      // No comp and no inspiration is the text-only card the payload would
+      // have rendered without a comp declaration. Bring the complete read
+      // forward before removing the now-unreachable back face.
+      const card = m.closest('.card');
+      const front = card?.querySelector('.face.front');
+      const body = front?.querySelector('.body');
+      const back = card?.querySelector('.face.back');
+      const textOnlyFacts = m.querySelector('template.text-only-facts');
+      const choose = body?.querySelector(':scope > button.choose');
+      if (body && textOnlyFacts && choose) {
+        const plainDetail = body.querySelector(':scope > .detail:not(.more)');
+        [...body.children].filter((el) => el.classList.contains('fact') || el.matches('.detail.more')).forEach((el) => el.remove());
+        choose.before(textOnlyFacts.content.cloneNode(true));
+        if (plainDetail) choose.before(plainDetail);
+      }
+      card?.classList.remove('flipped');
+      front?.classList.add('text-only');
+      back?.remove();
+      settle();
+      m.remove();
+      return true;
     };
     const tryLoad = () => {
       // A slot the user flipped back out of leaves the DOM; let its loop die.
@@ -1011,7 +1069,7 @@ function page() {
       probe.onload = () => { landTracker.last = Date.now(); img.src = probe.src; img.hidden = false; settle(); };
       probe.onerror = () => {
         const quiet = Date.now() - landTracker.last > 240000;
-        if (Date.now() - started > 240000 && quiet) standIn();
+        if (Date.now() - started > 240000 && quiet && fallback()) return;
         setTimeout(tryLoad, m.classList.contains('stand-in') ? 5000 : 2500);
       };
       probe.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
@@ -1068,12 +1126,28 @@ function page() {
         else if (!front.querySelector('.media')) front.classList.add('text-only');
       });
     };
-    bp.querySelectorAll('.bp-opt').forEach(b => b.addEventListener('click', () => {
-      const value = b.dataset.bp;
-      if (value === current) return;
+    const apply = (value) => {
       set(value);
       fetch('/build-path', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ value }) });
       if (value === 'comp') enterComp(); else exitComp();
+    };
+    // Flipping to comp starts real generation, so it confirms first; the
+    // flip back is free and applies immediately.
+    const confirm = document.getElementById('bp-confirm');
+    const closeConfirm = () => { confirm.classList.remove('open'); confirm.hidden = true; };
+    confirm.querySelector('[data-confirm]').addEventListener('click', () => { closeConfirm(); apply('comp'); });
+    confirm.querySelector('[data-cancel]').addEventListener('click', closeConfirm);
+    confirm.addEventListener('click', (e) => { if (e.target === confirm) closeConfirm(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !confirm.hidden) closeConfirm(); });
+    bp.querySelectorAll('.bp-opt').forEach(b => b.addEventListener('click', () => {
+      const value = b.dataset.bp;
+      if (value === current) return;
+      if (value === 'comp') {
+        confirm.hidden = false;
+        requestAnimationFrame(() => confirm.classList.add('open'));
+        return;
+      }
+      apply(value);
     }));
   }
 
