@@ -1,10 +1,39 @@
+---
+name: cc-create-mai-agent
+description: >-
+  Create a project-local (MAI) agent for BYOA — generates a
+  properly-structured agent file at wai/byoa/ that Maestro
+  discovers by filename and routes to instead of WAI defaults.
+  Use when: user wants to add their own frontend or backend
+  specialist, says "create a MAI agent", "add my own agent",
+  "bring my own agent", "set up BYOA", or wants Maestro to use
+  their project's stack instead of FDS/Koa defaults.
+argument-hint: >-
+  Which category (frontend, backend, or both) and optionally
+  the project path.
+user-invocable: true
+---
+
 # Create MAI Agent
 
 Generate a project-local (MAI) agent that Maestro can discover
 and route to. MAI agents live in `wai/byoa/` in the project
 workspace and take precedence over WAI plugin defaults.
 
+Maestro discovers MAI agents by **strict filename** — not by
+description matching. The file MUST be named exactly:
+
+| Category | Required filename |
+|----------|-------------------|
+| FRONTEND | `wai/byoa/mai-frontend.agent.md` |
+| BACKEND | `wai/byoa/mai-backend.agent.md` |
+| PRODUCT | `wai/byoa/mai-product.agent.md` |
+
+---
+
 ## When to Use
+
+Use this skill when:
 
 - User wants to add a custom frontend or backend specialist
   for their project
@@ -12,6 +41,17 @@ workspace and take precedence over WAI plugin defaults.
   my own agent", or "set up BYOA"
 - User wants Maestro to use their project's stack instead of
   FDS/Koa defaults
+
+Do NOT use when:
+
+- User wants to create a WAI plugin agent (use
+  `cc-contribute-wai` instead)
+- User wants to edit an existing MAI agent (edit the file
+  directly)
+- The project has no `package.json` or detectable stack — ask
+  the user to scaffold first
+
+---
 
 ## Workflow
 
@@ -56,7 +96,12 @@ Ask the user which category their agent should cover:
 
 ### Step 3: Generate Agent File
 
-Create the agent file at `wai/byoa/<name>.agent.md`.
+Create the agent file at the **required filename** for the
+chosen category:
+
+- Frontend → `wai/byoa/mai-frontend.agent.md`
+- Backend → `wai/byoa/mai-backend.agent.md`
+- Both → create both files
 
 The agent MUST follow this structure:
 
@@ -131,13 +176,16 @@ Before reporting your work as done, you MUST:
 5. Report what was created/modified.
 ```
 
-### Step 4: Description Alignment
+### Step 4: Description Quality Check
 
-The `description` field is critical — it determines whether
-Maestro discovers and routes to this agent.
+The `description` field in the agent frontmatter is for human
+readability and tooling display. Maestro routes by filename,
+not description — but a good description helps users understand
+what the agent does when browsing the agents list.
 
-**For FRONTEND agents, the description MUST contain at least
-3 of these trigger signals** (from Maestro's Step 1 table):
+**For FRONTEND agents, the description SHOULD contain at least
+3 of these terms** (from Maestro's Step 1 classification
+signals):
 - "page", "pages"
 - "component", "components"
 - "UI feature"
@@ -145,8 +193,8 @@ Maestro discovers and routes to this agent.
 - "build errors" (frontend context)
 - The framework name (React, Next.js, Angular, Vue)
 
-**For BACKEND agents, the description MUST contain at least
-3 of these trigger signals:**
+**For BACKEND agents, the description SHOULD contain at least
+3 of these terms:**
 - "endpoint", "endpoints"
 - "API"
 - "route", "routes"
@@ -156,28 +204,35 @@ Maestro discovers and routes to this agent.
 - The framework name (Express, Koa, Fastify, Nest)
 
 After generating the description, verify it contains sufficient
-trigger signals. If fewer than 3 are present, revise the
-description to include more.
+terms. If fewer than 3 are present, revise the description to
+include more.
 
 ### Step 5: Create Directory and Write File
 
 1. Create `wai/byoa/` directory if it doesn't exist
-2. Write the agent file
+2. Write the agent file at the required filename
 3. Confirm creation to the user
 
 ### Step 6: Verify (Optional)
 
-If the user asks to verify, classify a sample prompt for the
-chosen category and confirm Maestro would route to the new
-agent based on its description matching the category signals.
+If the user asks to verify, confirm:
+- The file exists at the correct path
+  (`wai/byoa/mai-frontend.agent.md` or
+  `wai/byoa/mai-backend.agent.md`)
+- Maestro's Step 2a would find it during filename lookup
+- The agent frontmatter is valid YAML
+
+---
 
 ## Rules
 
 - You MUST detect the stack automatically — do NOT ask the
   user for information available in `package.json` or the
   filesystem.
-- You MUST include trigger signals in the description that
-  align with Maestro's classification table.
+- You MUST use the exact required filename for the category
+  (`mai-frontend.agent.md`, `mai-backend.agent.md`, or
+  `mai-product.agent.md`). No other filenames will be
+  discovered by Maestro.
 - You MUST include a Completion Protocol with the project's
   actual build and test commands.
 - You MUST NOT generate an agent that references dependencies
@@ -186,13 +241,42 @@ agent based on its description matching the category signals.
   `.claude/agents/` or `plugins/wai/agents/`.
 - If the project already has a MAI agent for the chosen
   category in `wai/byoa/`, warn the user and ask whether to
-  replace or add alongside it.
+  replace it.
+
+---
+
+## Error Handling
+
+**No `package.json` found:**
+- Ask the user whether to scaffold the project first (suggest
+  `cc-vite-react-ds` or `cc-fullstack-vite`) or provide the
+  stack details manually.
+
+**Cannot detect framework or database:**
+- Report what was detected and what was not. Ask the user to
+  confirm the missing details before generating the agent.
+
+**`wai/byoa/` directory creation fails:**
+- Check filesystem permissions. Report the error and suggest
+  the user create the directory manually.
+
+**Agent file already exists for category:**
+- Show the existing file path and ask whether to replace or
+  abort. Do NOT silently overwrite.
+
+**Build/test commands not found in `package.json` scripts:**
+- Use placeholder comments in the Completion Protocol:
+  `# TODO: add build command` and `# TODO: add test command`.
+  Warn the user that the agent will not self-verify until
+  these are filled in.
+
+---
 
 ## Example Output
 
 For a Next.js + shadcn + Prisma project named "acme-portal":
 
-**`wai/byoa/frontend-engineer.agent.md`:**
+**`wai/byoa/mai-frontend.agent.md`:**
 
 ```markdown
 ---
@@ -248,13 +332,61 @@ Before reporting your work as done, you MUST:
 3. Report done only after both pass.
 ```
 
+---
+
 ## Acceptance Criteria
 
-- [ ] Agent file created at `wai/byoa/<name>.agent.md`
-- [ ] Description contains ≥3 trigger signals for the category
-- [ ] Stack section reflects actual project dependencies
-- [ ] Conventions section reflects actual directory structure
-- [ ] Completion Protocol uses the project's real build/test
-      commands
-- [ ] File follows the skeleton structure (frontmatter +
-      Priority Hierarchy + Core Directives + Workflow)
+### Feedforward Assertions (MUST-contain)
+
+Every generated MAI agent MUST contain:
+- Agent file at `wai/byoa/mai-<category>.agent.md` using the
+  exact required filename
+- Valid YAML frontmatter with `name` and `description` fields
+  between `---` delimiters
+- Description containing ≥3 category-relevant terms
+- A `## Priority Hierarchy` section with at least one rule
+- A `## Core Directives` section with Stack, Conventions, and
+  Completion Protocol subsections
+- Stack section reflecting actual project dependencies
+  (versions from `package.json`)
+- Conventions section reflecting actual directory structure
+- Completion Protocol using the project's real build/test
+  commands (or explicit TODOs if not detected)
+- A `## Workflow` section with numbered steps
+
+### Feedback Sensors (MUST-NOT-contain)
+
+Every generated MAI agent MUST NOT contain:
+- A filename other than `mai-frontend.agent.md`,
+  `mai-backend.agent.md`, or `mai-product.agent.md`
+- References to dependencies not present in the project's
+  `package.json`
+- Hardcoded paths that do not exist in the workspace
+- Missing `---` delimiters in frontmatter
+- The file placed in `.claude/agents/` or
+  `plugins/wai/agents/` instead of `wai/byoa/`
+
+**PASS example:**
+> Input: "Create a MAI agent for my Next.js frontend"
+>
+> Output: Detects Next.js 14, shadcn/ui, Tailwind from
+> package.json. Creates `wai/byoa/mai-frontend.agent.md` with
+> correct stack, conventions matching `src/app/` structure, and
+> `pnpm build` / `pnpm test` in Completion Protocol.
+
+**FAIL example:**
+> Output: Creates `wai/byoa/frontend-engineer.agent.md`
+> (wrong filename — Maestro will never find it). Stack lists
+> "React 18" but project uses Next.js 14.
+> *(Fails: wrong filename; inaccurate stack detection)*
+
+### Test Cases
+
+| Feature | Scenario | Persona | Expected behaviour |
+|---------|----------|---------|-------------------|
+| Frontend MAI | Next.js + shadcn project | Engineer | Creates `mai-frontend.agent.md` with Next.js stack, `pnpm build` in protocol |
+| Backend MAI | Express + Prisma + PostgreSQL | Engineer | Creates `mai-backend.agent.md` with Express/Prisma stack, correct migration patterns |
+| Both categories | Full-stack Vite + Koa project | Engineer | Creates both `mai-frontend.agent.md` and `mai-backend.agent.md` |
+| Existing agent | `mai-frontend.agent.md` already exists | Any | Warns user, asks whether to replace before overwriting |
+| No package.json | Empty workspace | Any | Asks user to scaffold or provide stack details manually |
+| Missing build script | package.json has no `build` script | Any | Uses TODO placeholder in Completion Protocol, warns user |
