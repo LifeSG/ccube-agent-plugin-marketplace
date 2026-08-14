@@ -3,8 +3,8 @@
 All notable changes to this marketplace are documented here.
 Entries are grouped by plugin.
 
-## 2.1.0 — 2026-08-14
-### wai `v2.1.0`
+## 2.0.0 — 2026-08-14
+### wai `v2.0.0` (continued)
 
 BYOA (Bring Your Own Agent) support, evaluation harness, and
 skill improvements.
