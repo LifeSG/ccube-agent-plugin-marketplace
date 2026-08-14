@@ -3,6 +3,57 @@
 All notable changes to this marketplace are documented here.
 Entries are grouped by plugin.
 
+## 2.1.0 — 2026-08-14
+### wai `v2.1.0`
+
+BYOA (Bring Your Own Agent) support, evaluation harness, and
+skill improvements.
+
+#### Added
+
+- **feat**: BYOA routing — Maestro checks `wai/byoa/` for
+  project-local MAI agents before falling back to WAI defaults
+  (EP-0003 Part B)
+- **feat**: `/create-mai-agent` skill — guided generation of
+  project-local agents with stack detection, trigger signal
+  alignment, and completion protocol
+- **feat**: Maestro eval harness — Claude Code workflow with 3
+  smoke-test cases for classification regression testing
+  (EP-0003 Part A)
+- **feat**: `cc-swe-coach` skill migrated from community to
+  WAI plugin
+- **docs**: EP-0003 enhancement proposal documenting eval,
+  BYOA, MAI naming, and create-mai-agent skill
+
+#### Changed
+
+- **refactor**: Maestro Step 2 simplified — strict filename
+  discovery (`mai-frontend.agent.md`, `mai-backend.agent.md`,
+  `mai-product.agent.md`) replaces description matching
+- **refactor**: WAI agents are unconditional fallback — no
+  project context check needed when MAI agents are absent
+- **refactor**: Dispatch table references "agent resolved in
+  Step 2" instead of hardcoding WAI agent names
+- **refactor**: MAI references confined to the override
+  section of Maestro only
+- **fix**: `cc-create-mai-agent` skill aligned with WAI
+  conventions — added YAML frontmatter, fixed example
+  filenames, added Acceptance Criteria and Error Handling
+- **fix**: Cross-platform `sed -i` in fullstack scaffold
+  script (BSD vs GNU detection)
+- **fix**: Eval `setsEqual` treats `null` and `[]` as
+  equivalent for dispatch comparison
+
+### community `v1.1.0`
+
+#### Added
+
+- **feat**: `draw-io` skill for diagram creation
+- **feat**: Automated vendored skill update workflow
+- **feat**: Auto-bump plugin version on skill add/update
+- **fix**: Remove unsupported `--quiet` flag from
+  sparse-checkout
+
 ## 2.0.0 — 2026-08-11
 ### wai `v2.0.0`
 
