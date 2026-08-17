@@ -1,5 +1,4 @@
 {
-  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "wai",
   "description": "Full-stack web application delivery platform. Lightweight Maestro router dispatches to specialist agents for product thinking, frontend (FDS), backend (Koa + PostgreSQL), and code review.",
   "version": "2.0.0",
@@ -17,17 +16,5 @@
     "postgresql",
     "fds",
     "lifesg"
-  ],
-  "extensions": {
-    "com.anthropic.claude": {
-      "skills": "skills/",
-      "agents": "agents/",
-      "hooks": "hooks.json"
-    },
-    "com.microsoft.vscode": {
-      "skills": "skills/",
-      "agents": "agents/",
-      "hooks": "hooks.json"
-    }
-  }
+  ]
 }
