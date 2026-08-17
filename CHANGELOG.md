@@ -3,6 +3,319 @@
 All notable changes to this marketplace are documented here.
 Entries are grouped by plugin.
 
+## 2.0.0 — 2026-08-17
+### AGENT.md `v2.0.0`
+
+- **docs**: Add updating existing plugin workflow; fix user-invocable typo in skill template
+
+### agent `v2.0.0`
+
+- **feat**: Add product manager guided web app builder agent
+- **docs**: Improve plugin authoring guidelines
+- **feat**: Add mandatory instruction loading to principal engineer
+- **refactor**: Use markdown links for instruction loading
+- **feat**: Delegate Phase 3 implementation to PSE V2 subagent
+- **feat**: Add code generation rules and close V1 parity gaps in PSE V2
+- **feat**: Delegate error diagnosis and bug fixing to PSE V2 subagent
+- **docs**: Reflow cc-principal-software-engineerV2 to 80 columns
+- **feat**: Add graceful fallback mode to cc-product-manager
+- **docs**: Add fds v4 migration checklist to AGENT.md
+- **docs**: Add steps and rules for keeping root README in sync
+- **docs**: Enforce hook checks
+- **docs**: Add shared-agents cross-plugin consistency protocol
+- **docs**: Add changelog update cadence guidance
+
+### agents `v2.0.0`
+
+- **feat**: Delegate git operations from PM to PSE V2 via cc-git-commit
+- **docs**: Update AGENT.md with telemetry structure and authoring protocol
+- **fix**: Align Product Manager agent references to correct Software Engineer name
+- **refactor**: Rename cc-principal-software-engineerV2 to cc-software-engineer
+- **fix**: Resolve all validation issues in Product Manager agent (H1-H3, M1-M4, L1-L4)
+- **style**: Reformat vocabulary table column widths in Product Manager agent
+- **feat**: Add react engineer and react pattern skills
+- **fix**: Delegate prompt-refiner contract to single source of truth
+
+### catalogue `v2.0.0`
+
+- **feat**: Document 10 fds components
+
+### cc-design-system `v2.0.0`
+
+- **feat**: Add FDS knowledge skill with component catalogue, tokens, and theme setup resources
+- **docs**: Expand foundations-tokens reference
+- **docs**: Update catalogue progress tracker
+- **feat**: Split component catalogue into per-group files
+- **docs**: Add next catalogue component entries
+- **docs**: Refine ErrorDisplay documentation
+- **docs**: Add six catalogue component entries
+- **style**: Normalize markdown table alignment
+- **docs**: Add six ds catalogue updates
+- **style**: Fix markdown table alignment in resource docs
+- **docs**: Add Animations, ButtonWithIcon, InputGroup, LinkList
+- **docs**: Document 15 components in selection-input and form groups
+- **docs**: Remove z-index stub (not an FDS token)
+- **docs**: Correct progress count to 90/90
+
+### cc-plan-implementation `v2.0.0`
+
+- **feat**: Add standalone implementation planning skill
+
+### cc-product-manager `v2.0.0`
+
+- **chore**: Update tool names and remove tools block
+- **fix**: Use deterministic path to locate prompt-refiner config
+- **refactor**: Simplify agent workflow instructions
+- **refactor**: Remove skill invocation rules section
+- **feat**: Add product thinking workflow to PM agent
+- **feat**: Add product thinking workflow to PM agent
+
+### cc-rabbit-deploy `v2.0.0`
+
+- **feat**: Add GCC deployment skill to fds-web-app-builder
+- **docs**: Update GitLab URL examples to sgts.gitlab-dedicated.com
+
+### cc-software-engineer `v2.0.0`
+
+- **feat**: Rename agent display name to CC Software Engineer
+- **feat**: Add FDS skill guidance to prevent node_modules inspection
+- **refactor**: Simplify prompt refiner invocation
+- **chore**: Ban terminal file read, search, and edit commands
+- **feat**: Add LLM operational constraints section
+
+### cc-vite-react-ds `v2.0.0`
+
+- **fix**: Update script hint paths to reflect plugin install structure
+- **fix**: Run init script as background process to prevent npm install timeout
+- **style**: Enforce 80-char line wrap on prose in SKILL.md
+- **refactor**: Remove file generation from init script, delegate to Copilot file setup
+- **fix**: Fix incorrect ThemeProvider import, delegate theme wiring to cc-design-system skill
+- **chore**: Fix --no-interactive flag and clean up echo messages
+- **refactor**: Replace file_search with deterministic path derivation
+- **fix**: Correct script path discovery guidance
+
+### ccube-celerity `v2.0.0`
+
+- **feat**: Add Celerity deploy/release + smoke-test plugin
+- **refactor**: Migrate skills to MCP integrations
+- **fix**: Set author to Miguel, drop em dashes from plugin text
+- **docs**: Fix govtech MCP setup to a single managed server
+- **refactor**: Ship smoke binary, move Rust source to sources/
+
+### ccube-fds-web-app-builder `v2.0.0`
+
+- **chore**: Remove duplicate PSEv2 agent
+
+### ccube-software-craft `v2.0.0`
+
+- **feat**: Add ccube-software-craft plugin
+- **feat**: Package instructions as distributable skills
+- **feat**: Inline instructions and add markdown skill to PSE V2
+- **chore**: Remove instructions inlined into PSE V2 agent
+
+### community `v2.0.0`
+
+- **chore**: Update all vendored skills to latest upstream
+- **feat**: Add grilling and domain-modeling skills
+- **feat**: Add swe-coach skill for non-developers
+- **feat**: Add draw-io skill
+- **fix**: Remove unsupported --quiet flag from sparse-checkout
+- **feat**: Auto-bump plugin version on add/update
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+
+### css `v2.0.0`
+
+- **fix**: Update docs
+
+### design `v2.0.0`
+
+- **docs**: Add DESIGN.md system references
+
+### design-system `v2.0.0`
+
+- **feat**: Add component catalogue entries
+- **feat**: Add layout composition guidance
+
+### ds-catalogue `v2.0.0`
+
+- **docs**: Add markup table navbar entries
+- **docs**: Add seven component catalogue entries
+
+### fds `v2.0.0`
+
+- **docs**: Add 4 catalogue component entries
+
+### fds-builder `v2.0.0`
+
+- **fix**: Prevent fds search false negatives
+
+### fds-skill `v2.0.0`
+
+- **feat**: Add delight patterns to layout-composition-patterns
+
+### fds-web-app-builder `v2.0.0`
+
+- **chore**: Delete dead prompt-refinement instruction file
+
+### frontend-dev `v2.0.0`
+
+- **fix**: Fix readme and skill plugin attribution
+
+### git-commit `v2.0.0`
+
+- **refactor**: Improve staging command formatting
+
+### hooks `v2.0.0`
+
+- **fix**: Move hooks.json to plugin root for Copilot-format detection
+- **fix**: Revert to Claude format (hooks/hooks.json) for CLAUDE_PLUGIN_ROOT expansion
+- **fix**: Revert to Claude format and update AGENT.md docs
+- **chore**: Add systemMessage debug output to SessionStart hooks
+- **fix**: Resolve session-telemetry.sh path using assumed $HOME install location
+- **fix**: Stage readmes
+- **fix**: Update telemetry script path to new vscode install location
+
+### marketplace `v2.0.0`
+
+- **fix**: Register ccube-ux-designers plugin and enforce sync rule
+
+### mcp `v2.0.0`
+
+- **feat**: Add GovTech MCP gateway config to celerity and wai plugins
+
+### mkt `v2.0.0`
+
+- **feat**: Move react skills
+
+### plugins `v2.0.0`
+
+- **docs**: Add telemetry disclosure section to plugin READMEs
+- **docs**: Add agents and skills count badges to plugin READMEs
+- **docs**: Align ccube-software-craft README structure with fds-web-app-builder
+- **docs**: Move key capabilities into agent and skill entries
+- **feat**: Add Claude Code plugin manifests and marketplace catalog
+- **fix**: Align all plugins with Agent Plugins spec v1.0.0
+
+### pm-agent `v2.0.0`
+
+- **feat**: Narrow audience to PMs, consolidate delegation rules, fix validation findings
+
+### prompt-refiner `v2.0.0`
+
+- **feat**: Add Prompt Refiner subagent to ccube-software-craft
+- **feat**: Wire Prompt Refiner delegation into gateway agents and sync canonical policy
+- **fix**: Simplify confirmation to yes/no prompt
+- **fix**: Sync confirmation wording to canonical version
+- **fix**: Enforce full output in caller agents
+
+### react `v2.0.0`
+
+- **fix**: Update docs
+
+### readme `v2.0.0`
+
+- **style**: Normalize markdown table spacing
+- **docs**: Add missing plugins and update installation guidance
+- **docs**: Sync badges
+- **docs**: Update github repository and pr terminology
+
+### repo `v2.0.0`
+
+- **chore**: Add git-cliff changelog generation tooling
+- **docs**: Add changelog and update setup instructions
+- **docs**: Add git commit scope conventions to AGENT.md
+- **chore**: Reset all plugin versions to 1.0.0
+- **docs**: Add PM and SWE quick start sections to README
+- **docs**: Remove frontend dev skills section from SWE quick start
+- **feat**: Consolidate marketplace to wai and community plugins
+- **chore**: Add release script and update build config
+
+### scripts `v2.0.0`
+
+- **chore**: Split badge updates — plugins in root, agents/skills per plugin
+- **feat**: Add telemetry hook field diagnostic script
+
+### skill `v2.0.0`
+
+- **feat**: Add version context and v3/v4 routing to cc-design-system
+- **chore**: Pin fds install to @^3 and scaffold resources-v4/
+
+### software-craft `v2.0.0`
+
+- **feat**: Add cc-git-commit atomic commit skill
+- **feat**: Add enhancement proposal creation skill
+- **docs**: Align readme with plugin ground truth
+- **feat**: Register cc-create-ep skill and bump version to 1.2.0
+
+### styled `v2.0.0`
+
+- **fix**: Update docs
+
+### telemetry `v2.0.0`
+
+- **feat**: Add SessionStart hooks and scripts to both plugins
+- **fix**: Switch curl to synchronous and add debug logging
+- **fix**: Make session-telemetry.sh executable
+- **feat**: Add SubagentStart hook to track agent usage
+- **fix**: Read full stdin and default missing fields to UNDEFINED
+- **chore**: Log stdin to debug file and generalise event dispatch
+- **chore**: Sync fds-web-app-builder script with software-craft
+- **fix**: Correct hook_event_name key to snake_case
+- **chore**: Update endpoint to slack webhook url
+- **fix**: Track per-plugin installs with markers
+- **docs**: Add EP-0001 per-plugin install proposal
+- **feat**: Add chatSessionId to all telemetry event payloads
+- **feat**: Add Claude Code event handling to all plugin hooks
+
+### ux-designers `v2.0.0`
+
+- **feat**: Add cc-design-md plugin scaffolding
+
+### vscode `v2.0.0`
+
+- **chore**: Add workspace color customization settings
+- **chore**: Add workspace color customization settings
+
+### wai `v2.0.0`
+
+- **refactor**: Move swe-coach skill from community to wai plugin
+- **chore**: Remove guardrails section from cc-swe-coach
+- **chore**: Remove 'rolling back a release' from cc-swe-coach description
+- **chore**: Bump version to 1.6.0 for cc-swe-coach release
+- **docs**: Add EP-0002 Goal-Oriented Architecture proposal
+- **feat**: Implement EP-0002 goal-oriented architecture
+- **feat**: Promote FDS Engineer to user-invocable with direct prompt handling
+- **feat**: Add lightweight Maestro router agent for reliable dispatch
+- **docs**: Update READMEs for v2 architecture, remove plugin settings.json
+- **fix**: Switch scaffold to plugin-react-swc, add allowedHosts, fix Typography imports
+- **refactor**: Align all agents for Maestro dispatch compatibility
+- **docs**: Remove stale phase and SWE references from README
+- **refactor**: Slim Backend Engineer by removing generic OWASP rules
+- **refactor**: Remove brief handling from Backend Engineer
+- **fix**: Add CSP headers to scaffolds, disambiguate scaffold type in Maestro
+- **refactor**: Remove Designer agent
+- **chore**: Bump version to 2.0.0, add changelog
+- **refactor**: Remove DESIGN category from Maestro routing
+- **feat**: Multi-category parallel dispatch in Maestro
+- **feat**: Maestro refines prompts per agent before dispatch
+- **refactor**: Remove overly restrictive Maestro rules
+- **refactor**: Align Backend Engineer frontmatter with FDS Engineer
+- **refactor**: Rewrite Maestro as router + generalist fallback
+- **feat**: Add Maestro eval harness (EP-0003 + Phase 1 implementation)
+- **chore**: Replace Docker Desktop with Colima, add eval usage comment
+- **docs**: Update EP-0003 to reflect implementation
+- **feat**: Implement BYOA routing and /create-mai-agent skill
+- **refactor**: Simplify Maestro Step 2 — WAI defaults without context check
+- **refactor**: Strict filename-based MAI discovery
+- **refactor**: Confine MAI references to override section only
+- **fix**: Dispatch table references Step 2 resolution
+- **fix**: Align cc-create-mai-agent skill with WAI conventions
+- **docs**: Add 2.1.0 changelog entry for BYOA, eval, and skill fixes
+- **fix**: Revert plugin version to 2.0.0
+- **fix**: Address code review HIGH findings
+
 ## 2.0.0 — 2026-08-14
 ### wai `v2.0.0` (continued)
 

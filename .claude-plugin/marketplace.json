@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Full-stack web application delivery platform with specialist agents for requirements, design, frontend (FDS), backend (Koa + PostgreSQL), review, and deployment.",
-    "version": "1.5.0"
+    "version": "2.0.0"
   },
   "plugins": [
     {
       "name": "wai",
       "source": "./plugins/wai",
       "description": "Full-stack web application delivery platform. Orchestrates requirements, architecture review, frontend (FDS), backend (Koa + PostgreSQL), build verification, testing, code review, and deployment across a team of specialist agents.",
-      "version": "1.5.0",
+      "version": "2.0.0",
       "author": {
         "name": "LifeSG CCube"
       },
@@ -39,7 +39,12 @@
       "author": {
         "name": "LifeSG CCube"
       },
-      "keywords": ["community", "skills", "productivity", "open-source"],
+      "keywords": [
+        "community",
+        "skills",
+        "productivity",
+        "open-source"
+      ],
       "category": "productivity",
       "strict": false
     },
@@ -49,7 +54,7 @@
       "description": "Release, deploy, and smoke-test knowledge for the Celerity pillar (SupportGoWhere): an end-to-end deploy/release runbook and a read-only site health check. Sanitised for public use; project IDs are configured per deployment.",
       "version": "1.0.0",
       "author": {
-        "name": "Miguel Parramón Teixidó"
+        "name": "Miguel Parram\u00f3n Teixid\u00f3"
       },
       "keywords": [
         "release",

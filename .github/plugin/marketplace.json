@@ -12,7 +12,7 @@
       "name": "wai",
       "source": "./plugins/wai",
       "description": "The one to rule em all",
-      "version": "1.5.0",
+      "version": "2.0.0",
       "skills": "./skills",
       "agents": "./agents",
       "hooks": "./hooks.json"
