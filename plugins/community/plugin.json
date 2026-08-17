@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "community",
   "description": "Curated open-source community skills \u2014 vendored for zero-friction access across all projects.",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "author": {
     "name": "LifeSG CCube"
   },
