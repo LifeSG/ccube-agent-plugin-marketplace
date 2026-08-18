@@ -226,25 +226,31 @@ cmd_add() {
 
 cmd_update() {
   local target="${1:---all}"
+  local any_changed=false
 
   if [[ "${target}" == "--all" ]]; then
     local skills
     skills="$(manifest_list_names)"
     [[ -n "${skills}" ]] || die "No skills tracked in manifest. Nothing to update."
     while IFS= read -r skill; do
-      [[ -n "${skill}" ]] && _update_one "${skill}"
+      [[ -n "${skill}" ]] && _update_one "${skill}" && any_changed=true
     done <<< "${skills}"
-    bump_patch_version
-    echo ""
-    echo "   To commit all updates:"
-    echo "   git add plugins/community/skills/ plugins/community/plugin.json && git commit -m \"chore(community): update all vendored skills\""
+    if [[ "${any_changed}" == "true" ]]; then
+      bump_patch_version
+      echo ""
+      echo "   To commit all updates:"
+      echo "   git add plugins/community/skills/ plugins/community/plugin.json && git commit -m \"chore(community): update all vendored skills\""
+    else
+      info "All skills already up to date."
+    fi
   else
-    _update_one "${target}"
-    bump_patch_version
-    echo ""
-    echo "   To commit:"
-    echo "   git add plugins/community/skills/${target} plugins/community/skills/.manifest.json plugins/community/plugin.json"
-    echo "   git commit -m \"chore(community): update ${target} skill\""
+    if _update_one "${target}"; then
+      bump_patch_version
+      echo ""
+      echo "   To commit:"
+      echo "   git add plugins/community/skills/${target} plugins/community/skills/.manifest.json plugins/community/plugin.json"
+      echo "   git commit -m \"chore(community): update ${target} skill\""
+    fi
   fi
 }
 
@@ -272,11 +278,18 @@ _update_one() {
   info "Updating '${skill}' from github.com/${repo}/${skill_path}…"
   download_skill "${repo}" "${skill_path}" "${SKILLS_DIR}/${skill}"
 
+  if git diff --quiet -- "${SKILLS_DIR}/${skill}" && \
+     [[ -z "$(git status --porcelain -- "${SKILLS_DIR}/${skill}")" ]]; then
+    info "No changes for '${skill}', skipping."
+    return 1
+  fi
+
   local now
   now="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
   manifest_set "${skill}" "${repo}" "${skill_path}" "${now}"
 
   ok "Updated '${skill}'"
+  return 0
 }
 
 cmd_delete() {
