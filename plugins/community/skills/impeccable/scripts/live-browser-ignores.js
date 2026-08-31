@@ -16,6 +16,20 @@
  *   3. Remaining `ignoreValues` entries match on the finding's own value;
  *      those are forwarded as `disabledValues` for the detector bundle to
  *      apply where the findings are assembled.
+ *   4. `ignoreFiles` globs that name the page waive it wholesale: the
+ *      resolver reports `skipScan: true` and the detector answers the scan
+ *      with zero findings, mirroring shouldIgnoreDetectionFile in the CLI
+ *      and the edit hook's own ignoreFiles gate.
+ *
+ * `pageFiles`, when the server could resolve it, lists the real project
+ * files the inject config serves. A URL that suffix-matches exactly one of
+ * them takes that file as its only project identity; an ambiguous or absent
+ * match falls back to the served-root common ancestor below.
+ *
+ * Known gap, unchanged from PR #645: framework apps inject into source files
+ * (src/routes/about/+page.svelte) while scans see route URLs (/about), so
+ * entries scoped to source or asset paths never match a page candidate and
+ * are dropped. That shows the finding, which is the conservative direction.
  *
  * Kept separate from live-browser.js so the glob and page-scope logic can be
  * unit tested in Node (tests/live-browser-ignores.test.mjs) without the full
@@ -101,7 +115,7 @@
   // alternatives at all, and demanding a waiver match under both stops
   // prototype/index.html from applying anywhere. When the globs share no
   // common root, no prefix is asserted and only the URL path itself matches.
-  function pageCandidates(pathname, roots) {
+  function pageCandidates(pathname, roots, pageFiles) {
     let pagePath = String(pathname || '');
     try {
       pagePath = decodeURIComponent(pagePath);
@@ -112,6 +126,32 @@
     // A directory URL serves that directory's index, and the ignore globs
     // name files. Without this, /news/ never matches prototype/news/index.html.
     if (pagePath === '' || pagePath.endsWith('/')) pagePath += 'index.html';
+
+    const candidates = new Set();
+    const addSuffixes = (fullPath) => {
+      const parts = fullPath.split('/').filter(Boolean);
+      for (let i = 0; i < parts.length; i++) {
+        candidates.add(parts.slice(i).join('/'));
+      }
+    };
+    addSuffixes(pagePath);
+
+    // The served page list names the real files the inject config serves.
+    // A URL that suffix-matches exactly one of them has an unambiguous
+    // project identity; assert that identity and stop guessing from roots
+    // (PR #645 review: with src/ and public/ both served, /foo.html must not
+    // borrow src/foo.html's waivers while actually serving public/foo.html).
+    // Zero matches or several fall through to the common-ancestor fallback:
+    // ambiguity resolves toward showing the finding.
+    const knownPages = [];
+    for (const entry of Array.isArray(pageFiles) ? pageFiles : []) {
+      if (typeof entry !== 'string' || !entry) continue;
+      if (entry === pagePath || entry.endsWith('/' + pagePath)) knownPages.push(entry);
+    }
+    if (knownPages.length === 1) {
+      addSuffixes(knownPages[0]);
+      return [...candidates];
+    }
 
     const prefixes = [];
     for (const entry of Array.isArray(roots) ? roots : []) {
@@ -125,14 +165,6 @@
       common = common.slice(0, i);
     }
 
-    const candidates = new Set();
-    const addSuffixes = (fullPath) => {
-      const parts = fullPath.split('/').filter(Boolean);
-      for (let i = 0; i < parts.length; i++) {
-        candidates.add(parts.slice(i).join('/'));
-      }
-    };
-    addSuffixes(pagePath);
     if (common.length > 0) addSuffixes(common.join('/') + '/' + pagePath);
     return [...candidates];
   }
@@ -158,12 +190,21 @@
    *   in whatever state it arrived: absent, null, or hand-edited into the
    *   wrong shape. Every read tolerates that and degrades to no filtering.
    * @param {string} options.pathname  location.pathname of the scanned page.
-   * @returns {{ disabledRules: string[], disabledValues: Array<{rule: string, value: string}> }}
+   * @returns {{ disabledRules: string[], disabledValues: Array<{rule: string, value: string}>, skipScan: boolean }}
    */
   function resolveDetectIgnores({ ignores, pathname } = {}) {
     const config = ignores && typeof ignores === 'object' ? ignores : {};
     const asArray = (value) => (Array.isArray(value) ? value : []);
-    const candidates = pageCandidates(pathname, config.roots);
+    const candidates = pageCandidates(pathname, config.roots, config.pageFiles);
+
+    // detector.ignoreFiles waives whole files. When any glob names this
+    // page, the scan itself is skipped; rule and value lists are returned
+    // empty because nothing will run.
+    const ignoreFileGlobs = asArray(config.ignoreFiles)
+      .filter((glob) => typeof glob === 'string' && glob.trim());
+    if (ignoreFileGlobs.length > 0 && matchesScope(ignoreFileGlobs, candidates)) {
+      return { disabledRules: [], disabledValues: [], skipScan: true };
+    }
 
     const disabledRules = new Set(
       asArray(config.ignoreRules)
@@ -191,7 +232,7 @@
       disabledValues.push({ rule, value });
     }
 
-    return { disabledRules: [...disabledRules], disabledValues };
+    return { disabledRules: [...disabledRules], disabledValues, skipScan: false };
   }
 
   root.__IMPECCABLE_LIVE_IGNORES__ = {
