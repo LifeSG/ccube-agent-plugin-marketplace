@@ -1667,19 +1667,24 @@ const server = http.createServer((req, res) => {
     let body = '';
     req.on('data', (chunk) => { body += chunk; });
     req.on('end', () => {
-      res.writeHead(200, { 'content-type': 'application/json' });
-      res.end('{"ok":true}');
       let value = null;
       try { value = JSON.parse(body).value; } catch { /* ignore */ }
-      if (value !== 'comp' && value !== 'code') return;
-      const wasComp = liveBuildPath === 'comp';
-      liveBuildPath = value;
-      // Only a flip TO comp needs the agent mid-round: comps must start
-      // rendering into the declared slots. The reverse is free.
-      if (detachedKey && value === 'comp' && !wasComp) {
-        fs.mkdirSync(QUESTION_DIR, { recursive: true });
-        fs.writeFileSync(flipFile(detachedKey), JSON.stringify({ buildPath: 'comp' }) + '\n');
+      if (value === 'comp' || value === 'code') {
+        const wasComp = liveBuildPath === 'comp';
+        liveBuildPath = value;
+        // Only a flip TO comp needs the agent mid-round: comps must start
+        // rendering into the declared slots. The reverse is free.
+        if (detachedKey && value === 'comp' && !wasComp) {
+          fs.mkdirSync(QUESTION_DIR, { recursive: true });
+          fs.writeFileSync(flipFile(detachedKey), JSON.stringify({ buildPath: 'comp' }) + '\n');
+        }
       }
+      // Answer only once the flip is on disk. Responding first raced the
+      // caller: the 200 reached the client (a separate process) while this
+      // one could still be preempted before the write landed, so a poller
+      // that trusted the 200 could look for the flip file and miss it.
+      res.writeHead(200, { 'content-type': 'application/json' });
+      res.end('{"ok":true}');
     });
     return;
   }
