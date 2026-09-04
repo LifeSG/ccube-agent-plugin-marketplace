@@ -498,6 +498,147 @@ function isNeutralBorderColor(str) {
   return isNeutralAuthoredColor(m[1]);
 }
 
+const TW_SOLID_CHROMATIC_BG_RE = /\bbg-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d+(?!\/)\b/;
+
+function scanJs(text, start, onChar) {
+  let stringQuote = '';
+  let inTemplate = false;
+  let paren = 0;
+  let brace = 0;
+  const interpBrace = [];
+
+  for (let i = start; i < text.length; i++) {
+    const char = text[i];
+    const prev = text[i - 1];
+    const next = text[i + 1];
+
+    if (stringQuote) {
+      if (char === '\\') { i++; continue; }
+      if (char === stringQuote) stringQuote = '';
+      continue;
+    }
+    if (inTemplate && interpBrace.length === 0) {
+      if (char === '\\') { i++; continue; }
+      if (char === '$' && next === '{') {
+        brace++;
+        interpBrace.push(brace);
+        i++;
+        continue;
+      }
+      if (char === '`') { inTemplate = false; continue; }
+      continue;
+    }
+
+    if (char === "'" || char === '"') { stringQuote = char; continue; }
+    if (char === '`') { inTemplate = true; continue; }
+    if (char === '(') { paren++; continue; }
+    if (char === ')') { paren--; continue; }
+    if (char === '{') { brace++; continue; }
+    if (char === '}') {
+      brace--;
+      if (interpBrace.length && brace < interpBrace[interpBrace.length - 1]) interpBrace.pop();
+      continue;
+    }
+    if (onChar(char, i, prev, next, { paren, brace })) return;
+  }
+}
+
+function containingMarkupTag(line, index) {
+  let i = 0;
+  while (i < line.length) {
+    const tagStart = line.indexOf('<', i);
+    if (tagStart === -1) break;
+    if (!/^<[A-Za-z]/.test(line.slice(tagStart))) {
+      i = tagStart + 1;
+      continue;
+    }
+    let tagEnd = -1;
+    scanJs(line, tagStart + 1, (char, j, _p, _n, depth) => {
+      if (char === '>' && depth.brace === 0) {
+        tagEnd = j;
+        return true;
+      }
+      return false;
+    });
+    if (tagEnd === -1) break;
+    if (index >= tagStart && index <= tagEnd) {
+      return { text: line.slice(tagStart, tagEnd + 1), start: tagStart };
+    }
+    i = tagEnd + 1;
+  }
+  return { text: line, start: 0 };
+}
+
+function findTernarySplit(text) {
+  let qPos = -1;
+  let qParen = 0;
+  let qBrace = 0;
+  let nested = 0;
+  let colonPos = -1;
+  let split = null;
+
+  const isQuestion = (char, prev, next) =>
+    char === '?' && prev !== '.' && prev !== '?' && next !== '?' && next !== '.';
+  const sameDepth = (depth) => depth.paren === qParen && depth.brace === qBrace;
+
+  scanJs(text, 0, (char, i, prev, next, depth) => {
+    if (colonPos === -1) {
+      if (qPos === -1 && isQuestion(char, prev, next)) {
+        qPos = i;
+        qParen = depth.paren;
+        qBrace = depth.brace;
+        return false;
+      }
+      if (qPos !== -1 && isQuestion(char, prev, next) && sameDepth(depth)) {
+        nested++;
+        return false;
+      }
+      if (qPos !== -1 && char === ':' && sameDepth(depth)) {
+        if (nested) nested--;
+        else colonPos = i;
+      }
+      return false;
+    }
+    if (char === ',' && sameDepth(depth)) {
+      split = {
+        common: text.slice(0, qPos),
+        consequent: text.slice(qPos + 1, colonPos),
+        alternate: text.slice(colonPos + 1, i),
+        suffix: text.slice(i),
+      };
+      return true;
+    }
+    return false;
+  });
+
+  if (!split && qPos !== -1 && colonPos !== -1) {
+    split = {
+      common: text.slice(0, qPos),
+      consequent: text.slice(qPos + 1, colonPos),
+      alternate: text.slice(colonPos + 1),
+      suffix: '',
+    };
+  }
+  return split;
+}
+
+function exclusiveClassScopes(text) {
+  const split = findTernarySplit(text);
+  if (!split) return [text];
+  return [
+    ...exclusiveClassScopes(split.consequent).map((part) => split.common + part + split.suffix),
+    ...exclusiveClassScopes(split.alternate).map((part) => split.common + part + split.suffix),
+  ];
+}
+
+function grayOnColorScopes(line, index) {
+  return exclusiveClassScopes(containingMarkupTag(line, index).text);
+}
+
+function grayOnColorPairs(line, grayClass, index) {
+  return grayOnColorScopes(line, index).filter((scope) => scope.includes(grayClass));
+}
+
 const REGEX_MATCHERS = [
   // --- Side-tab ---
   { id: 'side-tab', regex: /\bborder-[lrse]-(\d+)\b/g,
@@ -545,8 +686,13 @@ const REGEX_MATCHERS = [
     fmt: () => 'bg-clip-text + bg-gradient' },
   // --- Tailwind gray on colored bg ---
   { id: 'gray-on-color', regex: /\btext-(?:gray|slate|zinc|neutral|stone)-(\d+)\b/g,
-    test: (m, line) => /\bbg-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d+\b/.test(line),
-    fmt: (m, line) => { const bg = line.match(/\bbg-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d+\b/); return `${m[0]} on ${bg?.[0] || '?'}`; } },
+    test: (m, line) => grayOnColorPairs(line, m[0], m.index).some((scope) => TW_SOLID_CHROMATIC_BG_RE.test(scope)),
+    fmt: (m, line) => {
+      const bg = grayOnColorPairs(line, m[0], m.index)
+        .map((scope) => scope.match(TW_SOLID_CHROMATIC_BG_RE))
+        .find(Boolean);
+      return `${m[0]} on ${bg?.[0] || '?'}`;
+    } },
   // --- Tailwind AI palette ---
   { id: 'ai-color-palette', regex: /\btext-(?:purple|violet|indigo)-(\d+)\b/g,
     test: (m, line) => /\btext-(?:[2-9]xl|[3-9]xl)\b|<h[1-3]/i.test(line),
