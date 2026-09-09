@@ -17,17 +17,21 @@ user-invocable: true
 # Create MAI Agent
 
 Generate a project-local (MAI) agent that Maestro can discover
-and route to. MAI agents live in `wai/byoa/` in the project
-workspace and take precedence over WAI plugin defaults.
+and route to. MAI agents live in `wai/byoa/` relative to the
+project root or any subfolder in the workspace, and take
+precedence over WAI plugin defaults.
 
 Maestro discovers MAI agents by **strict filename** — not by
 description matching. The file MUST be named exactly:
 
 | Category | Required filename |
 |----------|-------------------|
-| FRONTEND | `wai/byoa/mai-frontend.agent.md` |
-| BACKEND | `wai/byoa/mai-backend.agent.md` |
-| PRODUCT | `wai/byoa/mai-product.agent.md` |
+| FRONTEND | `[<subfolder>/]wai/byoa/mai-frontend.agent.md` |
+| BACKEND | `[<subfolder>/]wai/byoa/mai-backend.agent.md` |
+| PRODUCT | `[<subfolder>/]wai/byoa/mai-product.agent.md` |
+
+The `<subfolder>/` prefix is optional. Maestro searches all
+depths using `find . -path "*/wai/byoa/mai-*.agent.md"`.
 
 > **V1 scope:** Only frontend, backend, and product categories
 > are supported. This matches Maestro's current routing table.
@@ -212,9 +216,12 @@ include more.
 
 ### Step 5: Create Directory and Write File
 
-1. Create `wai/byoa/` directory if it doesn't exist
-2. Write the agent file at the required filename
-3. Confirm creation to the user
+1. Determine the target directory. If the user specified a
+   subfolder (e.g., `apps/web`), use `<subfolder>/wai/byoa/`.
+   Otherwise, default to `wai/byoa/` at the workspace root.
+2. Create the target directory if it doesn't exist.
+3. Write the agent file at the required filename.
+4. Confirm creation to the user, showing the full path.
 
 ### Step 6: Verify (Optional)
 
@@ -240,11 +247,13 @@ If the user asks to verify, confirm:
   actual build and test commands.
 - You MUST NOT generate an agent that references dependencies
   not present in the project.
-- You MUST create the file in `wai/byoa/`, NOT in
-  `.claude/agents/` or `plugins/wai/agents/`.
+- You MUST create the file in `[<subfolder>/]wai/byoa/`, NOT
+  in `.claude/agents/` or `plugins/wai/agents/`. When a
+  subfolder is specified or the project lives in a monorepo
+  subdirectory, use that subdirectory as the prefix.
 - If the project already has a MAI agent for the chosen
-  category in `wai/byoa/`, warn the user and ask whether to
-  replace it.
+  category at any depth (`**/wai/byoa/`), warn the user and
+  ask whether to replace it.
 
 ---
 
@@ -342,8 +351,8 @@ Before reporting your work as done, you MUST:
 ### Feedforward Assertions (MUST-contain)
 
 Every generated MAI agent MUST contain:
-- Agent file at `wai/byoa/mai-<category>.agent.md` using the
-  exact required filename
+- Agent file at `[<subfolder>/]wai/byoa/mai-<category>.agent.md`
+  using the exact required filename
 - Valid YAML frontmatter with `name` and `description` fields
   between `---` delimiters
 - Description containing ≥3 category-relevant terms
@@ -367,7 +376,8 @@ Every generated MAI agent MUST NOT contain:
 - Hardcoded paths that do not exist in the workspace
 - Missing `---` delimiters in frontmatter
 - The file placed in `.claude/agents/` or
-  `plugins/wai/agents/` instead of `wai/byoa/`
+  `plugins/wai/agents/` instead of
+  `[<subfolder>/]wai/byoa/`
 
 **PASS example:**
 > Input: "Create a MAI agent for my Next.js frontend"
