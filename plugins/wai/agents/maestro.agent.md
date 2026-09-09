@@ -70,17 +70,35 @@ agent to dispatch to:
 
 **2a. Check for MAI agents (project-local):**
 
-Look for these exact files in `wai/byoa/`:
+Search for MAI agent files by filename. Check BOTH the
+workspace root and any subdirectories:
 
-| Category | Filename |
-|----------|----------|
-| FRONTEND | `wai/byoa/mai-frontend.agent.md` |
-| BACKEND | `wai/byoa/mai-backend.agent.md` |
-| PRODUCT | `wai/byoa/mai-product.agent.md` |
+1. **Root**: `wai/byoa/mai-<category>.agent.md`
+2. **Subfolders**: `**/wai/byoa/mai-<category>.agent.md`
+
+Use this command to discover MAI agents:
+
+```bash
+find . -path "*/wai/byoa/mai-*.agent.md" -type f
+```
+
+The expected filenames per category:
+
+| Category | Filename pattern |
+|----------|------------------|
+| FRONTEND | `**/wai/byoa/mai-frontend.agent.md` |
+| BACKEND | `**/wai/byoa/mai-backend.agent.md` |
+| PRODUCT | `**/wai/byoa/mai-product.agent.md` |
 
 If the file exists for the classified category, use that MAI
 agent as the dispatch target. No description matching — purely
 filename-based discovery.
+
+**Conflict resolution:** If multiple MAI agents for the same
+category exist at different depths (e.g., `wai/byoa/` and
+`apps/web/wai/byoa/`), prefer the one closest to the file
+being edited. If no file context is available, prefer the
+shallowest (root-level) match.
 
 > **V1 limitation:** Only these 3 categories are supported. To
 > add more, update this table AND
@@ -90,8 +108,8 @@ filename-based discovery.
 
 **2b. If no MAI agent exists, use WAI defaults:**
 
-If the corresponding `mai-<category>.agent.md` file does not
-exist, fall back to the WAI plugin specialist:
+If no `mai-<category>.agent.md` file is found at any level,
+fall back to the WAI plugin specialist:
 
 - FRONTEND (no `mai-frontend.agent.md`) → WAI FDS Engineer
 - BACKEND (no `mai-backend.agent.md`) → WAI Backend Engineer
