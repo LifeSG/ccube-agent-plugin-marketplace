@@ -61,6 +61,28 @@ if [ -z "$DB_NAME" ]; then
   DB_NAME="${PROJECT_NAME//-/_}"
 fi
 
+# ── Input validation ────────────────────────────────────────────
+# Prevent command injection via GNU sed's `e` flag (CWE-78/CWE-94).
+# Values are validated against strict allowlists before any sed use.
+validate_input() {
+  local value="$1" pattern="$2" field="$3"
+  if [[ ! "$value" =~ $pattern ]]; then
+    echo "Error: $field contains invalid characters."
+    echo "  Value:   '$value'"
+    echo "  Allowed: $pattern"
+    exit 1
+  fi
+}
+
+validate_input "$PROJECT_NAME" '^[A-Za-z0-9_-]+$' "PROJECT_NAME"
+validate_input "$DB_NAME"      '^[A-Za-z0-9_]+$'  "DB_NAME"
+validate_input "$BACKEND_PORT" '^[0-9]+$'          "BACKEND_PORT"
+
+if (( BACKEND_PORT < 1 || BACKEND_PORT > 65535 )); then
+  echo "Error: BACKEND_PORT must be between 1 and 65535 (got $BACKEND_PORT)"
+  exit 1
+fi
+
 PROJECT_PATH="$TARGET_DIR/$PROJECT_NAME"
 
 echo "╔══════════════════════════════════════════════════════════════╗"
