@@ -51,6 +51,31 @@ die()  { echo "✖  $*" >&2; exit 1; }
 info() { echo "→  $*"; }
 ok()   { echo "✔  $*"; }
 
+# ── Input validation ──────────────────────────────────────────────────────────
+
+# Reject skill names that contain path separators, '..' sequences, or
+# characters outside a strict allowlist.  Every caller — including
+# manifest-derived values — must pass through this check before the
+# name is used to build a filesystem path.
+validate_skill_name() {
+  local name="$1"
+  [[ "${name}" =~ ^[A-Za-z0-9._-]+$ ]] \
+    || die "Invalid skill name '${name}': only letters, digits, '.', '_', and '-' are allowed."
+}
+
+# Resolve CANDIDATE with realpath -m (no filesystem access required) and
+# assert that the result is a direct descendant of PARENT.  Dies with a
+# clear security error if the check fails.  LABEL is used in the error
+# message for context.
+assert_path_within() {
+  local candidate="$1" parent="$2" label="${3:-path}"
+  local resolved parent_resolved
+  resolved="$(realpath -m "${candidate}")"
+  parent_resolved="$(realpath -m "${parent}")"
+  [[ "${resolved}" == "${parent_resolved}/"* ]] \
+    || die "Security: ${label} '${candidate}' resolves to '${resolved}', which is outside '${parent_resolved}'. Aborting."
+}
+
 # ── Manifest helpers (all JSON writes go through python3 with argv, not
 #    string interpolation, to safely handle paths with special characters) ─────
 
@@ -186,6 +211,12 @@ download_skill() {
   git -C "${tmp_dir}" sparse-checkout set --no-cone "${skill_path}" 2>/dev/null
 
   local src="${tmp_dir}/${skill_path}"
+
+  # Containment checks — must run before any filesystem mutation.
+  # dest must resolve inside SKILLS_DIR; src must resolve inside tmp_dir.
+  assert_path_within "${dest}" "${SKILLS_DIR}" "dest"
+  assert_path_within "${src}"  "${tmp_dir}"    "src"
+
   [[ -d "${src}" ]] || die "Path '${skill_path}' not found in ${repo}. Verify the path exists on the default branch."
 
   rm -rf "${dest}"
@@ -204,6 +235,9 @@ cmd_add() {
   [[ "${repo}" == */* ]] || die "repo must be in owner/repo format (e.g. mattpocock/skills)"
 
   [[ -z "${skill_name}" ]] && skill_name="${skill_path##*/}"
+
+  # Validate skill name before building any path from it.
+  validate_skill_name "${skill_name}"
 
   local dest="${SKILLS_DIR}/${skill_name}"
   [[ ! -d "${dest}" ]] || die "Skill '${skill_name}' already exists. Use 'update ${skill_name}' to refresh it."
@@ -269,6 +303,10 @@ PYEOF
 
 _update_one() {
   local skill="$1"
+
+  # Treat the manifest key as untrusted — validate before building a path.
+  validate_skill_name "${skill}"
+
   local repo skill_path
   repo="$(manifest_get "${skill}" source)"
   skill_path="$(manifest_get "${skill}" path)"
@@ -295,6 +333,9 @@ _update_one() {
 cmd_delete() {
   local skill="${1:-}"
   [[ -n "${skill}" ]] || { usage; exit 1; }
+
+  # Validate before building a path from the CLI-supplied name.
+  validate_skill_name "${skill}"
 
   local dest="${SKILLS_DIR}/${skill}"
   [[ -d "${dest}" ]] || die "Skill '${skill}' not found at ${dest}"
@@ -324,6 +365,7 @@ cmd_list() {
 main() {
   command -v git     >/dev/null 2>&1 || die "git is required but not found in PATH."
   command -v python3 >/dev/null 2>&1 || die "python3 is required but not found in PATH."
+  command -v realpath >/dev/null 2>&1 || die "realpath is required but not found in PATH. Install GNU coreutils (e.g. brew install coreutils on macOS)."
 
   local cmd="${1:-}"
   shift || true
