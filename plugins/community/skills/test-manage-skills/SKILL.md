@@ -39,7 +39,7 @@ The script under test is at:
 `plugins/community/scripts/manage-skills.sh`
 
 The test plan is at:
-`plugins/community/scripts/manage-skills.test-plan.md`
+`plugins/community/skills/test-manage-skills/resources/test-plan.md`
 
 Required tools: `git`, `python3`, `realpath`, `bash`.
 
@@ -52,7 +52,7 @@ access. Security and most exploratory tests are purely local.
 
 ### Phase 1 — Read the test plan
 
-Read `plugins/community/scripts/manage-skills.test-plan.md`
+Read `plugins/community/skills/test-manage-skills/resources/test-plan.md`
 in full. This is the authoritative source for mandatory test
 cases and exploratory areas. Do not skip or summarize — every
 mandatory test must be executed exactly as specified.
