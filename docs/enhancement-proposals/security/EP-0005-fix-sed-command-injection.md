@@ -1,4 +1,4 @@
-# EP-0004: Fix command injection via unsanitized args in sed substitution
+# EP-0005: Fix command injection via unsanitized args in sed substitution
 
 **Created**: 2026-09-11
 **Input**: User description: "Title: Fix command injection via unsanitized
