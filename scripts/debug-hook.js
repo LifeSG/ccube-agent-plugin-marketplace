@@ -22,7 +22,7 @@ const path = require('path');
 const https = require('https');
 const http = require('http');
 const dns = require('dns');
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 
 // ── Mirror the configuration used by session-telemetry.sh ─────────────────
 const ENDPOINT =
@@ -583,6 +583,19 @@ function replicateCurl() {
     return;
   }
 
+  // Validate ENDPOINT is a well-formed URL before passing to curl
+  // (prevents malformed/malicious values from reaching the process).
+  try {
+    const parsed = new URL(ENDPOINT);
+    if (parsed.protocol !== 'https:') {
+      check(FAIL, `Endpoint protocol is ${parsed.protocol} — expected https:`);
+      return;
+    }
+  } catch {
+    check(FAIL, `Endpoint URL is malformed: ${ENDPOINT} — skipping curl`);
+    return;
+  }
+
   const anonId = fs.existsSync(ID_FILE)
     ? fs.readFileSync(ID_FILE, 'utf8').trim()
     : 'diagnostic-test-id';
@@ -597,28 +610,27 @@ function replicateCurl() {
     ts: now,
   });
 
-  // Escape payload for shell
-  const escapedPayload = payload.replace(/'/g, "'\\''");
-
-  const curlCmd = [
-    'curl',
+  // Use execFileSync with an argument array to avoid shell
+  // interpretation entirely (fixes CWE-78 command injection via
+  // CCUBE_TELEMETRY_ENDPOINT).
+  const curlArgs = [
     '--silent',
     '--max-time',
     '10',
     '--write-out',
-    "'---HTTPSTATUS:%{http_code}---'",
+    '---HTTPSTATUS:%{http_code}---',
     '-H',
-    '"Content-Type: application/json"',
+    'Content-Type: application/json',
     '-d',
-    `'${escapedPayload}'`,
-    `'${ENDPOINT}'`,
-  ].join(' ');
+    payload,
+    ENDPOINT,
+  ];
 
-  check(INFO, `Running: ${curlCmd}`);
+  check(INFO, `Running: curl ${curlArgs.join(' ')}`);
   console.log('');
 
   try {
-    const output = execSync(curlCmd, { encoding: 'utf8', timeout: 15000 });
+    const output = execFileSync('curl', curlArgs, { encoding: 'utf8', timeout: 15000 });
     const SENTINEL = '---HTTPSTATUS:';
     const sentinelIdx = output.indexOf(SENTINEL);
     const body =

@@ -71,18 +71,47 @@ else                                                                      RISK="
 fi
 
 echo "=== METRICS JSON ==="
-cat <<JSON
+# Use jq to build JSON safely — prevents injection via crafted git
+# author names (CWE-1427, CWE-116, CWE-74).  --arg escapes strings;
+# --argjson passes numbers without quoting.
+if command -v jq >/dev/null 2>&1; then
+  jq -n \
+    --argjson filesChanged "$FILES_CHANGED" \
+    --argjson linesAdded "$LINES_ADDED" \
+    --argjson linesDeleted "$LINES_DELETED" \
+    --argjson totalChanged "$TOTAL_CHANGED" \
+    --argjson commits "$COMMITS" \
+    --arg contributors "$CONTRIBUTORS" \
+    --arg complexity "$COMPLEXITY" \
+    --arg riskProfile "$RISK" \
+    '{
+      filesChanged: $filesChanged,
+      linesAdded: $linesAdded,
+      linesDeleted: $linesDeleted,
+      totalChanged: $totalChanged,
+      commits: $commits,
+      contributors: $contributors,
+      complexity: $complexity,
+      riskProfile: $riskProfile
+    }'
+else
+  # Fallback: escape double quotes and backslashes in string values
+  CONTRIBUTORS_ESC=$(printf '%s' "$CONTRIBUTORS" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  COMPLEXITY_ESC=$(printf '%s' "$COMPLEXITY" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  RISK_ESC=$(printf '%s' "$RISK" | sed 's/\\/\\\\/g; s/"/\\"/g')
+  cat <<JSON
 {
   "filesChanged": $FILES_CHANGED,
   "linesAdded": $LINES_ADDED,
   "linesDeleted": $LINES_DELETED,
   "totalChanged": $TOTAL_CHANGED,
   "commits": $COMMITS,
-  "contributors": "$CONTRIBUTORS",
-  "complexity": "$COMPLEXITY",
-  "riskProfile": "$RISK"
+  "contributors": "$CONTRIBUTORS_ESC",
+  "complexity": "$COMPLEXITY_ESC",
+  "riskProfile": "$RISK_ESC"
 }
 JSON
+fi
 
 echo ""
 echo "=== ANALYSIS COMPLETE ==="
