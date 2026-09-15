@@ -59,6 +59,8 @@ ok()   { echo "✔  $*"; }
 # name is used to build a filesystem path.
 validate_skill_name() {
   local name="$1"
+  [[ "${name}" != "." && "${name}" != ".." ]] \
+    || die "Invalid skill name '${name}': '.' and '..' are not allowed."
   [[ "${name}" =~ ^[A-Za-z0-9._-]+$ ]] \
     || die "Invalid skill name '${name}': only letters, digits, '.', '_', and '-' are allowed."
 }
@@ -338,6 +340,7 @@ cmd_delete() {
   validate_skill_name "${skill}"
 
   local dest="${SKILLS_DIR}/${skill}"
+  assert_path_within "${dest}" "${SKILLS_DIR}" "dest"
   [[ -d "${dest}" ]] || die "Skill '${skill}' not found at ${dest}"
 
   rm -rf "${dest}"
