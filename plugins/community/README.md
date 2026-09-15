@@ -7,7 +7,7 @@ extra tooling or setup*
 
 <p align="center">
   <img src="https://img.shields.io/badge/Agents-0-555?style=for-the-badge&logo=githubactions&logoColor=white&labelColor=274183" alt="Agents">
-  <img src="https://img.shields.io/badge/Skills-6-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills">
+  <img src="https://img.shields.io/badge/Skills-5-555?style=for-the-badge&logo=lightning&logoColor=white&labelColor=F6C063" alt="Skills">
 </p>
 
 </div>
@@ -74,24 +74,6 @@ Explores the codebase for facts rather than asking, but puts
 decisions to the user. Used by `/grill-me` and `/grill-with-docs`.
 
 **Source**: `mattpocock/skills` — vendored via `manage-skills.sh`.
-
-### impeccable
-
-Frontend design skill that teaches the AI a real visual vocabulary:
-23 commands (`/impeccable audit`, `/impeccable polish`,
-`/impeccable craft`, and more), 7 domain reference files (typography,
-color, spatial, motion, interaction, responsive, UX writing), and
-explicit anti-pattern rules that prevent AI slop (gradient text,
-cream/sand defaults, identical card grids, bounce easing). Activates
-when the user wants to design, redesign, critique, audit, polish, or
-otherwise improve a frontend interface. Full script-based features
-(live mode, palette seed, context detection) require per-project
-installation via `npx impeccable skills install`.
-
-**Getting started**:
-[impeccable.style/tutorials/getting-started](https://impeccable.style/tutorials/getting-started/)
-
-**Source**: `pbakaus/impeccable` — vendored via `manage-skills.sh`.
 
 ---
 
