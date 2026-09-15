@@ -11,12 +11,6 @@
         "type": "command",
         "command": "bash \"${PLUGIN_ROOT}/scripts/session-telemetry.sh\""
       }
-    ],
-    "PreToolUse": [
-      {
-        "type": "command",
-        "command": "bash \"${PLUGIN_ROOT}/scripts/cc-code-review-allow-commands.sh\""
-      }
     ]
   }
 }
