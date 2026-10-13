@@ -915,8 +915,13 @@ All skill lifecycle operations go through
 - `skill-name` is optional and defaults to the last segment of `<path/in/repo>`.
 - The script uses `git sparse-checkout --depth 1` so only the target folder is
   downloaded — the full upstream repo is never cloned.
-- Provenance (repo, path, timestamps) is written to `skills/.manifest.json`
-  automatically. Do NOT edit `.manifest.json` by hand.
+- Provenance (repo, path, pinned commit SHA, tree hash, timestamps) is
+  written to `skills/.manifest.json` automatically. Do NOT edit
+  `.manifest.json` by hand.
+- Every skill is pinned to an exact upstream commit. `update` resolves the
+  latest upstream commit, fetches exactly that commit, and aborts if the
+  fetched commit does not match. Review the printed GitHub compare link
+  before merging a pin bump.
 
 **Update a single skill to the latest upstream commit:**
 
@@ -1009,12 +1014,17 @@ know where content came from without requiring the user to remember:
     "grill-me": {
       "source": "mattpocock/skills",
       "path": "skills/productivity/grill-me",
+      "ref": "49dd158d1076134a641b33efb035946536778336",
+      "tree": "3df14e2d3a89459bf300614be9247e3ce74798f8",
       "added": "2026-05-03T13:00:00Z",
       "updated": "2026-05-03T13:00:00Z"
     }
   }
 }
 ```
+
+- `ref` — full commit SHA of the upstream commit the skill is pinned to.
+- `tree` — git tree hash of `path` at `ref`, recorded for integrity audits.
 
 Do NOT modify this file manually. All reads and writes go through the script.
 
