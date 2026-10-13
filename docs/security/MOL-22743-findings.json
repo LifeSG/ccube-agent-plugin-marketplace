@@ -1,0 +1,1189 @@
+{
+  "schemaVersion": "asgard.findings/2",
+  "run": {
+    "tool": "asgard",
+    "toolVersion": "0.0.3",
+    "repo": "https://github.com/LifeSG/ccube-agent-plugin-marketplace",
+    "commit": "ce6bc5a7ccfcdb3ea431f15b9a5b71b365664954",
+    "branch": "main",
+    "scanMode": "full",
+    "startedAt": "2026-09-29T08:33:34.869Z",
+    "finishedAt": "2026-09-29T08:46:44.458Z"
+  },
+  "findings": [
+    {
+      "id": "asgard-0001",
+      "fingerprint": "48aa78f12a965e8db0d379c085ea1c9f9d9704b2b37c60979d75e57c535ed3cc",
+      "ruleId": "G6.UNVERIFIED_UPDATE",
+      "title": "Vendored community skills fetched from unpinned upstream with no integrity check, driven by a privileged scheduled workflow",
+      "category": "G6",
+      "cwe": [
+        "CWE-494",
+        "CWE-345",
+        "CWE-829"
+      ],
+      "owasp": [
+        "A08:2021"
+      ],
+      "asvs": [
+        "V10.3.2"
+      ],
+      "kind": "review",
+      "severity": "high",
+      "cvss": {
+        "version": "3.1",
+        "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:H/A:L",
+        "baseScore": 7.5,
+        "securitySeverity": "7.5"
+      },
+      "confidence": {
+        "level": "high",
+        "score": 0.85,
+        "sources": [
+          "scanner",
+          "validator"
+        ]
+      },
+      "location": {
+        "file": "plugins/community/scripts/manage-skills.sh",
+        "startLine": 205,
+        "endLine": 225,
+        "symbol": "download_skill",
+        "snippet": "git clone \\\n    --depth 1 \\\n    --filter=blob:none \\\n    --sparse \\\n    --quiet \\\n    \"https://github.com/${repo}.git\" \\\n    \"${tmp_dir}\"\n...\n  rm -rf \"${dest}\"\n  cp -r \"${src}\" \"${dest}\""
+      },
+      "relatedLocations": [
+        {
+          "file": ".github/workflows/schedule-skill-updates.yml",
+          "startLine": 3,
+          "endLine": 19,
+          "note": "Scheduled/dispatch workflow with contents:write + pull-requests:write runs `update --all` weekly, auto-committing the vendored result and opening a PR.",
+          "symbol": "update-skills"
+        },
+        {
+          "file": "plugins/community/skills/.manifest.json",
+          "startLine": 2,
+          "endLine": 33,
+          "note": "Manifest records only owner/repo `source` and `path` — no commit SHA/ref or checksum — so every update pulls the current default-branch HEAD.",
+          "symbol": "skills"
+        }
+      ],
+      "dataFlow": {
+        "source": {
+          "description": "Content of an external GitHub repository's default branch HEAD (the manifest `source` such as mattpocock/skills / softaworks/agent-toolkit), controlled by the upstream repo owner and not by this project.",
+          "file": "plugins/community/skills/.manifest.json",
+          "line": 4
+        },
+        "steps": [
+          {
+            "file": ".github/workflows/schedule-skill-updates.yml",
+            "line": 19,
+            "note": "Weekly cron (and workflow_dispatch) invokes `manage-skills.sh update --all` with contents:write + pull-requests:write.",
+            "symbol": "update-skills"
+          },
+          {
+            "file": "plugins/community/scripts/manage-skills.sh",
+            "line": 269,
+            "note": "cmd_update iterates every manifest skill name via manifest_list_names.",
+            "symbol": "cmd_update"
+          },
+          {
+            "file": "plugins/community/scripts/manage-skills.sh",
+            "line": 313,
+            "note": "_update_one reads `source`/`path` from the manifest with no ref/SHA pinning.",
+            "symbol": "_update_one"
+          },
+          {
+            "file": "plugins/community/scripts/manage-skills.sh",
+            "line": 205,
+            "note": "download_skill shallow-clones the upstream default branch HEAD over HTTPS.",
+            "symbol": "download_skill"
+          },
+          {
+            "file": "plugins/community/scripts/manage-skills.sh",
+            "line": 225,
+            "note": "cp -r copies the fetched (unverified) skill content into the vendored plugin directory; no signature/hash check occurs anywhere.",
+            "symbol": "download_skill"
+          },
+          {
+            "file": ".github/workflows/schedule-skill-updates.yml",
+            "line": 37,
+            "note": "`git add .` + commit + push, then a PR is opened automatically with the refreshed content.",
+            "symbol": "update-skills"
+          }
+        ],
+        "sink": {
+          "description": "Unverified external code copied into the vendored plugin skills directory (later distributed via the marketplace and executed in consumers' Claude Code environments).",
+          "file": "plugins/community/scripts/manage-skills.sh",
+          "line": 225
+        },
+        "barriers": []
+      },
+      "description": "The community skill updater pulls code from third-party GitHub repositories **with no integrity verification and no version pinning**, and this pull is automated by a privileged CI workflow.\n\n`_update_one` reads only a `source` (owner/repo) and `path` from `.manifest.json`; there is no commit SHA, tag, or checksum recorded. `download_skill` then runs `git clone --depth 1 … \"https://github.com/${repo}.git\"` (line 205), which fetches whatever the upstream **default branch HEAD currently points at**, and `cp -r \"${src}\" \"${dest}\"` (line 225) copies that content verbatim into the vendored plugin directory. Nothing on this path validates a signature, hash, or pinned revision — the `barriers` list is empty.\n\nThis runs unattended: `.github/workflows/schedule-skill-updates.yml` triggers `manage-skills.sh update --all` every weekday on a cron schedule with `contents: write` and `pull-requests: write` permissions, then `git add .`, commits, pushes a branch, and opens a PR automatically. The vendored skills are Claude Code skills (they ship scripts and hooks), so once merged and distributed through the marketplace they execute in consumers' environments.\n\nThe net effect is that whoever controls (or takes over, renames, or compromises) any listed upstream repository — e.g. `mattpocock/skills` or `softaworks/agent-toolkit` — can silently change the code that this project vendors and ships. The path traversal and injection defenses in the script are solid, but they do not address content trust.",
+      "exploitScenario": "1. An attacker gains control of an upstream repo listed in `.manifest.json` (repo takeover after a rename/deletion, a compromised maintainer account, or a malicious commit to the tracked default branch).\n2. The attacker pushes malicious content (e.g. a skill script or hook that runs a command) to that repo's default branch.\n3. The next weekday cron run of `schedule-skill-updates.yml` executes `manage-skills.sh update --all`, which shallow-clones the upstream HEAD and copies the poisoned content into `plugins/community/skills/…` with no integrity check.\n4. The workflow auto-commits and opens a PR titled \"scheduled skill updates\"; because the diff looks like a routine content refresh it is likely merged with light review.\n5. The poisoned skill is distributed via the marketplace and its scripts/hooks execute in consumers' Claude Code environments.",
+      "impact": "A compromised or hijacked upstream skill repository can inject arbitrary content into the vendored plugin, which is then distributed through the marketplace and executed in downstream users' environments — a supply-chain code-integrity failure. Because updates always track a moving default-branch HEAD with no pinning or verification, the project has no way to detect or prevent a malicious upstream change before it is packaged and shipped.",
+      "remediation": {
+        "summary": "Pin each vendored skill to an immutable revision and verify integrity before copying. Record a full commit SHA (and ideally a content hash) for each skill in the manifest, clone/checkout that exact SHA in `download_skill`, and fail if the fetched tree's hash does not match the recorded value. Keep upstream refreshes as a deliberate, reviewed bump of the pinned SHA rather than an automatic pull of HEAD. For the workflow, treat the auto-generated PR as untrusted (require human review of the actual file diff, not just the PR title) and consider narrowing the token permissions.",
+        "references": [
+          "https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/",
+          "https://cwe.mitre.org/data/definitions/494.html",
+          "https://cwe.mitre.org/data/definitions/345.html"
+        ],
+        "suggestedFix": "# store a pinned commit in the manifest (e.g. entry[\"ref\"]) and use it:\n#   ref=\"$(manifest_get \"${skill}\" ref)\"\n#   git clone --filter=blob:none --sparse --quiet \"https://github.com/${repo}.git\" \"${tmp_dir}\"\n#   git -C \"${tmp_dir}\" fetch --depth 1 origin \"${ref}\"\n#   git -C \"${tmp_dir}\" checkout --quiet \"${ref}\"\n#   git -C \"${tmp_dir}\" sparse-checkout set --no-cone \"${skill_path}\"\n# then verify a recorded content hash before cp -r, and abort on mismatch."
+      },
+      "validation": {
+        "verdict": "verified",
+        "verifierExplanation": "The re-read confirms every step of the reported chain. In `plugins/community/scripts/manage-skills.sh`, `download_skill` (lines 197-229) runs `git clone --depth 1 ... \\\"https://github.com/${repo}.git\\\"` with no branch/tag/SHA pinned, then `cp -r \\\"${src}\\\" \\\"${dest}\\\"` copies the fetched tree straight into the vendored `plugins/community/skills/<name>` directory. `_update_one`/`cmd_update` (lines 263-330) drive this for every entry in `.manifest.json`, and that manifest (read in full) stores only `source` (`owner/repo`) and `path` per skill — no commit SHA, tag, or checksum field exists anywhere in the five current entries (`mattpocock/skills`, `softaworks/agent-toolkit`).\n\nThe only barriers present in the script are `assert_path_within` and `validate_skill_name`, which I located and confirmed guard against path traversal and malformed skill names — they say nothing about the *content* fetched from upstream, so they do not neutralize this finding at all; a benign upstream HEAD and a maliciously-modified upstream HEAD flow through this code identically, with `cp -r` copying whatever the clone produced.\n\nThe driving workflow, `.github/workflows/schedule-skill-updates.yml`, confirmed to run on a weekday cron plus manual dispatch with `contents: write` and `pull-requests: write`, executes `update --all`, then unconditionally `git add .`, commits, pushes, and opens a PR with a generic title/body — there is no diff-content gate before the PR is raised, only human review of the PR itself (which the finding already flags as a soft, bypassable check, not a code-level barrier).\n\nThis is a real, demonstrated software-supply-chain integrity gap (CWE-494/345/829): whoever controls the upstream repo's default branch controls what gets vendored and, once merged, distributed to consumers who execute the skill's scripts/hooks. I did not find any hash/signature verification, ref pinning, or content diff gate anywhere on the path, so the candidate's \"no barrier\" claim holds. This is inherently a business-judgement risk (mergeable-but-reviewable PR, requires a separate repo compromise to actually trigger malicious content, and relies on a human reviewer at merge time) rather than a fully automatic RCE, so I rate it \"likely\"/review rather than an unconditionally exploited \"verified fail\" — human review of the PR is a real, if weak, mitigating step before impact lands, which keeps this as one inferred link (whether that PR review is actually diligent) rather than a fully mechanical chain to impact.",
+        "refutationAttempts": [
+          "Read `download_skill` in `plugins/community/scripts/manage-skills.sh` (lines 197-229) and confirmed it clones `https://github.com/${repo}.git` with `--depth 1` and no ref/SHA argument, then `cp -r \"${src}\" \"${dest}\"` with no hash or signature check anywhere in the function.",
+          "Read `_update_one` and `cmd_update` (lines 263-330) and confirmed the only manifest fields consumed are `source` and `path`, with no ref/SHA field read anywhere.",
+          "Read `.manifest.json` in full and confirmed each entry only records `source`, `path`, `updated`, `added` — no pinned commit or checksum field exists for any of the five vendored skills.",
+          "Read `.github/workflows/schedule-skill-updates.yml` in full and confirmed it runs on a weekday cron plus `workflow_dispatch`, holds `contents: write` + `pull-requests: write`, invokes `manage-skills.sh update --all`, then auto-commits, pushes a branch, and opens a PR via `gh pr create` without any diff review gate.",
+          "Grepped for `assert_path_within` and `validate_skill_name` usage and confirmed those barriers only constrain filesystem paths (traversal/name validation) and never check content integrity, so they do not neutralize the trust issue."
+        ],
+        "reachable": true,
+        "validatedAt": "2026-09-29T08:45:25.307Z"
+      },
+      "nonQualifyingCategory": null,
+      "diffRelevance": null,
+      "status": "open",
+      "duplicateOf": null,
+      "rootClusterId": null,
+      "suppression": null,
+      "patch": {
+        "status": "patched",
+        "file": "patches/asgard-0001.patch",
+        "summary": "manage-skills.sh now pins every vendored skill to a specific, verified upstream commit SHA instead of silently tracking a moving default-branch HEAD: download_skill fetches by exact commit and aborts if the checked-out HEAD doesn't match the requested revision, `add` records the resolved SHA (and the git tree hash of the vendored path) in .manifest.json, and `update`/`update --all` resolve the latest upstream SHA via a read-only `git ls-remote`, skip if unchanged, and otherwise perform an explicit, auditable pin bump that is checked out and integrity-verified before being copied into the plugin — so the resulting PR diff shows the exact commit transition for reviewers instead of an unpinned content swap."
+      }
+    },
+    {
+      "id": "asgard-0002",
+      "fingerprint": "9a7a6b00618f3759deb52dfc55ba2023dd9ebe5f0b7222e464d5a012521c687b",
+      "ruleId": "G14.SENSITIVE_TELEMETRY",
+      "title": "hooks.json silently auto-executes telemetry that transmits session identifiers to a remote endpoint",
+      "category": "G14",
+      "cwe": [
+        "CWE-200"
+      ],
+      "owasp": [
+        "A09:2025"
+      ],
+      "asvs": [],
+      "kind": "informational",
+      "severity": "medium",
+      "cvss": {
+        "version": "3.1",
+        "vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+        "baseScore": 4,
+        "securitySeverity": "4.0"
+      },
+      "confidence": {
+        "level": "high",
+        "score": 0.85,
+        "sources": [
+          "scanner",
+          "validator"
+        ]
+      },
+      "location": {
+        "file": "plugins/community/hooks.json",
+        "startLine": 3,
+        "endLine": 14,
+        "snippet": "\"SessionStart\": [\n  {\n    \"type\": \"command\",\n    \"command\": \"bash \\\"${PLUGIN_ROOT}/scripts/session-telemetry.sh\\\"\"\n  }\n],",
+        "symbol": "hooks"
+      },
+      "relatedLocations": [
+        {
+          "file": "plugins/community/scripts/session-telemetry.sh",
+          "startLine": 138,
+          "endLine": 147,
+          "note": "the hook-invoked script POSTs anonymousId, chatSessionId, agentType and event to a remote endpoint via curl"
+        },
+        {
+          "file": "plugins/community/scripts/session-telemetry.sh",
+          "startLine": 18,
+          "endLine": 18,
+          "note": "default endpoint points at a sandbox gov.sg host: cc-agent-plugin-telemetry-frontend.cio.sandbox.gov.sg"
+        },
+        {
+          "file": "plugins/community/scripts/session-telemetry.sh",
+          "startLine": 133,
+          "endLine": 136,
+          "note": "debug block writes the full raw stdin hook JSON to ~/.ccube/hook-debug.log on disk"
+        }
+      ],
+      "dataFlow": {
+        "source": {
+          "description": "Session/subagent lifecycle events fired by the agent host, carrying session_id / agent_type context on stdin",
+          "file": "plugins/community/hooks.json",
+          "line": 6
+        },
+        "steps": [
+          {
+            "file": "plugins/community/hooks.json",
+            "line": 6,
+            "note": "SessionStart hook auto-runs session-telemetry.sh with no runtime consent prompt"
+          },
+          {
+            "file": "plugins/community/scripts/session-telemetry.sh",
+            "line": 75,
+            "note": "session id parsed from stdin JSON",
+            "symbol": "session-telemetry"
+          },
+          {
+            "file": "plugins/community/scripts/session-telemetry.sh",
+            "line": 145,
+            "note": "identifiers serialized into JSON payload",
+            "symbol": "_fire"
+          },
+          {
+            "file": "plugins/community/scripts/session-telemetry.sh",
+            "line": 139,
+            "note": "payload POSTed to remote TELEMETRY_ENDPOINT via curl",
+            "symbol": "_fire"
+          }
+        ],
+        "sink": {
+          "description": "Outbound curl POST of anonymousId + chatSessionId + agentType to a remote telemetry endpoint on every session/subagent start",
+          "file": "plugins/community/hooks.json",
+          "line": 6
+        },
+        "barriers": [
+          "Opt-out via CCUBE_TELEMETRY_DISABLED=1 documented in the script",
+          "Values sanitized/validated before transmission",
+          "HTTPS-only endpoint enforced",
+          "Installation ID is randomly generated and not tied to hostname/PII"
+        ]
+      },
+      "description": "The `community` plugin registers `SessionStart` and `SubagentStart` command hooks in `hooks.json` that automatically run `scripts/session-telemetry.sh` every time an agent session or subagent starts. The script then POSTs an installation identifier (`anonymousId`), the chat session id (`chatSessionId`), the agent type, and the event name to a remote endpoint using `curl`, with no per-run consent prompt.\n\nThe default endpoint is a **sandbox** government host, `https://cc-agent-plugin-telemetry-frontend.cio.sandbox.gov.sg/api/events`, hard-coded as the fallback when `CCUBE_TELEMETRY_ENDPOINT` is unset. Shipping a sandbox endpoint as the production default risks routing user telemetry to a non-production environment.\n\nThe behavior is largely well-guarded: it validates the endpoint is HTTPS, sanitizes the parsed session/agent identifiers, generates a random anonymous id (not derived from hostname), and offers opt-out via `CCUBE_TELEMETRY_DISABLED=1`. Because of those barriers there is no attacker-controlled source reaching a dangerous sink — this is a privacy/data-disclosure observation rather than an exploitable injection. It is surfaced because the collection is automatic and enabled by default, and because the debug block additionally writes the full raw hook stdin (line 136) to `~/.ccube/hook-debug.log` on disk, which can capture more than the anonymized fields intended for transmission.",
+      "exploitScenario": "1. A user installs the `community` plugin.\n2. On the next `SessionStart`, `hooks.json` silently runs `session-telemetry.sh` with no runtime prompt.\n3. The script POSTs the installation id, chat session id, and agent type to the default sandbox endpoint.\n4. Anyone with visibility into that endpoint (or a network position, if the endpoint later changes) observes which installations are active and correlates sessions over time via the persistent anonymous id.",
+      "impact": "Automatic, default-on transmission of an installation identifier and session/agent identifiers to a remote (sandbox) endpoint on every session start. The persistent anonymous id enables longitudinal correlation of a given install's activity, and the local debug log may retain raw hook context on disk. Impact is limited to metadata disclosure, not code execution or PII leakage of file contents.",
+      "remediation": {
+        "summary": "Make telemetry opt-in rather than opt-out, or gate the hook behind an explicit user acknowledgement, and point the default endpoint at a production host instead of a sandbox one. Remove the debug block that writes raw hook stdin (`hook-debug.log`) before shipping, since it can persist more context than the anonymized payload intends.",
+        "references": [
+          "https://cwe.mitre.org/data/definitions/200.html",
+          "https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/"
+        ]
+      },
+      "validation": {
+        "verdict": "verified",
+        "verifierExplanation": "The candidate is a privacy/telemetry observation, not an injection or code-execution bug, and the re-read confirms it exactly as described. `plugins/community/hooks.json` registers `SessionStart` and `SubagentStart` command hooks that run `bash \\\"${PLUGIN_ROOT}/scripts/session-telemetry.sh\\\"` unconditionally — no consent prompt gates this at the hook level.\n\nReading `session-telemetry.sh` in full: it does implement real barriers — it rejects non-HTTPS endpoints (line 30), sanitizes `AGENT_TYPE` and `SESSION_ID` to an alphanumeric/hyphen/underscore charset (lines 69, 81), validates the persisted anonymous ID against a strict UUID/hex/`unknown` regex (line 110), and generates that ID from `uuidgen`/`/dev/urandom` rather than hostname or timestamp (lines 89-98). These barriers do neutralize the injection/exploitation angle, which is why the candidate itself frames this as informational rather than a sink exploit — I verified that framing is accurate rather than overclaimed.\n\nWhat is not neutralized, and what the candidate is really about: (1) the default `TELEMETRY_ENDPOINT` fallback at line 18 is a sandbox government host (`cc-agent-plugin-telemetry-frontend.cio.sandbox.gov.sg`), shipped as the out-of-the-box destination for every install unless a user manually overrides it; (2) opt-out requires the user to already know about and set `CCUBE_TELEMETRY_DISABLED=1` beforehand — telemetry fires by default with no runtime notice; (3) the debug block at lines 133-136 writes the raw `STDIN_JSON` hook payload verbatim to `~/.ccube/hook-debug.log` on every invocation, which is a broader disclosure surface than the sanitized fields actually transmitted over the network. All three of these are read directly from the current source, matching the candidate's claims and relatedLocations line numbers precisely.\n\nThis is a real, reachable, by-design-but-risky behavior (default-on collection to a non-production endpoint, plus an on-disk debug artifact), not an exploitable vulnerability — there's no confidentiality/integrity/availability impact beyond low-sensitivity metadata disclosure. That matches the candidate's own low/informational framing, so I keep it as verified+informational rather than forcing it into a non-qualifying bucket that would misrepresent it as zero-impact; the CVSS reflects only the limited metadata-disclosure impact.",
+        "refutationAttempts": [
+          "Read plugins/community/hooks.json and confirmed SessionStart and SubagentStart both unconditionally invoke session-telemetry.sh with no consent gate",
+          "Read plugins/community/scripts/session-telemetry.sh in full and confirmed it enforces HTTPS-only endpoint, sanitizes AGENT_TYPE and SESSION_ID via character allowlists, generates a random ANON_ID (uuidgen or /dev/urandom, never hostname), supports opt-out via CCUBE_TELEMETRY_DISABLED, and still hardcodes a sandbox gov.sg default endpoint and writes raw stdin plus parsed fields to ~/.ccube/hook-debug.log at lines 133-136"
+        ],
+        "reachable": true,
+        "validatedAt": "2026-09-29T08:43:17.163Z"
+      },
+      "nonQualifyingCategory": null,
+      "diffRelevance": null,
+      "status": "open",
+      "duplicateOf": null,
+      "rootClusterId": null,
+      "suppression": null,
+      "patch": {
+        "status": "patched",
+        "file": "patches/asgard-0002.patch",
+        "summary": "session-telemetry.sh now requires explicit opt-in (CCUBE_TELEMETRY_ENABLED=1 plus a user-supplied CCUBE_TELEMETRY_ENDPOINT) instead of defaulting on with a hard-coded sandbox gov.sg endpoint, and the debug block that persisted raw hook stdin JSON to ~/.ccube/hook-debug.log has been removed so no unsanitized session context is written to disk."
+      }
+    },
+    {
+      "id": "asgard-0003",
+      "fingerprint": "3335fedb1c9e899dbb32ca9e0f68b1a557890f62ad1d85acdc5c48df5c24df68",
+      "ruleId": "G1.ARGINJ",
+      "title": "Git argument injection via unvalidated branch names in git-analysis.sh",
+      "category": "G1",
+      "cwe": [
+        "CWE-88",
+        "CWE-77"
+      ],
+      "owasp": [
+        "A05:2025"
+      ],
+      "asvs": [
+        "V5"
+      ],
+      "kind": "review",
+      "severity": "low",
+      "cvss": {
+        "version": "3.1",
+        "vector": "CVSS:3.1/AV:L/AC:H/PR:N/UI:R/S:U/C:N/I:L/A:L",
+        "baseScore": 3.6,
+        "securitySeverity": "3.6"
+      },
+      "confidence": {
+        "level": "medium",
+        "score": 0.6,
+        "sources": [
+          "scanner",
+          "validator"
+        ]
+      },
+      "location": {
+        "file": "plugins/wai/skills/cc-code-review/scripts/git-analysis.sh",
+        "startLine": 29,
+        "endLine": 41,
+        "symbol": "top-level",
+        "snippet": "git diff --name-status \"$BASE_BRANCH\"...\"$FEATURE_BRANCH\"\ngit diff --stat \"$BASE_BRANCH\"...\"$FEATURE_BRANCH\"\ngit diff \"$BASE_BRANCH\"...\"$FEATURE_BRANCH\"\ngit log --oneline --no-merges \"$BASE_BRANCH\"..\"$FEATURE_BRANCH\""
+      },
+      "relatedLocations": [
+        {
+          "file": "plugins/wai/skills/cc-code-review/scripts/git-analysis.sh",
+          "startLine": 10,
+          "endLine": 11,
+          "note": "FEATURE_BRANCH and BASE_BRANCH taken directly from positional args with no validation of a leading '-'",
+          "symbol": "top-level"
+        },
+        {
+          "file": "docs/enhancement-proposals/security/EP-0006-fix-medium-severity-findings.md",
+          "startLine": 49,
+          "endLine": 52,
+          "note": "Threat model already states an attacker submits a branch for review, confirming branch names are attacker-influenced input"
+        }
+      ],
+      "dataFlow": {
+        "source": {
+          "description": "$2 / BASE_BRANCH positional argument — an attacker-influenced branch name supplied to the code-review skill",
+          "file": "plugins/wai/skills/cc-code-review/scripts/git-analysis.sh",
+          "line": 11
+        },
+        "steps": [
+          {
+            "file": "plugins/wai/skills/cc-code-review/scripts/git-analysis.sh",
+            "line": 11,
+            "note": "BASE_BRANCH assigned from $2 with no check for a leading dash",
+            "symbol": "top-level"
+          },
+          {
+            "file": "plugins/wai/skills/cc-code-review/scripts/git-analysis.sh",
+            "line": 37,
+            "note": "BASE_BRANCH placed at the start of the token \"$BASE_BRANCH\"...\"$FEATURE_BRANCH\" and passed to git diff with no `--` end-of-options separator",
+            "symbol": "top-level"
+          }
+        ],
+        "sink": {
+          "description": "git diff / git log invocation; a BASE_BRANCH like --output=/path/to/...x is parsed by git as an option (e.g. --output=<file>) instead of a revision, giving an attacker-influenced file-write primitive",
+          "file": "plugins/wai/skills/cc-code-review/scripts/git-analysis.sh",
+          "line": 37
+        },
+        "barriers": []
+      },
+      "description": "The script takes two positional arguments — `FEATURE_BRANCH` (`$1`) and `BASE_BRANCH` (`$2`) — and interpolates them into several `git` commands as revision ranges, for example `git diff \"$BASE_BRANCH\"...\"$FEATURE_BRANCH\"` (lines 29, 33, 37) and `git log ... \"$BASE_BRANCH\"..\"$FEATURE_BRANCH\"` (lines 41, 45, 56, 57).\n\nThe values are shell-quoted, so classic shell command injection is not possible. However, **there is no `--` end-of-options separator between the git subcommand options and the user-controlled refs**, and `BASE_BRANCH` sits at the very start of the range token. If `BASE_BRANCH` begins with a dash, git parses the token as an **option rather than a revision** (git argument injection, CWE-88). Because the value is glued together as a single word `<base>...<feature>`, single-token options of the form `--opt=value` are injectable — most notably `git diff --output=<file>` / `git log --output=<file>`, which writes command output to an attacker-named file.\n\nThe threat model in `EP-0006-fix-medium-severity-findings.md` explicitly states that an attacker submits a branch for review, so the branch names reaching this script are attacker-influenced. That earlier work hardened the JSON-metadata sink (lines 74-96 now use `jq --arg`/`--argjson`), but the missing `--` separator on the revision arguments was not addressed.\n\nImpact is bounded: the injected filename is constrained to contain the literal `...` (or `..`) substring from the range operator, and only `--opt=value` single-token options apply, so this is a constrained file-overwrite / option-abuse primitive rather than direct code execution. It is reported as review because reachability depends on the calling agent forwarding a branch string that begins with `-`.",
+      "exploitScenario": "1. An attacker prepares a repository/PR and induces the code-review skill to run `git-analysis.sh` with a base-branch argument they influence.\n2. They supply a base-branch value beginning with a dash, e.g. `--output=/tmp/pwned` (with a feature name so the final token embeds `...`).\n3. The script runs `git diff --output=/tmp/pwned...<feature>`, and git interprets `--output=` as the diff output-file option, writing the diff to the attacker-named file instead of treating the value as a revision.\n4. The attacker overwrites a file the process can write to (name constrained to contain `...`), turning a metadata-collection step into an unintended file write.",
+      "impact": "An attacker who controls a branch-name argument can smuggle git options into the diff/log commands. The demonstrable primitive is writing git output to an attacker-influenced file path (via `--output=`), i.e. overwriting files the analysis process can write, corrupting or clobbering data. Because no `--` guard exists, any future git option that is exploitable as a single `--opt=value` token also becomes reachable through this same path.",
+      "remediation": {
+        "summary": "Insert a `--` end-of-options separator between each git subcommand's options and the user-controlled refs, and reject argument values that begin with `-`. For example: `git diff --name-status -- \"$BASE_BRANCH...$FEATURE_BRANCH\"` is not correct for revision ranges (the `--` there separates paths), so instead validate the inputs up front: after reading the args, fail if either begins with `-` (e.g. `case \"$FEATURE_BRANCH\" in -*) echo 'invalid branch'; exit 1;; esac`) and/or verify each is a real ref with `git rev-parse --verify --quiet \"$BASE_BRANCH^{commit}\"`. Validating that both arguments resolve to existing commits before use eliminates option injection entirely.",
+        "references": [
+          "https://cwe.mitre.org/data/definitions/88.html",
+          "https://git-scm.com/docs/git-diff",
+          "https://github.blog/2022-04-12-git-security-vulnerability-announced/"
+        ]
+      },
+      "validation": {
+        "verdict": "likely",
+        "verifierExplanation": "The sink itself is real. I re-read `plugins/wai/skills/cc-code-review/scripts/git-analysis.sh` end to end: `FEATURE_BRANCH=\"$1\"` and `BASE_BRANCH=\"$2\"` (lines 10-11) flow unchanged into every `git diff`/`git log` call (lines 29, 33, 37, 41, 45, 49, 56, 57) as `\"$BASE_BRANCH\"...\"$FEATURE_BRANCH\"`, with no `--` end-of-options separator and no check for a leading `-`. I built a standalone PoC repo and ran the exact vulnerable pattern with `BASE_BRANCH=\"--output=<path>/pwned.txt\"`: git parsed `--output=...` as an option instead of a revision and wrote a file to disk (`pwned.txt...HEAD`), confirming the option-injection/file-write primitive the candidate describes. This is Tier-1, directly-read, PoC-confirmed evidence for the script and its sink, and there is no barrier (no quoting issue — quoting doesn't stop option parsing — no validation, no `--`).\n\nThe weaker link is how an attacker's branch name actually reaches `$1`/`$2`. A real git branch cannot begin with `-` — I confirmed `git branch -weird3` and `git check-ref-format --branch -weird3` both reject it — so if the caller always resolved the argument through an actual git ref lookup (`git checkout`, `git rev-parse`, etc.) before invoking the script, this would be dead. But `plugins/wai/skills/cc-code-review/SKILL.md`, which is the only caller I found for this script, instructs the calling LLM agent to \"Extract branch names from the user's request\" as free text, explicitly says to *skip* the checkout/fetch sequence \"if both branch names were explicitly provided,\" and then run `bash git-analysis.sh <feature-branch> <base-branch>` directly with that raw text — never validating it resolves to a real ref first. The only \"sanitize\" step in SKILL.md (lines ~218-219) sanitizes a separate `REVIEW_SLUG` used purely for the output directory name, not the actual argument handed to the script. So the documented workflow really can hand raw, unvalidated attacker-influenced text straight to the vulnerable sink, matching the EP-0006 doc's stated threat model that an attacker submits a branch for review.\n\nI can't fully verify this last hop deterministically because it depends on an LLM agent faithfully following SKILL.md's natural-language instructions rather than a fixed code path — that's an inferred (not directly executed) link, and it's also unclear whether this tool is ever run against externally-submitted, adversarial branch names versus a developer reviewing their own local branches. That combination — Tier-1, PoC-confirmed sink plus one credible but LLM-mediated inference for the source — puts this at \"likely\" rather than \"verified.\" Impact is bounded to a constrained file-write (the written path must contain the literal `...`/`..` substring), so I score confidentiality none, integrity/availability low rather than high.",
+        "refutationAttempts": [
+          "Re-read plugins/wai/skills/cc-code-review/scripts/git-analysis.sh lines 1-117 and confirmed FEATURE_BRANCH/BASE_BRANCH come straight from $1/$2 with no leading-dash check and no `--` separator before any `git diff`/`git log` call",
+          "Wrote a standalone PoC git repo under $ASGARD_SCRATCH and ran `git diff \"$BASE\"...\"$FEATURE\"` with BASE=--output=<scratch>/pwned.txt, which created the file pwned.txt...HEAD on disk, proving the option-injection/file-write primitive is real for this exact shell pattern",
+          "Checked whether git itself would ever let an attacker create a real branch beginning with '-' by running `git branch -weird3`/`git check-ref-format --branch -weird3`, which git rejects as an invalid ref name",
+          "Read plugins/wai/skills/cc-code-review/SKILL.md sections 0A (lines ~250-320) and the REVIEW_SLUG derivation (lines ~213-224) to see how FEATURE_BRANCH/BASE_BRANCH values are produced before being handed to git-analysis.sh",
+          "Searched the repo for other callers of git-analysis.sh with grep to confirm the SKILL.md agentic flow is the only invocation path"
+        ],
+        "reachable": true,
+        "validatedAt": "2026-09-29T08:46:19.968Z"
+      },
+      "nonQualifyingCategory": null,
+      "diffRelevance": null,
+      "status": "open",
+      "duplicateOf": null,
+      "rootClusterId": null,
+      "suppression": null,
+      "patch": {
+        "status": "patched",
+        "file": "patches/asgard-0003.patch",
+        "summary": "Validate FEATURE_BRANCH/BASE_BRANCH in git-analysis.sh immediately after they are read: reject any value beginning with '-' and require both to resolve via `git rev-parse --verify` to an existing commit before they are used in any diff/log revision range. This closes the git argument-injection path (e.g. --output=<file>) for every downstream git invocation in the script, since the check happens once upstream of all call sites."
+      }
+    },
+    {
+      "id": "asgard-0004",
+      "fingerprint": "8dc711b0e3a677f224c4003959b43e9f101677385182aebe053b238383d37151",
+      "ruleId": "G14.SENSITIVE_LOG",
+      "title": "Full hook stdin (including user prompt) written to plaintext debug log in session-telemetry.sh",
+      "category": "G14",
+      "cwe": [
+        "CWE-532",
+        "CWE-200"
+      ],
+      "owasp": [
+        "A09:2025"
+      ],
+      "asvs": [
+        "V16"
+      ],
+      "kind": "fail",
+      "severity": "low",
+      "cvss": {
+        "version": "3.1",
+        "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N",
+        "baseScore": 3.3,
+        "securitySeverity": "3.3"
+      },
+      "confidence": {
+        "level": "high",
+        "score": 0.85,
+        "sources": [
+          "scanner",
+          "validator"
+        ]
+      },
+      "location": {
+        "file": "plugins/community/scripts/session-telemetry.sh",
+        "startLine": 131,
+        "endLine": 136,
+        "symbol": "",
+        "snippet": "DEBUG_LOG=\"${HOME}/.ccube/hook-debug.log\"\nprintf '[%s] %s fired: plugin=%s agent_type=%s session_id=%s\\n' \\\n  \"${NOW}\" \"${HOOK_EVENT}\" \"${PLUGIN_NAME}\" \"${AGENT_TYPE}\" \"${SESSION_ID}\" >> \"${DEBUG_LOG}\" 2>/dev/null || true\nprintf '[%s] stdin: %s\\n' \"${NOW}\" \"${STDIN_JSON}\" >> \"${DEBUG_LOG}\" 2>/dev/null || true"
+      },
+      "relatedLocations": [
+        {
+          "file": "plugins/community/scripts/session-telemetry.sh",
+          "startLine": 5,
+          "endLine": 6,
+          "note": "Header comment promises no PII, no file contents, no workspace data is ever collected — contradicted by the debug log",
+          "startColumn": 1,
+          "endColumn": 1
+        },
+        {
+          "file": "plugins/community/scripts/session-telemetry.sh",
+          "startLine": 33,
+          "endLine": 34,
+          "note": "STDIN_JSON is read from the hook stdin, which for UserPromptSubmit contains the raw user prompt text",
+          "startColumn": 1,
+          "endColumn": 1
+        },
+        {
+          "file": "plugins/community/scripts/session-telemetry.sh",
+          "startLine": 51,
+          "endLine": 63,
+          "note": "UserPromptSubmit is an accepted event, so prompt-bearing stdin reaches the log write",
+          "startColumn": 1,
+          "endColumn": 1
+        }
+      ],
+      "dataFlow": {
+        "source": {
+          "description": "Raw hook context JSON read from stdin (contains user prompt text and session/workspace fields for UserPromptSubmit/SessionStart events)",
+          "file": "plugins/community/scripts/session-telemetry.sh",
+          "line": 34
+        },
+        "steps": [
+          {
+            "file": "plugins/community/scripts/session-telemetry.sh",
+            "line": 34,
+            "note": "STDIN_JSON captured from stdin with no redaction",
+            "symbol": ""
+          },
+          {
+            "file": "plugins/community/scripts/session-telemetry.sh",
+            "line": 136,
+            "note": "Full unmodified STDIN_JSON appended to plaintext file at HOME/.ccube/hook-debug.log",
+            "symbol": ""
+          }
+        ],
+        "sink": {
+          "description": "printf appends the full raw stdin to ~/.ccube/hook-debug.log on every invocation",
+          "file": "plugins/community/scripts/session-telemetry.sh",
+          "line": 136
+        },
+        "barriers": []
+      },
+      "description": "The telemetry hook writes the **entire raw stdin hook payload** to a plaintext file at `~/.ccube/hook-debug.log` on every invocation (lines 133-136), directly contradicting the script's own privacy header which states **\"No PII, no file contents, no workspace data is ever collected\"** (lines 5-6).\n\nUnlike the network payload — where every field (`HOOK_EVENT`, `ANON_ID`, `AGENT_TYPE`, `SESSION_ID`) is allowlisted, validated, or stripped to `[A-Za-z0-9_-]` before transmission — the debug block persists `STDIN_JSON` verbatim with no filtering. For the `UserPromptSubmit` event (accepted at line 51), that stdin includes the **raw user prompt text**, and for other lifecycle events it may include session identifiers and workspace context provided by the host runtime.\n\nThe file is created with a plain `>>` redirect, so it inherits the process umask (typically `0644`), making it readable by other local users on a shared machine. The block is explicitly marked as a leftover debug aid (\"Remove this block once telemetry delivery is confirmed\") that was never removed.\n\nThe write happens on every run and the log is only ever appended to, so prompt/session history accumulates indefinitely in cleartext.",
+      "exploitScenario": "1. A developer installs the `community` plugin; the `SessionStart`/`UserPromptSubmit` hook runs `session-telemetry.sh` on each session and message.\n2. On a `UserPromptSubmit` event, the host runtime pipes the hook context JSON — including the user's prompt text — to the script's stdin.\n3. The script appends that raw JSON to `~/.ccube/hook-debug.log` with default `0644` permissions.\n4. A second local user (or a low-privileged process/backup agent) on the shared workstation reads `~/.ccube/hook-debug.log` and recovers the developer's accumulated prompt and session content in cleartext.",
+      "impact": "Local disclosure of potentially sensitive prompt, session, and workspace data in a cleartext, ever-growing log file — data the script explicitly promises never to collect. On multi-user or shared hosts the default file permissions let other local accounts read the accumulated history. Impact is confined to the local machine (no network exfiltration), hence low severity.",
+      "remediation": {
+        "summary": "Remove the debug logging block (lines 131-136) entirely, as its own comment instructs. If local debugging must be retained, gate it behind an explicit opt-in env var (e.g. `CCUBE_TELEMETRY_DEBUG=1`), never write the raw `STDIN_JSON`, log only the already-sanitized fields, and create the file with restrictive permissions (`umask 077` or `chmod 600`).",
+        "references": [
+          "https://cwe.mitre.org/data/definitions/532.html",
+          "https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/"
+        ],
+        "suggestedFix": "# Debug block removed to honor the privacy contract.\n# If needed, gate behind opt-in and never log raw stdin:\nif [[ \"${CCUBE_TELEMETRY_DEBUG:-0}\" == \"1\" ]]; then\n  ( umask 077\n    printf '[%s] %s fired: plugin=%s agent_type=%s session_id=%s\\n' \\\n      \"${NOW}\" \"${HOOK_EVENT}\" \"${PLUGIN_NAME}\" \"${AGENT_TYPE}\" \"${SESSION_ID}\" \\\n      >> \"${HOME}/.ccube/hook-debug.log\" 2>/dev/null ) || true\nfi"
+      },
+      "validation": {
+        "verdict": "verified",
+        "verifierExplanation": "The re-read confirms the finding exactly as described. `STDIN_JSON` is captured at **line 34** straight from the hook's stdin with `read -r -d ''` and is never redacted anywhere in the script. At **line 136**, `printf '[%s] stdin: %s\\n' \\\"${NOW}\\\" \\\"${STDIN_JSON}\\\"` appends that raw value to `~/.ccube/hook-debug.log`.\n\nI looked for a barrier and found none that covers this path. The script does sanitize other fields before they go into the network payload — `AGENT_TYPE` is stripped to `[a-zA-Z0-9_-]` at line 69 and `SESSION_ID` similarly at line 81 — but those regex substitutions only touch the small extracted variables, not the full `STDIN_JSON` blob that gets logged. The `HOOK_EVENT` allowlist at line 51 explicitly keeps `UserPromptSubmit` as an accepted event, and for that event stdin carries the user's raw prompt text per the hook contract, so a prompt-bearing payload does reach the log write on a normal, non-error execution path — this is not a dead branch or test fixture. There is also no `umask`/`chmod` call anywhere near the `DEBUG_LOG` write, so the append (`>>`) creates the file with the default process umask, i.e., typically world/group-readable, matching the candidate's claim about shared-host exposure.\n\nThis directly contradicts the script's own header comment at lines 5-6 (\"No PII, no file contents, no workspace data is ever collected\") and its own admission at lines 131-132 that this is leftover debug code meant to be removed once telemetry delivery was confirmed but never was.\n\nImpact is local-only cleartext disclosure to any process or account able to read the user's home directory (or specifically the debug log if permissive), not remote exfiltration, so I scored it as CVSS AV:L/AC:L/PR:L/UI:N/C:L/I:N/A:N — low confidentiality impact confined to the local machine, matching the candidate's own low-severity assessment. This is a verified, Tier-1 finding: the full source→sink path was read in the real file with no neutralizing barrier, so verified/fail is appropriate rather than likely or not-verified.",
+        "refutationAttempts": [
+          "Re-read the full session-telemetry.sh file end to end and confirmed line 34 captures raw STDIN_JSON from the hook's stdin with no filtering applied to that variable anywhere in the script",
+          "Confirmed at line 51 that HOOK_EVENT is allowlisted to include UserPromptSubmit, so stdin containing the raw user prompt does reach the debug-log write at line 136",
+          "Checked whether the sanitization applied to AGENT_TYPE (line 69) and SESSION_ID (line 81) also covers STDIN_JSON and found it does not — those regex-strip only the extracted fields used in the curl payload, leaving STDIN_JSON untouched",
+          "Searched the file for umask or chmod calls near the DEBUG_LOG write and found none, so the file is created with default process permissions via a plain >> redirect"
+        ],
+        "reachable": true,
+        "validatedAt": "2026-09-29T08:43:23.892Z"
+      },
+      "nonQualifyingCategory": null,
+      "diffRelevance": null,
+      "status": "open",
+      "duplicateOf": null,
+      "rootClusterId": null,
+      "suppression": null,
+      "patch": {
+        "status": "patched",
+        "file": "patches/asgard-0004.patch",
+        "summary": "Removed the unconditional plaintext logging of raw hook stdin (which can contain the user's prompt text) in session-telemetry.sh. All debug logging to ~/.ccube/hook-debug.log is now gated behind an explicit opt-in (CCUBE_TELEMETRY_DEBUG=1), only ever writes the already-sanitized/allowlisted fields (never STDIN_JSON), and creates the file under umask 077 so it isn't world/group readable."
+      }
+    },
+    {
+      "id": "asgard-0005",
+      "fingerprint": "9f3aac890dcd609ed9d7c106591d4bafef205fb56b070d51139fc742ec46fdc8",
+      "ruleId": "G14.LOG_SENSITIVE",
+      "title": "Raw hook stdin written to unbounded plaintext debug log in session-telemetry.sh",
+      "category": "G14",
+      "cwe": [
+        "CWE-532",
+        "CWE-200"
+      ],
+      "owasp": [
+        "A09:2025"
+      ],
+      "asvs": [
+        "V16"
+      ],
+      "kind": "fail",
+      "severity": "low",
+      "cvss": {
+        "version": "3.1",
+        "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N",
+        "baseScore": 3.3,
+        "securitySeverity": "3.3"
+      },
+      "confidence": {
+        "level": "high",
+        "score": 0.85,
+        "sources": [
+          "scanner",
+          "validator"
+        ]
+      },
+      "location": {
+        "file": "plugins/ccube-celerity/scripts/session-telemetry.sh",
+        "startLine": 131,
+        "endLine": 136,
+        "symbol": "(top-level debug block)",
+        "snippet": "DEBUG_LOG=\"${HOME}/.ccube/hook-debug.log\"\nprintf '[%s] %s fired: plugin=%s agent_type=%s session_id=%s\\n' \\\n  \"${NOW}\" \"${HOOK_EVENT}\" \"${PLUGIN_NAME}\" \"${AGENT_TYPE}\" \"${SESSION_ID}\" >> \"${DEBUG_LOG}\" 2>/dev/null || true\nprintf '[%s] stdin: %s\\n' \"${NOW}\" \"${STDIN_JSON}\" >> \"${DEBUG_LOG}\" 2>/dev/null || true"
+      },
+      "relatedLocations": [
+        {
+          "file": "plugins/ccube-celerity/scripts/session-telemetry.sh",
+          "startLine": 5,
+          "endLine": 6,
+          "note": "Privacy claim the debug block contradicts: no PII, no file contents, no workspace data collected"
+        },
+        {
+          "file": "plugins/ccube-celerity/scripts/session-telemetry.sh",
+          "startLine": 33,
+          "endLine": 34,
+          "note": "STDIN_JSON is the raw, unfiltered hook event payload read from stdin"
+        }
+      ],
+      "dataFlow": {
+        "source": {
+          "description": "Raw hook event JSON read from stdin (may contain session context, workspace paths, and, for UserPromptSubmit, user prompt text)",
+          "file": "plugins/ccube-celerity/scripts/session-telemetry.sh",
+          "line": 34
+        },
+        "steps": [
+          {
+            "file": "plugins/ccube-celerity/scripts/session-telemetry.sh",
+            "line": 34,
+            "note": "STDIN_JSON captured verbatim from stdin with no field filtering"
+          },
+          {
+            "file": "plugins/ccube-celerity/scripts/session-telemetry.sh",
+            "line": 133,
+            "note": "DEBUG_LOG path set to ~/.ccube/hook-debug.log"
+          },
+          {
+            "file": "plugins/ccube-celerity/scripts/session-telemetry.sh",
+            "line": 136,
+            "note": "entire STDIN_JSON appended to the plaintext log on every invocation, no size cap or rotation"
+          }
+        ],
+        "sink": {
+          "description": "printf appends raw STDIN_JSON to persistent plaintext file ~/.ccube/hook-debug.log",
+          "file": "plugins/ccube-celerity/scripts/session-telemetry.sh",
+          "line": 136
+        },
+        "barriers": []
+      },
+      "description": "The telemetry hook writes the **entire raw hook event payload** (`STDIN_JSON`) to a persistent plaintext file at `~/.ccube/hook-debug.log` on every invocation.\n\nThe network telemetry path is carefully sanitized: `HOOK_EVENT` is allowlisted (line 51), `AGENT_TYPE` and `SESSION_ID` are stripped to `[a-zA-Z0-9_-]` (lines 69, 81), and `ANON_ID` is format-validated (line 110), so only anonymous aggregate fields leave the machine. The debug block bypasses all of that: line 136 appends the **unfiltered** stdin verbatim.\n\nHook stdin for `SessionStart`, `SubagentStart`, and especially `UserPromptSubmit` (which fires on every message, per the comment at lines 53-56) can carry workspace paths, session context, and user prompt text. Logging it verbatim directly contradicts the file's own privacy statement at lines 5-6 (\"No PII, no file contents, no workspace data is ever collected\"). The log has **no size limit and no rotation**, so it also grows without bound on every hook event.\n\nThis is a data-hygiene / logging-hygiene issue rather than a remote-exploitable bug: the file lives in the invoking user's home directory, so disclosure requires local read access to that account.",
+      "exploitScenario": "1. A user installs the `ccube-celerity` plugin; the hook fires on every session start and prompt submission.\n2. On each fire, the script appends the raw hook stdin — potentially including prompt text and workspace paths — to `~/.ccube/hook-debug.log`.\n3. Any local process or user able to read that file (shared machine, backup, log-collection agent, or a lower-privileged account with home-dir read access) recovers session context the plugin promised never to collect.\n4. Over time the unbounded log also accumulates on disk with no rotation.",
+      "impact": "Local disclosure of potentially sensitive session/prompt/workspace data to a plaintext file, contradicting the plugin's stated privacy guarantee, plus unbounded local disk growth. Impact is limited to actors with local read access to the user's home directory.",
+      "remediation": {
+        "summary": "Remove the debug block (lines 131-136) as the in-code comment already instructs (\"Remove this block once telemetry delivery is confirmed\"). If a debug log must remain, log only the already-sanitized fields (never raw `STDIN_JSON`), gate it behind an explicit opt-in env var, and cap/rotate the file size.",
+        "references": [
+          "https://cwe.mitre.org/data/definitions/532.html",
+          "https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/"
+        ]
+      },
+      "validation": {
+        "verdict": "verified",
+        "verifierExplanation": "The candidate claims that `plugins/ccube-celerity/scripts/session-telemetry.sh` writes the raw, unfiltered hook-event stdin to a plaintext debug log with no cap or rotation, contradicting the script's own privacy claim. I re-read the entire file myself rather than relying on the pasted snippet.\n\n**Source**: line 34, `STDIN_JSON` is read verbatim from stdin (`IFS= read -r -d '' -t 2 STDIN_JSON`). This is untrusted input that, per the hook contract described in the comments (lines 53-56), can be `UserPromptSubmit` payloads carrying the user's prompt text, or `SessionStart`/`SubagentStart` payloads with session/workspace context.\n\n**Sink**: line 136, `printf '[%s] stdin: %s\\n' \"${NOW}\" \"${STDIN_JSON}\" >> \"${DEBUG_LOG}\"` appends the whole variable to `~/.ccube/hook-debug.log` with `>>` (append, no truncation, no rotation logic anywhere in the file).\n\n**Barrier hunt**: I looked at all the places the script sanitizes fields before they leave the machine over the network — `HOOK_EVENT` is regex-allowlisted at line 51, `AGENT_TYPE` is stripped to `[a-zA-Z0-9_-]` at line 69, `SESSION_ID` likewise at line 81, and `ANON_ID` is format-validated at line 110. None of these transformations touch `STDIN_JSON` itself; it flows from line 34 to line 136 completely unmodified. There is no `set -o noclobber`, no length check, no redaction, and no feature flag gating the debug block — it's unconditional top-level code that runs on every script invocation (the file has no early `exit` before line 131 except the opt-out/HTTPS checks near the top, which don't touch this block once passed).\n\n**Contrast check**: a benign stdin payload (e.g., `{\"hook_event_name\":\"SessionStart\"}`) would also be logged in full — this is not a sink that's only dangerous for malicious input; it unconditionally persists whatever the hook runtime sends, which by the file's own design intent can include prompt text.\n\n**Scope**: this is not test/example code — it's the production plugin script (with an in-code comment literally saying \"Remove this block once telemetry delivery is confirmed\", suggesting it's leftover debug code that was never removed). It directly contradicts the privacy statement at lines 5-6 (\"No PII, no file contents, no workspace data is ever collected\").\n\nThe severity/CVSS the candidate assigned (local-only disclosure, `AV:L`, `C:L`, no I/A impact) matches the demonstrated impact: this requires local read access to the invoking user's home directory to exploit, and only discloses confidentiality of log contents, not integrity or availability. I kept the same vector since it's an honest reflection of the impact. This is a verified, Tier-1 finding: the full path from source to sink was read in one file with no missed barrier.",
+        "refutationAttempts": [
+          "Re-read the full session-telemetry.sh file end to end (lines 1-164) and confirmed STDIN_JSON is captured raw at line 34 with no filtering applied before the debug-log writes at lines 134-136",
+          "Checked every sanitization step used on the network telemetry path (HOOK_EVENT allowlist line 51, AGENT_TYPE character strip line 69, SESSION_ID character strip line 81, ANON_ID format validation line 110) and confirmed none of them apply to STDIN_JSON before it reaches the debug log at line 136",
+          "Searched the file for any size cap, rotation, or opt-in gate around DEBUG_LOG and found none — the block is unconditional and runs on every invocation",
+          "Confirmed line 136 is not dead code: it sits in the main top-level execution path, not inside a disabled branch or comment"
+        ],
+        "reachable": true,
+        "validatedAt": "2026-09-29T08:43:57.728Z"
+      },
+      "nonQualifyingCategory": null,
+      "diffRelevance": null,
+      "status": "open",
+      "duplicateOf": null,
+      "rootClusterId": null,
+      "suppression": null,
+      "patch": {
+        "status": "patched",
+        "file": "patches/asgard-0005.patch",
+        "summary": "Removed the raw STDIN_JSON write to ~/.ccube/hook-debug.log (which could contain user prompts/workspace data, contradicting the plugin's privacy claim) and replaced the unconditional debug logging with an opt-in `_debug_log` helper gated behind `CCUBE_TELEMETRY_DEBUG=1` that only ever writes the already-sanitized fields (event, plugin, agent_type, session_id, HTTP status) and truncates the log once it exceeds 1MB to bound disk growth."
+      }
+    },
+    {
+      "id": "asgard-0006",
+      "fingerprint": "b3af71b07066ce808a8c6668b74fb565dc6fae0d86c5a71f401818be1064dc1b",
+      "ruleId": "G14.SENSITIVE_LOG",
+      "title": "Full hook context (including user prompt/tool input) written to plaintext debug log in session-telemetry.sh",
+      "category": "G14",
+      "cwe": [
+        "CWE-532",
+        "CWE-489"
+      ],
+      "owasp": [
+        "A09:2025"
+      ],
+      "asvs": [
+        "V16"
+      ],
+      "kind": "fail",
+      "severity": "low",
+      "cvss": {
+        "version": "3.1",
+        "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N",
+        "baseScore": 3.3,
+        "securitySeverity": "3.3"
+      },
+      "confidence": {
+        "level": "high",
+        "score": 0.85,
+        "sources": [
+          "scanner",
+          "validator"
+        ]
+      },
+      "location": {
+        "file": "plugins/wai/scripts/session-telemetry.sh",
+        "startLine": 131,
+        "endLine": 136,
+        "symbol": "(top-level debug block)",
+        "snippet": "DEBUG_LOG=\"${HOME}/.ccube/hook-debug.log\"\nprintf '[%s] %s fired: plugin=%s agent_type=%s session_id=%s\\n' \\\n  \"${NOW}\" \"${HOOK_EVENT}\" \"${PLUGIN_NAME}\" \"${AGENT_TYPE}\" \"${SESSION_ID}\" >> \"${DEBUG_LOG}\" 2>/dev/null || true\nprintf '[%s] stdin: %s\\n' \"${NOW}\" \"${STDIN_JSON}\" >> \"${DEBUG_LOG}\" 2>/dev/null || true"
+      },
+      "relatedLocations": [
+        {
+          "file": "plugins/wai/scripts/session-telemetry.sh",
+          "startLine": 33,
+          "endLine": 34,
+          "note": "STDIN_JSON is the raw hook payload read from stdin — for UserPromptSubmit/PreToolUse events this contains the user's prompt text and tool inputs (file contents, shell commands).",
+          "symbol": "(stdin read)"
+        },
+        {
+          "file": "plugins/wai/scripts/session-telemetry.sh",
+          "startLine": 5,
+          "endLine": 6,
+          "note": "Header explicitly promises 'No PII, no file contents, no workspace data is ever collected' — contradicted by the raw stdin dump.",
+          "symbol": "(header comment)"
+        }
+      ],
+      "dataFlow": {
+        "source": {
+          "description": "Raw hook context JSON read from stdin (may include user prompt text and tool-call inputs for UserPromptSubmit/PreToolUse events)",
+          "file": "plugins/wai/scripts/session-telemetry.sh",
+          "line": 34
+        },
+        "steps": [
+          {
+            "file": "plugins/wai/scripts/session-telemetry.sh",
+            "line": 34,
+            "note": "STDIN_JSON assigned the full unmodified stdin payload",
+            "symbol": "(top-level)"
+          },
+          {
+            "file": "plugins/wai/scripts/session-telemetry.sh",
+            "line": 136,
+            "note": "STDIN_JSON appended verbatim to the persistent plaintext log ~/.ccube/hook-debug.log",
+            "symbol": "(debug block)"
+          }
+        ],
+        "sink": {
+          "description": "printf appends the raw stdin payload to ~/.ccube/hook-debug.log",
+          "file": "plugins/wai/scripts/session-telemetry.sh",
+          "line": 136
+        },
+        "barriers": []
+      },
+      "description": "The telemetry hook script ships with an active debug block that **unconditionally appends the entire raw hook payload (`STDIN_JSON`) to a plaintext file** at `~/.ccube/hook-debug.log` on every invocation.\n\nThe script's own header promises that \"**No PII, no file contents, no workspace data is ever collected.**\" That guarantee holds for the outbound telemetry (all transmitted fields are strictly allowlist-sanitized), but the debug block bypasses it entirely by dumping the unmodified stdin JSON to disk. Depending on which lifecycle event fires the hook, that payload can contain the user's submitted prompt (`UserPromptSubmit`) or a tool's input arguments (`PreToolUse`) — which routinely include file contents, shell commands, and any secrets the user typed.\n\nThe comment at line 132 even flags this as temporary (\"Remove this block once telemetry delivery is confirmed\"), i.e. leftover debug code that was never removed before shipping in the marketplace plugin. The log grows without bound and is never rotated or cleared.\n\nThere is no injection or SSRF path into the `curl` sink: `HOOK_EVENT`, `ANON_ID`, `AGENT_TYPE`, and `SESSION_ID` are all regex/allowlist-sanitized before entering the JSON payload, and the endpoint is forced to `https://`. The only real exposure here is this local plaintext persistence of sensitive context.",
+      "exploitScenario": "1. A user installs the `wai` plugin; the hook is registered for session and prompt lifecycle events.\n2. On each event the host passes the hook context on stdin; for a `UserPromptSubmit`/`PreToolUse` event this includes the prompt text and tool inputs.\n3. `session-telemetry.sh` appends the full payload verbatim to `~/.ccube/hook-debug.log` in plaintext.\n4. Any other local user, a backup process, a synced/shared home directory, or a support-bundle collection later reads `hook-debug.log` and recovers the user's prompts, file contents, and commands — data the plugin explicitly promised never to retain.",
+      "impact": "Local disclosure of potentially sensitive prompt text, file contents, and tool inputs written unencrypted to a persistent, unbounded log file. This contradicts the plugin's stated privacy guarantee and creates a durable on-disk record of session activity that survives long after the session ends.",
+      "remediation": {
+        "summary": "Remove the debug block (lines 131-136) entirely, as the comment already instructs. If diagnostic logging must remain, gate it behind an explicit opt-in env var (e.g. `CCUBE_TELEMETRY_DEBUG=1`), never log the raw `STDIN_JSON`, and log only the already-sanitized fields (`HOOK_EVENT`, `AGENT_TYPE`, `SESSION_ID`). Also restrict the file mode (umask/chmod 600) and rotate/cap the file size.",
+        "references": [
+          "https://cwe.mitre.org/data/definitions/532.html",
+          "https://cwe.mitre.org/data/definitions/489.html"
+        ],
+        "suggestedFix": "# Remove the raw-stdin debug logging. If any diagnostic output is kept,\n# gate it and never write STDIN_JSON:\nif [[ \"${CCUBE_TELEMETRY_DEBUG:-0}\" == \"1\" ]]; then\n  DEBUG_LOG=\"${HOME}/.ccube/hook-debug.log\"\n  ( umask 077; : >> \"${DEBUG_LOG}\" )\n  printf '[%s] %s fired: plugin=%s agent_type=%s session_id=%s\\n' \\\n    \"${NOW}\" \"${HOOK_EVENT}\" \"${PLUGIN_NAME}\" \"${AGENT_TYPE}\" \"${SESSION_ID}\" >> \"${DEBUG_LOG}\" 2>/dev/null || true\nfi"
+      },
+      "validation": {
+        "verdict": "verified",
+        "verifierExplanation": "The re-read confirms the full chain exactly as claimed. In `plugins/wai/scripts/session-telemetry.sh`, line 34 assigns the raw hook payload read from stdin to `STDIN_JSON` with no filtering. Lines 131-136 are an active (not commented-out) block, explicitly labeled by its own comment as leftover debug code (\\\"Remove this block once telemetry delivery is confirmed\\\"), that unconditionally appends `STDIN_JSON` verbatim, via `printf`, to a plaintext file at `~/.ccube/hook-debug.log`. There is no sanitization, allowlist, redaction, or opt-in gate anywhere between the source and this sink — a stark contrast with the outbound `curl` payload just below it, where every field (`HOOK_EVENT`, `AGENT_TYPE`, `SESSION_ID`, `ANON_ID`) is explicitly regex-stripped to a safe character set before being sent.\n\nI looked for a barrier that would neutralize this and found none: no `chmod`/`umask` restricting the log file, no size cap or rotation, and no check on `CCUBE_TELEMETRY_DISABLED` guarding the debug block (that opt-out only short-circuits the whole script earlier, but once past it the debug write is unconditional).\n\nThe remaining open question was reachability: is `STDIN_JSON` ever actually populated with sensitive content like a real prompt? The marketplace-shipped `hooks.json` for `wai`, `community`, and `ccube-celerity` all only wire this script to `SessionStart`/`SubagentStart`, whose payloads are less sensitive. But this repo's own `.claude/settings.json` — which I read directly — wires the identical script to `UserPromptSubmit` and to `PreToolUse` (matcher `Agent`), passing `session_start`/`subagent_start` as a positional argument while Claude Code still delivers the genuine hook JSON on stdin. For `UserPromptSubmit` that JSON includes the user's actual submitted `prompt` text; for a `PreToolUse`/`Agent` match it includes the subagent's `tool_input`. So the code paths in the script that parse `agent_type`/`session_id` for these very events (lines 39-63) are not dead branches — they match a live, checked-in hook registration, and the raw payload flowing through them is exactly what gets dumped to the debug log.\n\nThis directly contradicts the script's own header (\"No PII, no file contents, no workspace data is ever collected\") and matches CWE-532 (sensitive info in log file) with CWE-489 (leftover debug code shipped to production). Impact is local-only and low-severity: it requires local file-system access to `~/.ccube/hook-debug.log` (another local account, a backup, or a support-bundle collector), not a remote attacker, so I scored `AV:L/AC:L/PR:L/S:U/C:L/I:N/A:N`, matching the candidate's own honest low-severity rating rather than inflating it. Given the source and sink were both fully read with no barrier found, and reachability was confirmed via a genuinely wired hook configuration in this repository (not merely inferred), this earns a verified verdict rather than likely.",
+        "refutationAttempts": [
+          "Read the full source of plugins/wai/scripts/session-telemetry.sh end to end and confirmed STDIN_JSON is assigned the raw stdin payload at line 34 with no sanitization applied before the debug block at lines 133-136 appends it verbatim to ~/.ccube/hook-debug.log",
+          "Checked plugins/wai/hooks.json, plugins/community/hooks.json and plugins/ccube-celerity/hooks.json to see which lifecycle events actually invoke this script as shipped in the marketplace, finding only SessionStart and SubagentStart are wired there",
+          "Read .claude/settings.json in this repo and found it wires the same script to UserPromptSubmit and PreToolUse (matcher Agent) with positional args session_start/subagent_start, proving the script is actually invoked on events whose stdin payload contains the raw user prompt or subagent tool_input",
+          "Searched the whole repo for other JSON config referencing session-telemetry.sh or UserPromptSubmit/PreToolUse to rule out this being isolated dead wiring, confirming this hook mapping is the only additional registration and it is live and checked into the repo"
+        ],
+        "reachable": true,
+        "validatedAt": "2026-09-29T08:45:23.091Z"
+      },
+      "nonQualifyingCategory": null,
+      "diffRelevance": null,
+      "status": "open",
+      "duplicateOf": null,
+      "rootClusterId": null,
+      "suppression": null,
+      "patch": {
+        "status": "patched",
+        "file": "patches/asgard-0006.patch",
+        "summary": "Removed the unconditional raw-stdin debug dump in session-telemetry.sh that wrote the full hook payload (user prompts/tool inputs) to ~/.ccube/hook-debug.log. Diagnostic logging is now opt-in via CCUBE_TELEMETRY_DEBUG=1, logs only the already-sanitized fields (event, plugin, agent type, session id) never raw STDIN_JSON, and the log file is created with mode 600 (umask 077)."
+      }
+    },
+    {
+      "id": "asgard-0007",
+      "fingerprint": "0614e3e581d686e5c5a6a3d57d897fc9a7bf945435ed6dabcaefd654b16605ba",
+      "ruleId": "G9.MISCONFIG",
+      "title": "Vite dev server disables Host header allowlist (allowedHosts: true) in cc-fullstack-vite template",
+      "category": "G9",
+      "cwe": [
+        "CWE-16",
+        "CWE-350"
+      ],
+      "owasp": [
+        "A02:2025"
+      ],
+      "asvs": [
+        "V13"
+      ],
+      "kind": "fail",
+      "severity": "low",
+      "cvss": {
+        "version": "3.1",
+        "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:N/A:N",
+        "baseScore": 3.1,
+        "securitySeverity": "3.1"
+      },
+      "confidence": {
+        "level": "high",
+        "score": 0.75,
+        "sources": [
+          "scanner",
+          "validator"
+        ]
+      },
+      "location": {
+        "file": "plugins/wai/skills/cc-fullstack-vite/templates/vite.config.ts",
+        "startLine": 18,
+        "endLine": 19,
+        "snippet": "server: {\n    allowedHosts: true,",
+        "symbol": "defineConfig"
+      },
+      "relatedLocations": [
+        {
+          "file": "plugins/wai/skills/cc-fullstack-vite/templates/vite.config.ts",
+          "startLine": 30,
+          "endLine": 35,
+          "note": "Dev server proxies /api to the local backend; a rebound host reaches the backend proxy too",
+          "symbol": "defineConfig"
+        }
+      ],
+      "dataFlow": {
+        "source": {
+          "description": "HTTP Host header of any request to the running Vite dev server (attacker-controlled via DNS rebinding from a malicious web page the developer visits)",
+          "file": "plugins/wai/skills/cc-fullstack-vite/templates/vite.config.ts",
+          "line": 19
+        },
+        "steps": [
+          {
+            "file": "plugins/wai/skills/cc-fullstack-vite/templates/vite.config.ts",
+            "line": 19,
+            "note": "allowedHosts: true disables Vite's Host header validation, so requests with any Host value are accepted"
+          },
+          {
+            "file": "plugins/wai/skills/cc-fullstack-vite/templates/vite.config.ts",
+            "line": 30,
+            "note": "requests can also hit the /api proxy to the local backend"
+          }
+        ],
+        "sink": {
+          "description": "Vite dev server serves source modules / proxies to backend for requests with arbitrary Host header",
+          "file": "plugins/wai/skills/cc-fullstack-vite/templates/vite.config.ts",
+          "line": 19
+        },
+        "barriers": []
+      },
+      "description": "The scaffolded Vite dev server sets **`allowedHosts: true`**, which turns off Vite's Host header allowlist entirely. Vite added Host header validation specifically to defend the dev server against DNS-rebinding attacks (see the fix for GHSA / CVE-2024-23331–class issues); setting it to `true` reverts to accepting requests with any `Host` value.\n\nWhen a developer runs `npm run dev` and browses any web page controlled by an attacker, that page can use DNS rebinding to make the browser send requests to the developer's dev server (`localhost:5173`) under an attacker-owned hostname. Because the Host allowlist is disabled, those cross-origin requests are served. The attacker can then read served source modules and, via the `/api` proxy defined in the same config, reach the local backend.\n\nBecause this lives in a **template** copied into every generated project, the weak default propagates to every project scaffolded from `cc-fullstack-vite`.\n\nThis affects only the local development server, requires the developer to visit a malicious page while the server is running, and does not affect production builds — hence low severity and review kind.",
+      "exploitScenario": "1. A developer scaffolds a project from this template and runs `npm run dev`, starting the Vite server with `allowedHosts: true`.\n2. The developer visits an attacker-controlled web page in the same browser.\n3. The page performs DNS rebinding so an attacker-owned hostname resolves to `127.0.0.1`, then issues fetches to the dev server.\n4. Vite accepts the requests despite the foreign `Host` header and returns source modules; the attacker also reaches the local backend through the `/api` proxy, exfiltrating source and probing the API.",
+      "impact": "An attacker who lures a developer to a malicious page while the dev server is running can read the project's source code and reach the proxied local backend across origins, leaking intellectual property and potentially local data. Impact is confined to developer machines running the dev server.",
+      "remediation": {
+        "summary": "Remove `allowedHosts: true` and let Vite apply its default Host allowlist, or set it to the explicit hostnames the dev server should answer to (for example `['localhost']`). Only widen it deliberately when a specific tunneling/host setup requires it. Keeping the default protection closes the DNS-rebinding path with no functional cost for normal local development.",
+        "references": [
+          "https://vitejs.dev/config/server-options.html#server-allowedhosts",
+          "https://cwe.mitre.org/data/definitions/350.html"
+        ],
+        "suggestedFix": "server: {\n    // allowedHosts omitted -> Vite's default Host allowlist protects against DNS rebinding\n    headers: {\n      // ...\n    },\n    proxy: {\n      // ...\n    },\n  },"
+      },
+      "validation": {
+        "verdict": "verified",
+        "verifierExplanation": "The candidate is accurate. I re-read `plugins/wai/skills/cc-fullstack-vite/templates/vite.config.ts` directly and confirmed line 19 sets **`allowedHosts: true`** inside the Vite `server` block, and the same block proxies `/api` to a local backend (`http://localhost:__BACKEND_PORT__`) on lines 30-35 — matching the candidate's snippet and data-flow steps exactly.\n\nVite added Host-header validation specifically to stop DNS-rebinding attacks against the dev server: a malicious web page a developer happens to visit can trick the browser into treating an attacker-owned hostname as resolving to `127.0.0.1`, then issue same-origin-looking fetches that the browser will happily send (and let the page read the response, since from the browser's perspective it's same-origin). Setting `allowedHosts: true` disables that check entirely, so any `Host` header is accepted and those rebound requests are served, exposing source files and the proxied backend.\n\nI looked for a barrier and found none: the CSP header configured in the same block governs scripts served *from* the dev origin, not requests an attacker's own page makes against it, so it does not block this. There's no `--host` restriction or CORS layer added elsewhere. I confirmed via `init-fullstack-project.sh` that this template file is copied byte-for-byte into every generated project (`cp \"$TEMPLATE_DIR/vite.config.ts\" .`) and that `npm run dev` invokes plain `vite`, so the weak setting reaches real running dev servers, not just an unused template. I also checked `CHANGELOG.md`, which shows the maintainers added `allowedHosts: true` deliberately to work around Vite's host check blocking proxied dev environments — this confirms it's intentional, but it's an insecure blanket bypass rather than a scoped allowlist of the specific proxy hostnames, so it doesn't count as a \"secure design, no exploit\" case; the DNS-rebinding exploit path genuinely exists.\n\nThis only affects developer machines while `npm run dev` is running, requires social engineering (visiting a malicious page) and DNS rebinding infrastructure, and does not touch production builds — matching the candidate's own low-severity, review-oriented framing. Given the fully-read source, the confirmed propagation to real projects, and the absence of any neutralizing barrier, I verify this as a real, low-severity local-dev misconfiguration rather than downgrading to likely or false-positive.",
+        "refutationAttempts": [
+          "Re-read plugins/wai/skills/cc-fullstack-vite/templates/vite.config.ts in full and confirmed line 19 sets `allowedHosts: true` inside the `server` block, with the `/api` proxy to the local backend on lines 30-35, exactly matching the candidate snippet.",
+          "Searched the template directory for any competing host-binding or CORS restriction that could neutralize the missing Host check and found none; the only other server option is the CSP header, which governs scripts served from the dev origin, not cross-origin requests initiated from an attacker page.",
+          "Read plugins/wai/skills/cc-fullstack-vite/scripts/init-fullstack-project.sh and confirmed it copies vite.config.ts verbatim (`cp \"$TEMPLATE_DIR/vite.config.ts\" .`) into every generated project and wires `npm run dev` to plain `vite` with no `--host` restriction, so the weak default is not a dead/test artifact but propagates to real scaffolded projects.",
+          "Grepped CHANGELOG.md and found the `allowedHosts: true` line was deliberately added to fix Vite host-check blocking in proxy/container dev environments, confirming this is an intentional but insecure workaround rather than an inert leftover, and that the maintainers chose the blanket bypass (`true`) instead of an explicit host allowlist."
+        ],
+        "reachable": true,
+        "validatedAt": "2026-09-29T08:44:27.765Z"
+      },
+      "nonQualifyingCategory": null,
+      "diffRelevance": null,
+      "status": "open",
+      "duplicateOf": null,
+      "rootClusterId": null,
+      "suppression": null,
+      "patch": {
+        "status": "patched",
+        "file": "patches/asgard-0007.patch",
+        "summary": "Removed `allowedHosts: true` from the scaffolded Vite dev server config so Vite's default Host header allowlist applies, closing the DNS-rebinding path to the dev server and its `/api` backend proxy for every project generated from the cc-fullstack-vite template."
+      }
+    },
+    {
+      "id": "asgard-0008",
+      "fingerprint": "728efe0cfdf2c1d4c5b174a4bc35ace7f2a61045166381e483ea31556f46ca62",
+      "ruleId": "G1.OUTPUT_INJECTION",
+      "title": "Markdown report injection via unescaped asset path from untrusted target page in smoke-test main.rs",
+      "category": "G1",
+      "cwe": [
+        "CWE-116",
+        "CWE-79"
+      ],
+      "owasp": [
+        "A05:2025"
+      ],
+      "asvs": [
+        "V5"
+      ],
+      "kind": "fail",
+      "severity": "low",
+      "cvss": {
+        "version": "3.1",
+        "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:N/I:L/A:N",
+        "baseScore": 3.1,
+        "securitySeverity": "3.1"
+      },
+      "confidence": {
+        "level": "high",
+        "score": 0.8,
+        "sources": [
+          "scanner",
+          "validator"
+        ]
+      },
+      "location": {
+        "file": "sources/ccube-celerity/smoke-test-sgw/src/main.rs",
+        "startLine": 430,
+        "endLine": 433,
+        "symbol": "main",
+        "snippet": "let report = markdown_report(&http_results, &render_results);\n    if std::fs::write(&args.report_path, &report).is_ok() {\n        println!(\"[wrote {}]\", args.report_path);\n    }"
+      },
+      "relatedLocations": [
+        {
+          "file": "sources/ccube-celerity/smoke-test-sgw/src/logic.rs",
+          "startLine": 173,
+          "endLine": 180,
+          "symbol": "markdown_report",
+          "note": "BAD-ASSET findings bullets interpolate the page-derived asset path with no md_cell escaping, unlike the table cells above"
+        },
+        {
+          "file": "sources/ccube-celerity/smoke-test-sgw/src/logic.rs",
+          "startLine": 88,
+          "endLine": 99,
+          "symbol": "extract_assets",
+          "note": "Captures the full src/href attribute value (val), which may contain newlines and markdown metacharacters (anything except a double quote)"
+        },
+        {
+          "file": "sources/ccube-celerity/smoke-test-sgw/src/main.rs",
+          "startLine": 145,
+          "endLine": 151,
+          "symbol": "http_check",
+          "note": "assets_bad is built in-scope from the untrusted extracted paths and carried into the report"
+        }
+      ],
+      "dataFlow": {
+        "source": {
+          "description": "HTML src=/href= attribute value from an untrusted target page being smoke-tested",
+          "file": "sources/ccube-celerity/smoke-test-sgw/src/logic.rs",
+          "line": 89
+        },
+        "steps": [
+          {
+            "file": "sources/ccube-celerity/smoke-test-sgw/src/logic.rs",
+            "line": 98,
+            "symbol": "extract_assets",
+            "note": "pushes the raw attribute value (val), which may contain \\n and markdown chars, into the asset list"
+          },
+          {
+            "file": "sources/ccube-celerity/smoke-test-sgw/src/main.rs",
+            "line": 140,
+            "symbol": "http_check",
+            "note": "asset record {path: <tainted>, status} built; malformed path yields non-200 so it lands in assets_bad"
+          },
+          {
+            "file": "sources/ccube-celerity/smoke-test-sgw/src/main.rs",
+            "line": 151,
+            "symbol": "http_check",
+            "note": "out[\"assets_bad\"] carries the tainted path into http_results"
+          },
+          {
+            "file": "sources/ccube-celerity/smoke-test-sgw/src/logic.rs",
+            "line": 178,
+            "symbol": "markdown_report",
+            "note": "BAD-ASSET bullet formats the tainted path with no escaping (md_cell not applied)"
+          },
+          {
+            "file": "sources/ccube-celerity/smoke-test-sgw/src/main.rs",
+            "line": 431,
+            "symbol": "main",
+            "note": "the assembled report string is written to args.report_path on disk"
+          }
+        ],
+        "sink": {
+          "description": "std::fs::write of the assembled Markdown report containing the unescaped, page-controlled asset path",
+          "file": "sources/ccube-celerity/smoke-test-sgw/src/main.rs",
+          "line": 431
+        },
+        "barriers": []
+      },
+      "description": "The smoke-test tool writes a shareable Markdown report assembled from data it scrapes off each **untrusted target page**. Table cells are neutralized with `md_cell` (which escapes `|` and `\\n`), but the `## Findings` section is not. Specifically the `BAD-ASSET` bullets interpolate a page-derived asset path directly: `format!(\"- **BAD-ASSET** {path}: HTTP {st}\")` in `logic.rs` (line 178).\n\nThe `path` value originates from the target page's HTML. `extract_assets` (logic.rs) records the **full attribute value** between `src=\"`/`href=\"` and the next `\"` — it only requires the value to start with `/` and to end in a static extension such as `.js`. An HTML attribute value can legally contain newlines and any character except the closing double quote, so an attacker who controls content on a page under test can craft `<script src=\"/x\\n\\n## Fake heading\\n[evil](http://x)\\n.js\">`. The value survives into the asset record, the malformed URL causes the HTTP sub-check to return a non-200 status (so it is classified into `assets_bad`), and it is then emitted verbatim into the report.\n\nThe tainted `assets_bad` structure is built in-scope in `main.rs` (`http_check`, lines 140/151) and the final report is written to disk by the in-scope sink `std::fs::write(&args.report_path, &report)` at main.rs line 431 with no escaping applied on this path.\n\nThe stated invariant \"Markdown cells must escape pipe/newline to prevent report injection\" is met for table cells but **not** for the Findings bullets, so page content can inject arbitrary Markdown (headings, links, fake findings, or raw HTML that some Markdown viewers render) into the report.",
+      "exploitScenario": "1. An attacker places (or influences) content on a page that operators will smoke-test — e.g. a page that reflects user input into an element attribute, on a staging/multi-tenant site.\n2. The attacker gets an asset-like reference into the HTML whose value starts with `/`, ends in `.js`/`.css`/etc., and embeds newlines plus Markdown: `<script src=\"/a\\n\\n## All checks passed\\n\\n- **BAD-ASSET** none\\n/b.js\"></script>`.\n3. The tool fetches the page; `extract_assets` records the whole multi-line value; the resulting malformed asset URL returns a non-200 status and is placed in `assets_bad`.\n4. `markdown_report` emits the value unescaped into the `## Findings` section, and `main.rs` writes it to `smoke-report.md`.\n5. A reviewer (or CI system) reads/renders the report and is shown attacker-controlled headings/links/fake results — misleading the reviewer, and enabling stored XSS if the Markdown is rendered by a viewer that permits raw HTML.",
+      "impact": "An attacker who controls content on a tested page can inject arbitrary Markdown into the generated smoke-test report, forging or hiding findings and misleading whoever reads the report. If the report is later rendered to HTML by a viewer that allows raw HTML (many do), the injected content becomes script execution in the reviewer's context. Impact is limited to report integrity/trust rather than the target systems, since the tool remains read-only.",
+      "remediation": {
+        "summary": "Escape all page-derived values wherever they are interpolated into the report, not only in table cells. Apply the same neutralization used for cells (or a stricter one) to the Findings bullets, and strengthen it to also handle carriage returns and Markdown/HTML metacharacters.\n\nConcretely, run the `path` (and any other scraped value) through `md_cell` before formatting the `BAD-ASSET` line, and extend `md_cell` to replace `\\r` as well as `\\n`. Better still, constrain `extract_assets` to reject attribute values containing control characters so malformed paths never enter the pipeline.",
+        "references": [
+          "https://cwe.mitre.org/data/definitions/116.html",
+          "https://owasp.org/www-community/attacks/Content_Spoofing"
+        ],
+        "suggestedFix": "findings.push(format!(\"- **BAD-ASSET** {}: HTTP {st}\", md_cell(path)));\n// and in md_cell:\nfn md_cell(s: &str) -> String {\n    s.replace('|', \"\\\\|\").replace('\\r', \" \").replace('\\n', \" \")\n}"
+      },
+      "validation": {
+        "verdict": "verified",
+        "verifierExplanation": "The re-read confirms the full chain exactly as described. `extract_assets` in `logic.rs` (lines 81-106) scans raw HTML text for `src=\"...\"`/`href=\"...\"` and pushes the **entire raw attribute value** (`val`) into the asset list as soon as it starts with `/` and ends in a known extension (checked after stripping `?`/`#`) — it does not reject embedded newlines or other control characters, and HTML attribute values legitimately allow literal newlines inside quotes, so a page can smuggle a multi-line, Markdown-shaped string in via a `src`/`href` attribute.\n\nThat value flows into `http_check` (`main.rs` lines 130-151), where it is stored as `path` in the per-asset JSON object. Even if the constructed request URL is malformed (because it contains a newline) and `asset_status` (lines 92-103) returns `-1` on any transport error, that `-1 != 200` still routes the record into `assets_bad` — so the raw, tainted `path` reaches `assets_bad` unconditionally, not just on a specific network outcome.\n\n`markdown_report` (`logic.rs` lines 122-188) then formats the BAD-ASSET bullet at line 178 as `format!(\"- **BAD-ASSET** {path}: HTTP {st}\")` with **no `md_cell` escaping**, in contrast to the table rows just above it (lines 145, 157) which do call `md_cell` (which strips `|` and `\\n`). I looked for any other barrier — input validation on the attribute value, a sanitizing step between `http_check` and `markdown_report`, or an escape applied later before the `std::fs::write` sink at `main.rs` line 431 — and found none; the report string is written to disk exactly as assembled.\n\nThis is a real, reachable inconsistency: an attacker who controls markup on a page being smoke-tested can get attacker-chosen Markdown/heading/link text written verbatim into the generated report. The impact is confined to report integrity (forged/faked findings, or stored-XSS-in-a-viewer scenario if the Markdown is later rendered with raw HTML allowed) rather than compromise of the tool or target systems, matching the candidate's own conservative CVSS characterization (AC:H for the crafted payload requirement, UI:R for a human having to view the report, I:L only). Given the fully-traced Tier-1 path with the exact offending line read and no barrier found, this earns verified rather than likely.</verifierExplanation>\n",
+        "refutationAttempts": [
+          "Re-read logic.rs extract_assets (lines 81-106) and confirmed it stores the full raw attribute value `val` (not a sanitized substring) whenever it starts with `/` and its extension-stripped form ends in a static extension, with no rejection of embedded control characters",
+          "Re-read logic.rs markdown_report (lines 122-188) and confirmed the render/http table rows apply `md_cell` (line 145, 157) which escapes `|` and `\\n`, but the BAD-ASSET findings line at line 178 formats `path` directly with no `md_cell` call, unlike the sibling status-finding line 170 which also skips it but is not the candidate's focus",
+          "Re-read main.rs http_check (lines 106-157) and asset_status (lines 92-103) and confirmed the tainted `path` is stored in the JSON asset record independent of whether the outgoing HTTP request for that malformed URL succeeds; asset_status returns -1 on any transport error which still fails the `== Some(200)` check so the raw path lands in assets_bad regardless",
+          "Re-read main.rs main() (lines 425-433) and confirmed the assembled markdown string is written verbatim to args.report_path via std::fs::write with no further sanitization step in between"
+        ],
+        "reachable": true,
+        "validatedAt": "2026-09-29T08:45:28.061Z"
+      },
+      "nonQualifyingCategory": null,
+      "diffRelevance": null,
+      "status": "open",
+      "duplicateOf": null,
+      "rootClusterId": null,
+      "suppression": null,
+      "patch": {
+        "status": "patched",
+        "file": "patches/asgard-0008.patch",
+        "summary": "Escaped all page-derived values interpolated into the Markdown report's Findings section (BAD-ASSET path, render URL/error/screenshot) with md_cell, matching the escaping already used for table cells, and extended md_cell to also neutralize carriage returns so a crafted HTML attribute value on the tested page can no longer inject Markdown/headings/links into the report."
+      }
+    },
+    {
+      "id": "asgard-0009",
+      "fingerprint": "b559ddbc39760b75eced7aa09fedf63b114313787488f0e98e3e8b0f512b298a",
+      "ruleId": "G9.MISCONFIG",
+      "title": "Project settings auto-execute telemetry hooks and auto-approve tools in .claude/settings.json",
+      "category": "G9",
+      "cwe": [
+        "CWE-16",
+        "CWE-532"
+      ],
+      "owasp": [
+        "A02:2025"
+      ],
+      "asvs": [
+        "V13"
+      ],
+      "kind": "review",
+      "severity": "low",
+      "cvss": {
+        "version": "3.1",
+        "vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:R/S:U/C:L/I:N/A:N",
+        "baseScore": 2.2,
+        "securitySeverity": "2.2"
+      },
+      "confidence": {
+        "level": "medium",
+        "score": 0.55,
+        "sources": [
+          "scanner",
+          "validator"
+        ]
+      },
+      "location": {
+        "file": ".claude/settings.json",
+        "startLine": 2,
+        "endLine": 28,
+        "snippet": "\"permissions\": {\n\t\t\"defaultMode\": \"auto\"\n\t},\n\t\"hooks\": {\n\t\t\"UserPromptSubmit\": [ ... command: bash session-telemetry.sh session_start ]",
+        "symbol": "settings"
+      },
+      "relatedLocations": [
+        {
+          "file": "plugins/wai/scripts/session-telemetry.sh",
+          "startLine": 133,
+          "endLine": 136,
+          "note": "Hook target writes the entire hook stdin (which for UserPromptSubmit contains the user's prompt/session context) to ~/.ccube/hook-debug.log, contradicting the script's stated privacy notice of collecting no PII/file contents.",
+          "symbol": "debug log"
+        },
+        {
+          "file": "plugins/wai/scripts/session-telemetry.sh",
+          "startLine": 138,
+          "endLine": 147,
+          "note": "Hook target POSTs anonymousId/sessionId to an external endpoint on every session start with no explicit user opt-in prompt.",
+          "symbol": "_fire"
+        }
+      ],
+      "dataFlow": {
+        "source": {
+          "description": "Claude Code hook stdin delivered to the UserPromptSubmit/PreToolUse hooks configured here; for UserPromptSubmit this JSON carries the user's prompt and session context.",
+          "file": ".claude/settings.json",
+          "line": 12
+        },
+        "steps": [
+          {
+            "file": ".claude/settings.json",
+            "line": 12,
+            "note": "UserPromptSubmit hook auto-runs session-telemetry.sh on every prompt with the empty matcher (fires for all prompts)."
+          },
+          {
+            "file": "plugins/wai/scripts/session-telemetry.sh",
+            "line": 34,
+            "note": "Script reads the full hook stdin JSON into STDIN_JSON."
+          },
+          {
+            "file": "plugins/wai/scripts/session-telemetry.sh",
+            "line": 136,
+            "note": "Full STDIN_JSON is appended verbatim to ~/.ccube/hook-debug.log on disk."
+          },
+          {
+            "file": "plugins/wai/scripts/session-telemetry.sh",
+            "line": 147,
+            "note": "Sanitized identifiers are POSTed to the external telemetry endpoint."
+          }
+        ],
+        "sink": {
+          "description": "Hook command that pipes prompt/session stdin into the local debug log and outbound telemetry POST, configured to run automatically for every prompt.",
+          "file": ".claude/settings.json",
+          "line": 12
+        },
+        "barriers": [
+          "Payload sent to the remote endpoint is restricted to sanitized session/anon IDs and event names",
+          "Telemetry can be disabled via CCUBE_TELEMETRY_DISABLED=1",
+          "The local debug-log write of full stdin is guarded only by a comment marking it as temporary, not by any allowlist"
+        ]
+      },
+      "description": "The committed project configuration `.claude/settings.json` wires two Claude Code lifecycle hooks (`UserPromptSubmit` and `PreToolUse`) to **auto-execute** `plugins/wai/scripts/session-telemetry.sh` on every prompt and subagent start, and sets `permissions.defaultMode` to `\"auto\"`.\n\nThe hook receives the tool/prompt hook context on stdin. The target script at line 136 appends the **entire stdin JSON verbatim** to `~/.ccube/hook-debug.log`. For the `UserPromptSubmit` event this stdin contains the user's prompt text and session context, so full prompt content is written to a local log file — despite the script's own privacy notice at the top claiming \"No PII, no file contents, no workspace data is ever collected.\" The script also POSTs identifiers to an external endpoint (`cc-agent-plugin-telemetry-frontend.cio.sandbox.gov.sg`) on every session with no interactive opt-in.\n\nBecause these settings are committed to the repository, anyone who opens this repo in Claude Code silently runs the telemetry script and accumulates prompt/session content in an on-disk debug log. This is a configuration/data-handling concern rather than a directly attacker-triggered injection: the hook commands are static string literals with no interpolated untrusted input, so there is no command-injection primitive here. It is surfaced for human review of the telemetry-by-default posture and the contradiction between the privacy notice and the debug-log behavior.",
+      "exploitScenario": "1. A developer clones this repository and opens it in Claude Code / VS Code with the wai plugin.\n2. On the first prompt, the `UserPromptSubmit` hook auto-runs `session-telemetry.sh` with the prompt context on stdin.\n3. The script appends the full stdin JSON (including prompt content) to `~/.ccube/hook-debug.log` and POSTs session identifiers to the external endpoint.\n4. Any local user or process able to read `~/.ccube/hook-debug.log` can recover accumulated prompt/session data that the privacy notice states is never collected.",
+      "impact": "Local disclosure of user prompt and session context via the `~/.ccube/hook-debug.log` file, plus unconditioned outbound transmission of session/installation identifiers to a third-party endpoint on every session. Impact is limited: the remote payload is sanitized to identifiers, and the on-disk log is confined to the user's home directory, so this is a privacy/data-handling weakness rather than remote compromise.",
+      "remediation": {
+        "summary": "Remove or gate the debug-log block in the hook target so full hook stdin (which can contain prompt content) is never written to disk, and align actual behavior with the stated privacy notice. Make telemetry opt-in rather than opt-out, and reconsider committing a project-level `defaultMode: \"auto\"` that reduces tool-execution friction for anyone opening the repo.\n\nSpecifically: delete the `printf ... stdin: %s` line that logs `STDIN_JSON`, or restrict any diagnostic logging to non-content metadata; require an explicit env-var opt-in before firing telemetry.",
+        "references": [
+          "https://cwe.mitre.org/data/definitions/532.html",
+          "https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/"
+        ],
+        "suggestedFix": "# in plugins/wai/scripts/session-telemetry.sh, remove the stdin debug log:\n# printf '[%s] stdin: %s\\n' \"${NOW}\" \"${STDIN_JSON}\" >> \"${DEBUG_LOG}\"  <-- delete this line\n# and require explicit opt-in:\n[[ \"${CCUBE_TELEMETRY_ENABLED:-0}\" == \"1\" ]] || exit 0"
+      },
+      "validation": {
+        "verdict": "likely",
+        "verifierExplanation": "I re-read `.claude/settings.json` and confirmed it wires `UserPromptSubmit` (empty matcher, fires on every prompt) and `PreToolUse` (matcher `Agent`) to auto-run `plugins/wai/scripts/session-telemetry.sh`, and sets `permissions.defaultMode` to `auto`, matching the candidate's location exactly.\n\nI then read `session-telemetry.sh` end-to-end. Line 34 reads the full hook stdin into `STDIN_JSON`. Lines 133-136 append that raw `STDIN_JSON` verbatim to `~/.ccube/hook-debug.log` with no filtering, which directly contradicts the script's own header comment claiming \"No PII, no file contents, no workspace data is ever collected.\" By contrast, the actual network call in `_fire()` (lines 138-147) only ever sends a small set of fields that are each passed through a strict allowlist regex (`ANON_ID`, `SESSION_ID`, `AGENT_TYPE` are all scrubbed to `[a-zA-Z0-9_-]`), so the remote-exfiltration half of the finding is neutralized by real sanitization — the candidate's own barrier list correctly notes this.\n\nThe remaining risk is the local debug-log write of the unfiltered stdin blob. That part has no barrier: the \"guard\" is only a code comment (\"Remove this block once telemetry delivery is confirmed\"), not an env-var gate or allowlist. I also confirmed `CCUBE_TELEMETRY_DISABLED=1` (checked before stdin is even parsed) is a genuine opt-out that skips this entirely, and the design doc `EP-0001-Update-telemetry.md` shows the authors deliberately added `~/.ccube/hook-debug.log` as a debugging aid, meaning this is a known, if sloppy, design choice rather than a hidden bug.\n\nOne link I could not verify purely from this repository is the exact JSON schema Claude Code sends on `UserPromptSubmit`'s stdin (i.e., whether it literally includes a `prompt` field with the user's typed text) — that is an external product's hook contract, not something defined in this codebase, so I can't fully confirm \"prompt text\" specifically lands in the log versus just session/event metadata. Given the code-level behavior (verbatim stdin logged, contradicting the stated privacy notice) is solidly confirmed but this one detail about the external payload shape is inferred rather than read, I am marking this **likely** rather than **verified**. Severity stays low: this is a local-only, self-inflicted logging inconsistency (not remote compromise), reachable by any developer who opens the repo in Claude Code and submits a prompt, with a clean opt-out available.",
+        "refutationAttempts": [
+          "Re-read `.claude/settings.json` lines 1-28 and confirmed the `UserPromptSubmit` and `PreToolUse` hooks call `plugins/wai/scripts/session-telemetry.sh` unconditionally with an empty matcher, and that `permissions.defaultMode` is set to `auto`.",
+          "Re-read `plugins/wai/scripts/session-telemetry.sh` in full and confirmed line 34 captures the raw hook stdin into `STDIN_JSON`, line 133-136 appends `${NOW} ... fired` plus a `stdin: ${STDIN_JSON}` line verbatim to `~/.ccube/hook-debug.log`, and lines 145-147/151-153 only send sanitized `HOOK_EVENT/ANON_ID/PLUGIN_NAME/AGENT_TYPE/SESSION_ID` fields (each constrained by regex allowlists) to the remote endpoint.",
+          "Checked the opt-out path at line 26 and confirmed `CCUBE_TELEMETRY_DISABLED=1` exits before stdin is parsed or logged, and the HTTPS-only endpoint check at line 30, both acting as real barriers when set.",
+          "Searched the repo's telemetry design doc `docs/enhancement-proposals/telemetry/EP-0001-Update-telemetry.md` and found the authors explicitly reference `~/.ccube/hook-debug.log` as an intentional (if meant-to-be-temporary) debug artifact, confirming the log write is a known, by-design leftover rather than an unnoticed bug."
+        ],
+        "reachable": true,
+        "validatedAt": "2026-09-29T08:44:58.082Z"
+      },
+      "nonQualifyingCategory": null,
+      "diffRelevance": null,
+      "status": "open",
+      "duplicateOf": null,
+      "rootClusterId": null,
+      "suppression": null,
+      "patch": {
+        "status": "patched",
+        "file": "patches/asgard-0009.patch",
+        "summary": "Removed the debug-log write of raw hook stdin in plugins/wai/scripts/session-telemetry.sh, which previously persisted full UserPromptSubmit/PreToolUse stdin (including prompt text) to ~/.ccube/hook-debug.log in contradiction of the script's stated privacy notice; only non-content metadata (event, plugin, agent_type, session_id) is now logged. Also flipped telemetry from opt-out (CCUBE_TELEMETRY_DISABLED) to opt-in (CCUBE_TELEMETRY_ENABLED, off by default) so the script — invoked identically by both hooks configured in .claude/settings.json — no longer auto-collects or transmits data without explicit user consent."
+      }
+    }
+  ],
+  "summary": {
+    "total": 9,
+    "bySeverity": [
+      {
+        "key": "high",
+        "count": 1
+      },
+      {
+        "key": "medium",
+        "count": 1
+      },
+      {
+        "key": "low",
+        "count": 7
+      }
+    ],
+    "byCategory": [
+      {
+        "key": "G6",
+        "count": 1
+      },
+      {
+        "key": "G14",
+        "count": 4
+      },
+      {
+        "key": "G1",
+        "count": 2
+      },
+      {
+        "key": "G9",
+        "count": 2
+      }
+    ],
+    "clusters": [],
+    "coverageNotes": [
+      "All 9 validated findings carry rootClusterId: null — no per-finding cluster assignment was supplied by asgard's clustering stage. Although 3 of the G14 findings (asgard-0004, -0005, -0006) visually share an identical pattern (plaintext hook-stdin debug logging in session-telemetry.sh, duplicated across the community/ccube-celerity/wai plugin copies) and could plausibly share a root cause, no rootClusterId was provided to confirm this, so no cluster entries are reported here rather than fabricating a grouping — this should be re-run through the clustering stage to confirm/attach real cluster ids.",
+      "bySeverity and byCategory are derived directly from the per-finding severity/category fields supplied and sum to total=9; confidence levels (0.55-0.85, medium-high) were left distinct from severity per axis-separation rule and not used to adjust severity.",
+      "ProjectMap lists numerous additional entry points, sinks, and business-logic flows (e.g. release.sh json-patch flow, MCP gateway config, TypeScript scaffolding templates, Python find_aws_icon.py, GitHub Actions Slack webhook interpolation, eval-maestro.js) for which no validated findings were supplied in this batch — this summary covers only the 9 findings provided and should not be read as a clean bill of health for those unexamined areas.",
+      "No compiled/minified/vendored dependency code, no generated build output, and no node_modules or third-party MCP server source were included in the provided findings or file reads, so those remain outside this summary's coverage."
+    ]
+  }
+}
