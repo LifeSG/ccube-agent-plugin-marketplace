@@ -3,32 +3,42 @@
     "grill-me": {
       "source": "mattpocock/skills",
       "path": "skills/productivity/grill-me",
-      "updated": "2026-08-17T02:14:32Z",
-      "added": "2026-05-03T13:21:02Z"
+      "updated": "2026-10-13T07:31:56Z",
+      "added": "2026-05-03T13:21:02Z",
+      "ref": "49dd158d1076134a641b33efb035946536778336",
+      "tree": "3df14e2d3a89459bf300614be9247e3ce74798f8"
     },
     "grill-with-docs": {
       "source": "mattpocock/skills",
       "path": "skills/engineering/grill-with-docs",
-      "updated": "2026-08-17T02:14:32Z",
-      "added": "2026-06-02T02:39:00Z"
+      "updated": "2026-10-13T07:32:04Z",
+      "added": "2026-06-02T02:39:00Z",
+      "ref": "49dd158d1076134a641b33efb035946536778336",
+      "tree": "eedaf2562c83155115e9c649fa3ecaac2e10e81d"
     },
     "grilling": {
       "source": "mattpocock/skills",
       "path": "skills/productivity/grilling",
-      "updated": "2026-10-08T06:50:42Z",
-      "added": "2026-07-24T05:19:13Z"
+      "updated": "2026-10-13T07:32:12Z",
+      "added": "2026-07-24T05:19:13Z",
+      "ref": "49dd158d1076134a641b33efb035946536778336",
+      "tree": "28aceb4c9567b985cb47f7db88cf23c9f33af8b8"
     },
     "domain-modeling": {
       "source": "mattpocock/skills",
       "path": "skills/engineering/domain-modeling",
-      "updated": "2026-09-30T06:11:04Z",
-      "added": "2026-07-24T05:21:16Z"
+      "updated": "2026-10-13T07:32:21Z",
+      "added": "2026-07-24T05:21:16Z",
+      "ref": "49dd158d1076134a641b33efb035946536778336",
+      "tree": "ea30ee454ba264543dbe40737973b1a5afb9f0e6"
     },
     "draw-io": {
       "source": "softaworks/agent-toolkit",
       "path": "skills/draw-io",
-      "updated": "2026-08-17T02:14:36Z",
-      "added": "2026-08-13T00:25:37Z"
+      "updated": "2026-10-13T07:32:29Z",
+      "added": "2026-08-13T00:25:37Z",
+      "ref": "3027f20f3181758385a1bb8c022d4041dfb4de84",
+      "tree": "7f11a1fc99d76896cb5a9a6468e04e3a1ea7aab4"
     }
   }
 }
