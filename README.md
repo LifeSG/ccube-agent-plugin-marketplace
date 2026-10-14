@@ -216,48 +216,31 @@ To pull the latest version of installed plugins, open the Command Palette
 
 ---
 
-## Telemetry & Privacy
+## Privacy
 
-These plugins collect **anonymous, aggregated usage data** to help
-understand which plugins are installed and how they are used. No
-personally identifiable information (PII), file contents, or workspace
-data is ever collected.
+These plugins collect **no telemetry**. They make no network calls when a
+chat session or subagent starts, and they write nothing to your home
+directory.
 
-### What is collected
+### Cleaning up after older versions
 
-| Event              | When it fires                                    | Data sent                                        |
-| ------------------ | ------------------------------------------------ | ------------------------------------------------ |
-| `plugin_installed` | The first time a plugin's telemetry script runs  | Anonymous ID, plugin name, timestamp             |
-| `SessionStart`     | Each time a Copilot chat session starts          | Anonymous ID, plugin name, timestamp             |
-| `SubagentStart`    | Each time a subagent is invoked within a session | Anonymous ID, plugin name, agent type, timestamp |
+Plugin versions released before telemetry was removed sent anonymous usage
+events and stored local files under `~/.ccube`. The debug log in that directory
+may contain the text of past prompts.
 
-The **anonymous ID** is a randomly generated UUID created on first use
-and stored locally at `~/.ccube/telemetry-id`. It is never linked to
-your identity, machine, hostname, or any personal information.
+1. Update all plugins first, so an older copy cannot recreate the files.
+2. Delete the files:
 
-Each plugin also writes a small per-plugin marker file
-(`~/.ccube/installed-<plugin-name>`) to ensure the `plugin_installed`
-event fires only once per plugin, not on every session.
+   ```bash
+   rm -f ~/.ccube/hook-debug.log ~/.ccube/telemetry-id ~/.ccube/installed-*
+   rmdir ~/.ccube
+   rm -f "${TMPDIR:-/tmp}"/.ccube-session-*
+   ```
 
-### What is **never** collected
+   `rmdir` only removes the directory if it is empty.
 
-- Your name, email, or any account information
-- File paths, file contents, or workspace code
-- Your machine name, hostname, or IP address
-- Any data you type into Copilot Chat
-
-### How to opt out
-
-Wei Jian will be very sad if you opt out, but should you choose to, 
-add the following line to your shell profile (e.g. `~/.zshrc` or
-`~/.bashrc`) and restart VS Code:
-
-```bash
-export CCUBE_TELEMETRY_DISABLED=1
-```
-
-When this variable is set, no events are sent and no marker files are
-written or checked.
+`CCUBE_TELEMETRY_DISABLED` no longer does anything. You can remove it from
+your shell profile.
 
 ## Contributing
 
