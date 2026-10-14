@@ -284,6 +284,29 @@
         "status": "superseded",
         "file": "patches/asgard-0002.patch",
         "summary": "Superseded by docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md: session-telemetry.sh removed from all plugins and hooks.json emptied."
+      },
+      "resolution": {
+        "resolvedAt": "2026-10-14",
+        "summary": "Removed plugins/community/scripts/session-telemetry.sh and emptied plugins/community/hooks.json, so no telemetry is sent on SessionStart or SubagentStart and the sandbox endpoint is no longer contacted.",
+        "enhancementProposal": "docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md",
+        "branch": "fix/mol-22743-patch-vulnerabilities",
+        "commits": [
+          "cf035ae",
+          "5dd89e8",
+          "ec082a3",
+          "e2d3037"
+        ],
+        "verification": [
+          "S1: no session-telemetry.sh under plugins/ and scripts/debug-hook.js removed",
+          "S2: telemetry host and hook-debug.log referenced only in historical records and README cleanup steps",
+          "S3: plugins/*/hooks.json equal {\"hooks\": {}}; .claude/settings.json has no hooks key",
+          "S4/S5: all manifests valid JSON; claude plugin validate passes for wai, community, ccube-celerity",
+          "R1/R2/R4: plugin count still 3; pre-commit hook passes; manage-skills.sh list works"
+        ],
+        "pending": [
+          "T09 manual runtime checks in Claude Code and VS Code/Copilot (hook errors, debug log growth, outbound traffic)",
+          "T10 plugin version bump and release; fix not yet shipped to marketplace users"
+        ]
       }
     },
     {
@@ -528,6 +551,29 @@
         "status": "superseded",
         "file": "patches/asgard-0004.patch",
         "summary": "Superseded by docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md: session-telemetry.sh removed from all plugins and hooks.json emptied."
+      },
+      "resolution": {
+        "resolvedAt": "2026-10-14",
+        "summary": "Removed plugins/community/scripts/session-telemetry.sh, eliminating the raw hook stdin write to ~/.ccube/hook-debug.log.",
+        "enhancementProposal": "docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md",
+        "branch": "fix/mol-22743-patch-vulnerabilities",
+        "commits": [
+          "cf035ae",
+          "5dd89e8",
+          "ec082a3",
+          "e2d3037"
+        ],
+        "verification": [
+          "S1: no session-telemetry.sh under plugins/ and scripts/debug-hook.js removed",
+          "S2: telemetry host and hook-debug.log referenced only in historical records and README cleanup steps",
+          "S3: plugins/*/hooks.json equal {\"hooks\": {}}; .claude/settings.json has no hooks key",
+          "S4/S5: all manifests valid JSON; claude plugin validate passes for wai, community, ccube-celerity",
+          "R1/R2/R4: plugin count still 3; pre-commit hook passes; manage-skills.sh list works"
+        ],
+        "pending": [
+          "T09 manual runtime checks in Claude Code and VS Code/Copilot (hook errors, debug log growth, outbound traffic)",
+          "T10 plugin version bump and release; fix not yet shipped to marketplace users"
+        ]
       }
     },
     {
@@ -645,6 +691,29 @@
         "status": "superseded",
         "file": "patches/asgard-0005.patch",
         "summary": "Superseded by docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md: session-telemetry.sh removed from all plugins and hooks.json emptied."
+      },
+      "resolution": {
+        "resolvedAt": "2026-10-14",
+        "summary": "Removed plugins/ccube-celerity/scripts/session-telemetry.sh, eliminating the raw hook stdin write to ~/.ccube/hook-debug.log.",
+        "enhancementProposal": "docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md",
+        "branch": "fix/mol-22743-patch-vulnerabilities",
+        "commits": [
+          "c393d7f",
+          "5dd89e8",
+          "ec082a3",
+          "e2d3037"
+        ],
+        "verification": [
+          "S1: no session-telemetry.sh under plugins/ and scripts/debug-hook.js removed",
+          "S2: telemetry host and hook-debug.log referenced only in historical records and README cleanup steps",
+          "S3: plugins/*/hooks.json equal {\"hooks\": {}}; .claude/settings.json has no hooks key",
+          "S4/S5: all manifests valid JSON; claude plugin validate passes for wai, community, ccube-celerity",
+          "R1/R2/R4: plugin count still 3; pre-commit hook passes; manage-skills.sh list works"
+        ],
+        "pending": [
+          "T09 manual runtime checks in Claude Code and VS Code/Copilot (hook errors, debug log growth, outbound traffic)",
+          "T10 plugin version bump and release; fix not yet shipped to marketplace users"
+        ]
       }
     },
     {
@@ -762,6 +831,29 @@
         "status": "superseded",
         "file": "patches/asgard-0006.patch",
         "summary": "Superseded by docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md: session-telemetry.sh removed from all plugins and hooks.json emptied."
+      },
+      "resolution": {
+        "resolvedAt": "2026-10-14",
+        "summary": "Removed plugins/wai/scripts/session-telemetry.sh, eliminating the raw hook stdin write to ~/.ccube/hook-debug.log.",
+        "enhancementProposal": "docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md",
+        "branch": "fix/mol-22743-patch-vulnerabilities",
+        "commits": [
+          "143ce90",
+          "5dd89e8",
+          "ec082a3",
+          "e2d3037"
+        ],
+        "verification": [
+          "S1: no session-telemetry.sh under plugins/ and scripts/debug-hook.js removed",
+          "S2: telemetry host and hook-debug.log referenced only in historical records and README cleanup steps",
+          "S3: plugins/*/hooks.json equal {\"hooks\": {}}; .claude/settings.json has no hooks key",
+          "S4/S5: all manifests valid JSON; claude plugin validate passes for wai, community, ccube-celerity",
+          "R1/R2/R4: plugin count still 3; pre-commit hook passes; manage-skills.sh list works"
+        ],
+        "pending": [
+          "T09 manual runtime checks in Claude Code and VS Code/Copilot (hook errors, debug log growth, outbound traffic)",
+          "T10 plugin version bump and release; fix not yet shipped to marketplace users"
+        ]
       }
     },
     {
@@ -1141,6 +1233,31 @@
         "status": "superseded",
         "file": "patches/asgard-0009.patch",
         "summary": "Superseded by docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md: telemetry hooks removed from .claude/settings.json and session-telemetry.sh deleted. permissions.defaultMode \"auto\" remains and is tracked separately."
+      },
+      "resolution": {
+        "resolvedAt": "2026-10-14",
+        "summary": "Removed the UserPromptSubmit and PreToolUse telemetry hooks from .claude/settings.json and deleted the wai telemetry script they called.",
+        "enhancementProposal": "docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md",
+        "branch": "fix/mol-22743-patch-vulnerabilities",
+        "commits": [
+          "7cf43f4",
+          "143ce90",
+          "5dd89e8",
+          "ec082a3",
+          "e2d3037"
+        ],
+        "verification": [
+          "S1: no session-telemetry.sh under plugins/ and scripts/debug-hook.js removed",
+          "S2: telemetry host and hook-debug.log referenced only in historical records and README cleanup steps",
+          "S3: plugins/*/hooks.json equal {\"hooks\": {}}; .claude/settings.json has no hooks key",
+          "S4/S5: all manifests valid JSON; claude plugin validate passes for wai, community, ccube-celerity",
+          "R1/R2/R4: plugin count still 3; pre-commit hook passes; manage-skills.sh list works"
+        ],
+        "pending": [
+          "T09 manual runtime checks in Claude Code and VS Code/Copilot (hook errors, debug log growth, outbound traffic)",
+          "T10 plugin version bump and release; fix not yet shipped to marketplace users"
+        ],
+        "remaining": "permissions.defaultMode \"auto\" in .claude/settings.json is out of scope for EP-0007 and still open."
       }
     }
   ],
@@ -1183,7 +1300,22 @@
       "All 9 validated findings carry rootClusterId: null — no per-finding cluster assignment was supplied by asgard's clustering stage. Although 3 of the G14 findings (asgard-0004, -0005, -0006) visually share an identical pattern (plaintext hook-stdin debug logging in session-telemetry.sh, duplicated across the community/ccube-celerity/wai plugin copies) and could plausibly share a root cause, no rootClusterId was provided to confirm this, so no cluster entries are reported here rather than fabricating a grouping — this should be re-run through the clustering stage to confirm/attach real cluster ids.",
       "bySeverity and byCategory are derived directly from the per-finding severity/category fields supplied and sum to total=9; confidence levels (0.55-0.85, medium-high) were left distinct from severity per axis-separation rule and not used to adjust severity.",
       "ProjectMap lists numerous additional entry points, sinks, and business-logic flows (e.g. release.sh json-patch flow, MCP gateway config, TypeScript scaffolding templates, Python find_aws_icon.py, GitHub Actions Slack webhook interpolation, eval-maestro.js) for which no validated findings were supplied in this batch — this summary covers only the 9 findings provided and should not be read as a clean bill of health for those unexamined areas.",
-      "No compiled/minified/vendored dependency code, no generated build output, and no node_modules or third-party MCP server source were included in the provided findings or file reads, so those remain outside this summary's coverage."
+      "No compiled/minified/vendored dependency code, no generated build output, and no node_modules or third-party MCP server source were included in the provided findings or file reads, so those remain outside this summary's coverage.",
+      "2026-10-14: asgard-0002, 0004, 0005 and 0006 resolved and asgard-0009 partially resolved by EP-0007 (session telemetry removed from all plugins); see each finding's resolution block. Manual runtime checks and release are pending."
+    ],
+    "byStatus": [
+      {
+        "key": "open",
+        "count": 4
+      },
+      {
+        "key": "partially-resolved",
+        "count": 1
+      },
+      {
+        "key": "resolved",
+        "count": 4
+      }
     ]
   }
 }
