@@ -5,23 +5,32 @@ on:
     - cron: '0 1 * * 1-5' # Weekdays at 9am UTC+8 (1am UTC)
   workflow_dispatch: # Allow manual trigger
 
+# Read-only by default; only the job below is granted write scopes.
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   update-skills:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
+      # Do not persist the token in .git/config, so the update step (which
+      # fetches untrusted upstream content) cannot use it.
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Run skill update script
-        run: bash plugins/community/scripts/manage-skills.sh update --all
+        run: |
+          bash plugins/community/scripts/manage-skills.sh update --all \
+            | tee "$RUNNER_TEMP/update.log"
 
       - name: Check for changes
         id: changes
         run: |
-          if git diff --quiet; then
+          if [ -z "$(git status --porcelain)" ]; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
             echo "has_changes=true" >> $GITHUB_OUTPUT
@@ -34,18 +43,35 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           BRANCH="skill-updates-$(date +%Y%m%d-%H%M%S)"
           git checkout -b "$BRANCH"
-          git add .
+          git add plugins/community/
           git commit -m "chore(community): update vendored skills"
-          git push -u origin "$BRANCH"
+          git push -u \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "$BRANCH"
           echo "BRANCH_NAME=$BRANCH" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Pull Request
         if: steps.changes.outputs.has_changes == 'true'
         id: pr
         run: |
+          {
+            echo "Automated update of vendored community skills."
+            echo ""
+            echo "> [!WARNING]"
+            echo "> This content comes from third-party repositories. Review the"
+            echo "> full file diff and the upstream changes below before merging."
+            echo "> Do not approve based on the PR title alone."
+            echo ""
+            echo "### Upstream changes"
+            echo ""
+            grep 'Review upstream changes:' "$RUNNER_TEMP/update.log" \
+              | sed 's/^ *Review upstream changes: /- /' || true
+          } > "$RUNNER_TEMP/pr-body.md"
           PR_URL=$(gh pr create \
             --title "chore(community): scheduled skill updates" \
-            --body "Automated update of vendored community skills." \
+            --body-file "$RUNNER_TEMP/pr-body.md" \
             --head "${{ env.BRANCH_NAME }}" \
             --base main)
           echo "PR_URL=$PR_URL" >> $GITHUB_OUTPUT
