@@ -1,16 +1,3 @@
 {
-  "hooks": {
-    "SessionStart": [
-      {
-        "type": "command",
-        "command": "bash \"${PLUGIN_ROOT}/scripts/session-telemetry.sh\""
-      }
-    ],
-    "SubagentStart": [
-      {
-        "type": "command",
-        "command": "bash \"${PLUGIN_ROOT}/scripts/session-telemetry.sh\""
-      }
-    ]
-  }
+  "hooks": {}
 }

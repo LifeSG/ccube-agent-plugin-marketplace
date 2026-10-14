@@ -7,14 +7,29 @@
 # per-command to allow partial output on failure
 set -uo pipefail
 
-FEATURE_BRANCH="$1"
-BASE_BRANCH="$2"
+FEATURE_BRANCH="${1:-}"
+BASE_BRANCH="${2:-}"
 
 if [ -z "$FEATURE_BRANCH" ] || [ -z "$BASE_BRANCH" ]; then
     echo "Error: Both feature and base branches required"
     echo "Usage: $0 <feature-branch> <base-branch>"
     exit 1
 fi
+
+# Reject option-like values and require both to resolve to existing commits
+# so they cannot be parsed as git options (CWE-88).
+for REF in "$FEATURE_BRANCH" "$BASE_BRANCH"; do
+    case "$REF" in
+        -*)
+            echo "Error: Invalid branch '$REF' (must not start with '-')"
+            exit 1
+            ;;
+    esac
+    if ! git rev-parse --verify --quiet --end-of-options "$REF^{commit}" >/dev/null; then
+        echo "Error: '$REF' does not resolve to a commit"
+        exit 1
+    fi
+done
 
 echo "=== MR Git Analysis ==="
 echo "Feature Branch: $FEATURE_BRANCH"

@@ -26,8 +26,12 @@ Commands:
   add     Download a skill folder from GitHub and vendor it into this plugin.
           skill-name defaults to the last path segment of <path/in/repo>.
 
-  update  Re-download a skill from its recorded source to pick up upstream
-          changes. Use --all to update every vendored skill at once.
+  update  Bump a skill's pinned commit to the latest upstream commit and
+          re-download it. Use --all to update every vendored skill at once.
+
+Every skill is pinned to a full commit SHA ("ref") and the git tree hash of
+its folder ("tree") in the manifest. Downloads fetch that exact commit and
+abort if the commit or tree hash does not match.
 
   delete  Remove a vendored skill folder and its manifest entry.
 
@@ -78,6 +82,14 @@ assert_path_within() {
     || die "Security: ${label} '${candidate}' resolves to '${resolved}', which is outside '${parent_resolved}'. Aborting."
 }
 
+# Pins must be full 40-character commit SHAs.  Branch and tag names are
+# mutable, so accepting them would reintroduce an unpinned download.
+validate_ref() {
+  local ref="$1"
+  [[ "${ref}" =~ ^[0-9a-f]{40}$ ]] \
+    || die "Invalid ref '${ref}': expected a full 40-character commit SHA."
+}
+
 # ── Manifest helpers (all JSON writes go through python3 with argv, not
 #    string interpolation, to safely handle paths with special characters) ─────
 
@@ -96,11 +108,11 @@ PYEOF
 }
 
 manifest_set() {
-  local skill="$1" source="$2" path="$3" now="$4"
+  local skill="$1" source="$2" path="$3" now="$4" ref="$5" tree="$6"
   mkdir -p "${SKILLS_DIR}"
-  python3 - "${skill}" "${source}" "${path}" "${now}" "${MANIFEST}" <<'PYEOF'
+  python3 - "${skill}" "${source}" "${path}" "${now}" "${ref}" "${tree}" "${MANIFEST}" <<'PYEOF'
 import json, sys, os
-skill, source, skill_path, now, manifest_path = sys.argv[1:]
+skill, source, skill_path, now, ref, tree, manifest_path = sys.argv[1:]
 data = {}
 if os.path.isfile(manifest_path):
     with open(manifest_path) as f:
@@ -109,6 +121,8 @@ skills = data.setdefault("skills", {})
 entry = skills.get(skill, {})
 entry["source"]  = source
 entry["path"]    = skill_path
+entry["ref"]     = ref
+entry["tree"]    = tree
 entry["updated"] = now
 if "added" not in entry:
     entry["added"] = now
@@ -145,7 +159,8 @@ try:
         source = entry.get("source", "?")
         path   = entry.get("path", "?")
         added  = entry.get("added", "?")
-        print(f"  {name:<30} {source}/{path}  (added {added})")
+        ref    = entry.get("ref", "")[:12] or "unpinned"
+        print(f"  {name:<30} {source}/{path} @ {ref}  (added {added})")
 except Exception as e:
     print(f"  (error reading manifest: {e})")
 PYEOF
@@ -194,23 +209,50 @@ PYEOF
 
 # ── Download ──────────────────────────────────────────────────────────────────
 
+# Print the commit SHA that the upstream default branch currently points at.
+# Read-only: uses ls-remote, nothing is downloaded.
+resolve_latest_ref() {
+  local repo="$1" ref
+  ref="$(git ls-remote "https://github.com/${repo}.git" HEAD | cut -f1)"
+  [[ -n "${ref}" ]] || die "Could not resolve the default branch HEAD of ${repo}."
+  validate_ref "${ref}"
+  echo "${ref}"
+}
+
+# Fetch exactly commit REF of REPO and copy SKILL_PATH into DEST.  Aborts if
+# the fetched or checked-out commit is not REF.  Sets DOWNLOADED_TREE to the
+# git tree hash of SKILL_PATH at REF so callers can record it.
 download_skill() {
-  local repo="$1" skill_path="$2" dest="$3"
+  local repo="$1" skill_path="$2" dest="$3" ref="$4"
+  validate_ref "${ref}"
+
   local tmp_dir
   tmp_dir="$(mktemp -d)"
   # shellcheck disable=SC2064
   trap "rm -rf '${tmp_dir}'" EXIT
 
-  info "Cloning ${repo} (sparse checkout: ${skill_path})…"
-  git clone \
-    --depth 1 \
-    --filter=blob:none \
-    --sparse \
-    --quiet \
-    "https://github.com/${repo}.git" \
-    "${tmp_dir}"
+  info "Fetching ${repo}@${ref} (sparse checkout: ${skill_path})…"
+  git init --quiet "${tmp_dir}"
+  git -C "${tmp_dir}" remote add origin "https://github.com/${repo}.git"
+  git -C "${tmp_dir}" fetch --quiet --depth 1 --filter=blob:none origin "${ref}" \
+    || die "Could not fetch commit ${ref} from ${repo}."
+
+  local fetched
+  fetched="$(git -C "${tmp_dir}" rev-parse FETCH_HEAD)"
+  [[ "${fetched}" == "${ref}" ]] \
+    || die "Security: fetched commit ${fetched} does not match pinned ref ${ref}. Aborting."
+
+  local tree
+  tree="$(git -C "${tmp_dir}" rev-parse --verify --quiet "${ref}:${skill_path}")" \
+    || die "Path '${skill_path}' not found in ${repo} at ${ref}."
+  [[ "$(git -C "${tmp_dir}" cat-file -t "${tree}")" == "tree" ]] \
+    || die "Path '${skill_path}' in ${repo} at ${ref} is not a directory."
 
   git -C "${tmp_dir}" sparse-checkout set --no-cone "${skill_path}" 2>/dev/null
+  git -C "${tmp_dir}" checkout --quiet --detach "${ref}"
+
+  [[ "$(git -C "${tmp_dir}" rev-parse HEAD)" == "${ref}" ]] \
+    || die "Security: checked-out commit does not match pinned ref ${ref}. Aborting."
 
   local src="${tmp_dir}/${skill_path}"
 
@@ -219,10 +261,12 @@ download_skill() {
   assert_path_within "${dest}" "${SKILLS_DIR}" "dest"
   assert_path_within "${src}"  "${tmp_dir}"    "src"
 
-  [[ -d "${src}" ]] || die "Path '${skill_path}' not found in ${repo}. Verify the path exists on the default branch."
+  [[ -d "${src}" ]] || die "Path '${skill_path}' not found in ${repo} at ${ref}."
 
   rm -rf "${dest}"
   cp -r "${src}" "${dest}"
+
+  DOWNLOADED_TREE="${tree}"
 
   trap - EXIT
   rm -rf "${tmp_dir}"
@@ -244,16 +288,19 @@ cmd_add() {
   local dest="${SKILLS_DIR}/${skill_name}"
   [[ ! -d "${dest}" ]] || die "Skill '${skill_name}' already exists. Use 'update ${skill_name}' to refresh it."
 
+  local ref
+  ref="$(resolve_latest_ref "${repo}")"
+
   mkdir -p "${SKILLS_DIR}"
-  download_skill "${repo}" "${skill_path}" "${dest}"
+  download_skill "${repo}" "${skill_path}" "${dest}" "${ref}"
 
   local now
   now="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-  manifest_set "${skill_name}" "${repo}" "${skill_path}" "${now}"
+  manifest_set "${skill_name}" "${repo}" "${skill_path}" "${now}" "${ref}" "${DOWNLOADED_TREE}"
 
   bump_minor_version
 
-  ok "Added '${skill_name}' from github.com/${repo}/${skill_path}"
+  ok "Added '${skill_name}' from github.com/${repo}/${skill_path} pinned at ${ref}"
   echo ""
   echo "   To commit:"
   echo "   git add plugins/community/skills/${skill_name} plugins/community/skills/.manifest.json plugins/community/plugin.json"
@@ -309,26 +356,41 @@ _update_one() {
   # Treat the manifest key as untrusted — validate before building a path.
   validate_skill_name "${skill}"
 
-  local repo skill_path
+  local repo skill_path old_ref old_tree
   repo="$(manifest_get "${skill}" source)"
   skill_path="$(manifest_get "${skill}" path)"
+  old_ref="$(manifest_get "${skill}" ref)"
+  old_tree="$(manifest_get "${skill}" tree)"
 
   [[ -n "${repo}" ]] || die "Skill '${skill}' not found in manifest. Use 'add' first."
+  [[ -z "${old_ref}" ]] || validate_ref "${old_ref}"
 
-  info "Updating '${skill}' from github.com/${repo}/${skill_path}…"
-  download_skill "${repo}" "${skill_path}" "${SKILLS_DIR}/${skill}"
+  local new_ref
+  new_ref="$(resolve_latest_ref "${repo}")"
 
-  if git diff --quiet -- "${SKILLS_DIR}/${skill}" && \
-     [[ -z "$(git status --porcelain -- "${SKILLS_DIR}/${skill}")" ]]; then
+  if [[ "${new_ref}" == "${old_ref}" ]]; then
+    info "'${skill}' is already pinned to the latest upstream commit, skipping."
+    return 1
+  fi
+
+  info "Updating '${skill}' from github.com/${repo}/${skill_path}: ${old_ref:-unpinned} → ${new_ref}"
+  download_skill "${repo}" "${skill_path}" "${SKILLS_DIR}/${skill}" "${new_ref}"
+
+  # Upstream moved but this skill's folder did not: keep the existing pin so
+  # unrelated upstream commits do not churn the manifest.
+  if [[ -n "${old_ref}" && "${DOWNLOADED_TREE}" == "${old_tree}" ]]; then
     info "No changes for '${skill}', skipping."
     return 1
   fi
 
   local now
   now="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-  manifest_set "${skill}" "${repo}" "${skill_path}" "${now}"
+  manifest_set "${skill}" "${repo}" "${skill_path}" "${now}" "${new_ref}" "${DOWNLOADED_TREE}"
 
-  ok "Updated '${skill}'"
+  ok "Updated '${skill}' to ${new_ref}"
+  if [[ -n "${old_ref}" ]]; then
+    echo "   Review upstream changes: https://github.com/${repo}/compare/${old_ref}...${new_ref}"
+  fi
   return 0
 }
 

@@ -40,10 +40,9 @@ plugins/
     .claude-plugin/
       plugin.json               ← Claude Code plugin manifest (bump version on every capability change)
     README.md                   ← human-readable description of the plugin
-    hooks.json                  ← SessionStart + SubagentStart hook declarations (Copilot format, plugin root)
+    hooks.json                  ← optional hook declarations (Copilot format, plugin root; default {"hooks": {}})
     docs/                       ← optional: supporting documentation for this plugin
     scripts/
-      session-telemetry.sh      ← telemetry script fired on session start and subagent start
       validate-*.sh             ← optional: agent validation scripts
     instructions/
       *.instructions.md         ← always-on coding standards for this plugin
@@ -67,8 +66,7 @@ The file types this repo authors and maintains:
 | `marketplace.json`               | `.github/plugin/`                       | Registry of all plugins; each entry points to a `plugins/<name>` directory                                         |
 | `README.md`                      | `plugins/<plugin-name>/`                | Human-readable description and skill inventory for the plugin                                                      |
 | `plugin.json`                    | `plugins/<plugin-name>/`                | **Copilot** plugin manifest; declares `skills`, `agents`, `hooks` paths; bump `version` on every capability change |
-| `hooks.json`                     | `plugins/<plugin-name>/`                | SessionStart + SubagentStart hook declarations (Copilot-format, VS Code auto-detected at root)                     |
-| `session-telemetry.sh`           | `plugins/<plugin-name>/scripts/`        | Shell hook fired on session start and subagent start; shared contract across all plugins                           |
+| `hooks.json`                     | `plugins/<plugin-name>/`                | Optional hook declarations (Copilot-format, VS Code auto-detected at root); default `{"hooks": {}}`                |
 | `.instructions.md`               | `plugins/<plugin-name>/instructions/`   | Always-on coding standards that enforce FDS component usage and React conventions                                  |
 | `.agent.md`                      | `plugins/<plugin-name>/agents/`         | Specialized agents that develop web applications within FDS constraints                                            |
 | `SKILL.md`                       | `plugins/<plugin-name>/skills/<name>/`  | Domain-knowledge packages — FDS component catalog, theming, project scaffolding                                    |
@@ -175,28 +173,19 @@ Create the directory `plugins/<plugin-name>/` at the repo root. Use a
 lowercase, hyphen-separated name that clearly describes the plugin's purpose
 (e.g. `wai`).
 
-### Step 1.5 — Add the telemetry hook (MANDATORY)
+### Step 1.5 — Add hook declarations
 
-Every plugin MUST include a telemetry hook at:
+Create `plugins/<plugin-name>/hooks.json` containing an empty hooks object:
 
 ```
-plugins/<plugin-name>/hooks.json
-plugins/<plugin-name>/scripts/session-telemetry.sh
+{
+  "hooks": {}
+}
 ```
 
-`hooks.json` MUST declare both `SessionStart` and `SubagentStart` events,
-each calling `session-telemetry.sh`.
-
-Copy `session-telemetry.sh` verbatim from an existing plugin (e.g.
-`plugins/wai/scripts/session-telemetry.sh`).
-Change only the `PLUGIN_NAME` variable at the top to match the new
-plugin's name.
-
-> **IMPORTANT — cross-plugin consistency rule**: `session-telemetry.sh`
-> is a shared contract. Any change to the script's logic, security
-> controls, or behaviour MUST be applied to **every** plugin's copy in
-> the same commit. See the [Telemetry](#telemetry) section for the
-> full update protocol.
+The marketplace entry and the plugin-count tooling expect this file to
+exist. Add hooks only when the plugin has a real need for one. Plugins MUST
+NOT ship telemetry (see [Telemetry](#telemetry)).
 
 ### Step 2 — Add instructions (optional)
 
@@ -366,11 +355,8 @@ Before committing, verify:
 
 1. `plugins/<plugin-name>/` exists with at least one
    `skills/<name>/SKILL.md`.
-2. `plugins/<plugin-name>/hooks.json` and
-   `plugins/<plugin-name>/scripts/session-telemetry.sh` both exist,
-   the script's `PLUGIN_NAME` variable matches the plugin's
-   directory name, and `hooks.json` declares both `SessionStart` and
-   `SubagentStart` events.
+2. `plugins/<plugin-name>/hooks.json` exists and is valid JSON (an empty
+   hooks object by default).
 3. `plugins/<plugin-name>/README.md` exists and lists all skills (and
    any instructions or agents).
 4. The plugin entry is present in `.github/plugin/marketplace.json`
@@ -824,39 +810,8 @@ chat input when the skill is invoked. Example:
 <!-- <telemetry> -->
 ## Telemetry
 
-Every plugin ships a telemetry hook at
-`plugins/<plugin-name>/scripts/session-telemetry.sh`. The hook fires on
-`SessionStart` and `SubagentStart` events.
-
-The hook is responsible for:
-
-- Firing a usage event to the configured telemetry endpoint.
-- Firing a one-time `install` event the first time the plugin is used
-  on a machine.
-- Generating and persisting an anonymous, per-machine installation ID
-  in `~/.ccube/telemetry-id`.
-
-### Endpoint and opt-out
-
-- The default endpoint (`CCUBE_TELEMETRY_ENDPOINT`) is set at the top
-  of the script. Replace the placeholder URL with a self-hosted
-  endpoint before shipping to production.
-- Users can opt out by setting `CCUBE_TELEMETRY_DISABLED=1` in their
-  shell profile.
-- All endpoints MUST use HTTPS. The script enforces this and will
-  exit silently if a non-HTTPS URL is supplied.
-
-### Privacy contract
-
-The script collects only:
-
-- A random, anonymous, per-machine installation ID (no PII).
-- The plugin name and agent name (from stdin, sanitised to
-  `[a-zA-Z0-9_-]` before use).
-- A UTC timestamp.
-
-No file contents, workspace paths, user identifiers, or environment
-variables are ever collected or transmitted.
+Plugins MUST NOT ship telemetry. Any future telemetry requires its own
+opt-in Enhancement Proposal (see EP-0007).
 
 <!-- </telemetry> -->
 
@@ -885,10 +840,9 @@ an explicit sync step is required (see below).
 plugins/community/
   plugin.json                  ← Copilot plugin manifest
   .claude-plugin/plugin.json   ← Claude Code plugin manifest
-  hooks.json                   ← SessionStart + SubagentStart telemetry
+  hooks.json                   ← Hook declarations (empty)
   README.md                    ← Skill inventory (update when skills change)
   scripts/
-    session-telemetry.sh       ← Standard telemetry hook (PLUGIN_NAME="community")
     manage-skills.sh           ← CLI for add / update / delete / list
   skills/
     .manifest.json             ← Auto-managed provenance record (do NOT edit by hand)
@@ -915,8 +869,13 @@ All skill lifecycle operations go through
 - `skill-name` is optional and defaults to the last segment of `<path/in/repo>`.
 - The script uses `git sparse-checkout --depth 1` so only the target folder is
   downloaded — the full upstream repo is never cloned.
-- Provenance (repo, path, timestamps) is written to `skills/.manifest.json`
-  automatically. Do NOT edit `.manifest.json` by hand.
+- Provenance (repo, path, pinned commit SHA, tree hash, timestamps) is
+  written to `skills/.manifest.json` automatically. Do NOT edit
+  `.manifest.json` by hand.
+- Every skill is pinned to an exact upstream commit. `update` resolves the
+  latest upstream commit, fetches exactly that commit, and aborts if the
+  fetched commit does not match. Review the printed GitHub compare link
+  before merging a pin bump.
 
 **Update a single skill to the latest upstream commit:**
 
@@ -1009,12 +968,17 @@ know where content came from without requiring the user to remember:
     "grill-me": {
       "source": "mattpocock/skills",
       "path": "skills/productivity/grill-me",
+      "ref": "49dd158d1076134a641b33efb035946536778336",
+      "tree": "3df14e2d3a89459bf300614be9247e3ce74798f8",
       "added": "2026-05-03T13:00:00Z",
       "updated": "2026-05-03T13:00:00Z"
     }
   }
 }
 ```
+
+- `ref` — full commit SHA of the upstream commit the skill is pinned to.
+- `tree` — git tree hash of `path` at `ref`, recorded for integrity audits.
 
 Do NOT modify this file manually. All reads and writes go through the script.
 

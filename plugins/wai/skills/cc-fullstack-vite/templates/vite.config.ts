@@ -16,7 +16,13 @@ export default defineConfig({
     outDir: 'dist/client',
   },
   server: {
-    allowedHosts: true,
+    // Explicit Host allowlist (localhost is always allowed) keeps Vite's
+    // DNS-rebinding protection while still working behind the Airbase
+    // proxy. Add other tunnel hosts via VITE_ALLOWED_HOSTS (comma-separated).
+    allowedHosts: [
+      '.airbase.sg',
+      ...(process.env.VITE_ALLOWED_HOSTS?.split(',').map((h) => h.trim()).filter(Boolean) ?? []),
+    ],
     headers: {
       'Content-Security-Policy': [
         "default-src 'self'",
