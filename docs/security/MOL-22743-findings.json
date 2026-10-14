@@ -145,7 +145,7 @@
       },
       "nonQualifyingCategory": null,
       "diffRelevance": null,
-      "status": "open",
+      "status": "resolved",
       "duplicateOf": null,
       "rootClusterId": null,
       "suppression": null,
@@ -153,6 +153,27 @@
         "status": "patched",
         "file": "patches/asgard-0001.patch",
         "summary": "manage-skills.sh now pins every vendored skill to a specific, verified upstream commit SHA instead of silently tracking a moving default-branch HEAD: download_skill fetches by exact commit and aborts if the checked-out HEAD doesn't match the requested revision, `add` records the resolved SHA (and the git tree hash of the vendored path) in .manifest.json, and `update`/`update --all` resolve the latest upstream SHA via a read-only `git ls-remote`, skip if unchanged, and otherwise perform an explicit, auditable pin bump that is checked out and integrity-verified before being copied into the plugin — so the resulting PR diff shows the exact commit transition for reviewers instead of an unpinned content swap."
+      },
+      "resolution": {
+        "resolvedAt": "2026-10-14",
+        "branch": "fix/mol-22743-patch-vulnerabilities",
+        "summary": "Each vendored skill is pinned to a full commit SHA (ref) and folder tree hash (tree) in the manifest; download_skill fetches that exact commit and aborts on ref or tree mismatch. The scheduled workflow now defaults to contents: read, scopes write permissions to the update job, checks out without persisting the token, and opens the PR with upstream compare links and an explicit human-review warning.",
+        "commits": [
+          "29a71cf"
+        ],
+        "files": [
+          "plugins/community/scripts/manage-skills.sh",
+          "plugins/community/skills/.manifest.json",
+          ".github/workflows/schedule-skill-updates.yml"
+        ],
+        "verification": [
+          "Manifest entries carry ref and tree fields",
+          "Workflow YAML parses; top-level permissions are contents: read"
+        ],
+        "pending": [
+          "Workflow change not yet committed",
+          "Confirm branch protection requires review on skill-updates-* PRs"
+        ]
       }
     },
     {
@@ -416,7 +437,7 @@
       },
       "nonQualifyingCategory": null,
       "diffRelevance": null,
-      "status": "open",
+      "status": "resolved",
       "duplicateOf": null,
       "rootClusterId": null,
       "suppression": null,
@@ -424,6 +445,22 @@
         "status": "patched",
         "file": "patches/asgard-0003.patch",
         "summary": "Validate FEATURE_BRANCH/BASE_BRANCH in git-analysis.sh immediately after they are read: reject any value beginning with '-' and require both to resolve via `git rev-parse --verify` to an existing commit before they are used in any diff/log revision range. This closes the git argument-injection path (e.g. --output=<file>) for every downstream git invocation in the script, since the check happens once upstream of all call sites."
+      },
+      "resolution": {
+        "resolvedAt": "2026-10-14",
+        "branch": "fix/mol-22743-patch-vulnerabilities",
+        "summary": "git-analysis.sh rejects branch arguments starting with \"-\" and requires each to resolve to a commit via git rev-parse --verify --end-of-options before any git command uses them.",
+        "files": [
+          "plugins/wai/skills/cc-code-review/scripts/git-analysis.sh"
+        ],
+        "verification": [
+          "--output=/tmp/x main exits 1 with invalid-branch error",
+          "nope-branch main exits 1 with does-not-resolve error",
+          "HEAD main runs normally"
+        ],
+        "pending": [
+          "Not yet committed"
+        ]
       }
     },
     {
@@ -954,7 +991,7 @@
       },
       "nonQualifyingCategory": null,
       "diffRelevance": null,
-      "status": "open",
+      "status": "resolved",
       "duplicateOf": null,
       "rootClusterId": null,
       "suppression": null,
@@ -962,6 +999,22 @@
         "status": "patched",
         "file": "patches/asgard-0007.patch",
         "summary": "Removed `allowedHosts: true` from the scaffolded Vite dev server config so Vite's default Host header allowlist applies, closing the DNS-rebinding path to the dev server and its `/api` backend proxy for every project generated from the cc-fullstack-vite template."
+      },
+      "resolution": {
+        "resolvedAt": "2026-10-14",
+        "branch": "fix/mol-22743-patch-vulnerabilities",
+        "summary": "Replaced allowedHosts: true with an explicit allowlist (.airbase.sg plus optional VITE_ALLOWED_HOSTS) in both scaffolds, keeping DNS-rebinding protection while preserving the proxy use case that motivated the original setting.",
+        "files": [
+          "plugins/wai/skills/cc-fullstack-vite/templates/vite.config.ts",
+          "plugins/wai/skills/cc-vite-react-ds/scripts/init-vite-react-project.sh"
+        ],
+        "verification": [
+          "init-vite-react-project.sh passes bash -n"
+        ],
+        "pending": [
+          "Not yet committed",
+          "Smoke-test a scaffolded app behind the Airbase proxy"
+        ]
       }
     },
     {
@@ -1225,7 +1278,7 @@
       },
       "nonQualifyingCategory": null,
       "diffRelevance": null,
-      "status": "partially-resolved",
+      "status": "resolved",
       "duplicateOf": null,
       "rootClusterId": null,
       "suppression": null,
@@ -1236,7 +1289,7 @@
       },
       "resolution": {
         "resolvedAt": "2026-10-14",
-        "summary": "Removed the UserPromptSubmit and PreToolUse telemetry hooks from .claude/settings.json and deleted the wai telemetry script they called.",
+        "summary": "Removed the UserPromptSubmit and PreToolUse telemetry hooks from .claude/settings.json and deleted the wai telemetry script they called. Removed the committed permissions.defaultMode \"auto\" from .claude/settings.json so the repo no longer lowers tool-approval friction for anyone opening it.",
         "enhancementProposal": "docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md",
         "branch": "fix/mol-22743-patch-vulnerabilities",
         "commits": [
@@ -1255,9 +1308,9 @@
         ],
         "pending": [
           "T09 manual runtime checks in Claude Code and VS Code/Copilot (hook errors, debug log growth, outbound traffic)",
-          "T10 plugin version bump and release; fix not yet shipped to marketplace users"
-        ],
-        "remaining": "permissions.defaultMode \"auto\" in .claude/settings.json is out of scope for EP-0007 and still open."
+          "T10 plugin version bump and release; fix not yet shipped to marketplace users",
+          "defaultMode removal not yet committed"
+        ]
       }
     }
   ],
@@ -1301,20 +1354,17 @@
       "bySeverity and byCategory are derived directly from the per-finding severity/category fields supplied and sum to total=9; confidence levels (0.55-0.85, medium-high) were left distinct from severity per axis-separation rule and not used to adjust severity.",
       "ProjectMap lists numerous additional entry points, sinks, and business-logic flows (e.g. release.sh json-patch flow, MCP gateway config, TypeScript scaffolding templates, Python find_aws_icon.py, GitHub Actions Slack webhook interpolation, eval-maestro.js) for which no validated findings were supplied in this batch — this summary covers only the 9 findings provided and should not be read as a clean bill of health for those unexamined areas.",
       "No compiled/minified/vendored dependency code, no generated build output, and no node_modules or third-party MCP server source were included in the provided findings or file reads, so those remain outside this summary's coverage.",
-      "2026-10-14: asgard-0002, 0004, 0005 and 0006 resolved and asgard-0009 partially resolved by EP-0007 (session telemetry removed from all plugins); see each finding's resolution block. Manual runtime checks and release are pending."
+      "2026-10-14: asgard-0002, 0004, 0005 and 0006 resolved and asgard-0009 partially resolved by EP-0007 (session telemetry removed from all plugins); see each finding's resolution block. Manual runtime checks and release are pending.",
+      "2026-10-14: asgard-0001, 0003, 0007 and 0009 resolved on fix/mol-22743-patch-vulnerabilities; asgard-0008 open."
     ],
     "byStatus": [
       {
         "key": "open",
-        "count": 4
-      },
-      {
-        "key": "partially-resolved",
         "count": 1
       },
       {
         "key": "resolved",
-        "count": 4
+        "count": 8
       }
     ]
   }
