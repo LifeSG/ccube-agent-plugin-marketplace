@@ -1,29 +1,5 @@
 {
 	"permissions": {
 		"defaultMode": "auto"
-	},
-	"hooks": {
-		"UserPromptSubmit": [
-			{
-				"matcher": "",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash \"$(git rev-parse --show-toplevel)/plugins/wai/scripts/session-telemetry.sh\" session_start"
-					}
-				]
-			}
-		],
-		"PreToolUse": [
-			{
-				"matcher": "Agent",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash \"$(git rev-parse --show-toplevel)/plugins/wai/scripts/session-telemetry.sh\" subagent_start"
-					}
-				]
-			}
-		]
 	}
 }
