@@ -276,14 +276,14 @@
       },
       "nonQualifyingCategory": null,
       "diffRelevance": null,
-      "status": "open",
+      "status": "resolved",
       "duplicateOf": null,
       "rootClusterId": null,
       "suppression": null,
       "patch": {
-        "status": "patched",
+        "status": "superseded",
         "file": "patches/asgard-0002.patch",
-        "summary": "session-telemetry.sh now requires explicit opt-in (CCUBE_TELEMETRY_ENABLED=1 plus a user-supplied CCUBE_TELEMETRY_ENDPOINT) instead of defaulting on with a hard-coded sandbox gov.sg endpoint, and the debug block that persisted raw hook stdin JSON to ~/.ccube/hook-debug.log has been removed so no unsanitized session context is written to disk."
+        "summary": "Superseded by docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md: session-telemetry.sh removed from all plugins and hooks.json emptied."
       }
     },
     {
@@ -520,14 +520,14 @@
       },
       "nonQualifyingCategory": null,
       "diffRelevance": null,
-      "status": "open",
+      "status": "resolved",
       "duplicateOf": null,
       "rootClusterId": null,
       "suppression": null,
       "patch": {
-        "status": "patched",
+        "status": "superseded",
         "file": "patches/asgard-0004.patch",
-        "summary": "Removed the unconditional plaintext logging of raw hook stdin (which can contain the user's prompt text) in session-telemetry.sh. All debug logging to ~/.ccube/hook-debug.log is now gated behind an explicit opt-in (CCUBE_TELEMETRY_DEBUG=1), only ever writes the already-sanitized/allowlisted fields (never STDIN_JSON), and creates the file under umask 077 so it isn't world/group readable."
+        "summary": "Superseded by docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md: session-telemetry.sh removed from all plugins and hooks.json emptied."
       }
     },
     {
@@ -637,14 +637,14 @@
       },
       "nonQualifyingCategory": null,
       "diffRelevance": null,
-      "status": "open",
+      "status": "resolved",
       "duplicateOf": null,
       "rootClusterId": null,
       "suppression": null,
       "patch": {
-        "status": "patched",
+        "status": "superseded",
         "file": "patches/asgard-0005.patch",
-        "summary": "Removed the raw STDIN_JSON write to ~/.ccube/hook-debug.log (which could contain user prompts/workspace data, contradicting the plugin's privacy claim) and replaced the unconditional debug logging with an opt-in `_debug_log` helper gated behind `CCUBE_TELEMETRY_DEBUG=1` that only ever writes the already-sanitized fields (event, plugin, agent_type, session_id, HTTP status) and truncates the log once it exceeds 1MB to bound disk growth."
+        "summary": "Superseded by docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md: session-telemetry.sh removed from all plugins and hooks.json emptied."
       }
     },
     {
@@ -754,14 +754,14 @@
       },
       "nonQualifyingCategory": null,
       "diffRelevance": null,
-      "status": "open",
+      "status": "resolved",
       "duplicateOf": null,
       "rootClusterId": null,
       "suppression": null,
       "patch": {
-        "status": "patched",
+        "status": "superseded",
         "file": "patches/asgard-0006.patch",
-        "summary": "Removed the unconditional raw-stdin debug dump in session-telemetry.sh that wrote the full hook payload (user prompts/tool inputs) to ~/.ccube/hook-debug.log. Diagnostic logging is now opt-in via CCUBE_TELEMETRY_DEBUG=1, logs only the already-sanitized fields (event, plugin, agent type, session id) never raw STDIN_JSON, and the log file is created with mode 600 (umask 077)."
+        "summary": "Superseded by docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md: session-telemetry.sh removed from all plugins and hooks.json emptied."
       }
     },
     {
@@ -1133,14 +1133,14 @@
       },
       "nonQualifyingCategory": null,
       "diffRelevance": null,
-      "status": "open",
+      "status": "partially-resolved",
       "duplicateOf": null,
       "rootClusterId": null,
       "suppression": null,
       "patch": {
-        "status": "patched",
+        "status": "superseded",
         "file": "patches/asgard-0009.patch",
-        "summary": "Removed the debug-log write of raw hook stdin in plugins/wai/scripts/session-telemetry.sh, which previously persisted full UserPromptSubmit/PreToolUse stdin (including prompt text) to ~/.ccube/hook-debug.log in contradiction of the script's stated privacy notice; only non-content metadata (event, plugin, agent_type, session_id) is now logged. Also flipped telemetry from opt-out (CCUBE_TELEMETRY_DISABLED) to opt-in (CCUBE_TELEMETRY_ENABLED, off by default) so the script — invoked identically by both hooks configured in .claude/settings.json — no longer auto-collects or transmits data without explicit user consent."
+        "summary": "Superseded by docs/enhancement-proposals/security/EP-0007-remove-session-telemetry.md: telemetry hooks removed from .claude/settings.json and session-telemetry.sh deleted. permissions.defaultMode \"auto\" remains and is tracked separately."
       }
     }
   ],
