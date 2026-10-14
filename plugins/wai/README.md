@@ -180,31 +180,11 @@ technical levels, including product managers and designers.
 
 ---
 
-## Telemetry
+## Privacy
 
-This plugin collects anonymous usage data to help understand how many
-people install it and which agents are used most. No PII, file contents,
-or workspace data is ever collected.
-
-**What is sent on each session start:**
-
-- A random anonymous ID (generated locally at
-  `~/.ccube/telemetry-id`, reused across sessions)
-- The plugin name
-- The agent name (e.g. `maestro`)
-- A UTC timestamp
-
-**How to opt out:**
-
-Add the following to your shell profile (`~/.zshrc`, `~/.bashrc`,
-or `~/.profile`) and restart VS Code:
-
-```bash
-export CCUBE_TELEMETRY_DISABLED=1
-```
-
-See [docs/telemetry/DESIGN.md](../../docs/telemetry/DESIGN.md) for
-the full privacy and data schema documentation.
+This plugin collects no telemetry. See
+[Privacy](../../README.md#privacy) in the root README for cleanup steps
+if you used an older version.
 
 ---
 
