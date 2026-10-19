@@ -88,7 +88,9 @@ pub fn extract_assets(html: &str, cap: usize) -> Vec<String> {
             let Some(close_rel) = html[start..].find('"') else { break };
             let val = &html[start..start + close_rel];
             search_from = start + close_rel + 1;
-            if !val.starts_with('/') {
+            // Real asset paths never contain control chars; rejecting them keeps
+            // page-crafted multi-line values out of the report.
+            if !val.starts_with('/') || val.chars().any(char::is_control) {
                 continue;
             }
             let path = val.split(['?', '#']).next().unwrap_or(val);
@@ -166,8 +168,8 @@ pub fn markdown_report(http: &[Value], render: &[Value]) -> String {
             let url = r.get("url_requested").and_then(Value::as_str).unwrap_or("");
             let why = r.get("error").and_then(Value::as_str).unwrap_or(status);
             let shot = r.get("screenshot").and_then(Value::as_str)
-                .map(|p| format!(" (screenshot: {p})")).unwrap_or_default();
-            findings.push(format!("- **{status}** {url}: {why}{shot}"));
+                .map(|p| format!(" (screenshot: {})", md_cell(p))).unwrap_or_default();
+            findings.push(format!("- **{status}** {}: {}{shot}", md_cell(url), md_cell(why)));
         }
     }
     for h in http {
@@ -175,7 +177,7 @@ pub fn markdown_report(http: &[Value], render: &[Value]) -> String {
             for a in bad {
                 let path = a.get("path").and_then(Value::as_str).unwrap_or("");
                 let st = a.get("status").and_then(Value::as_i64).unwrap_or(0);
-                findings.push(format!("- **BAD-ASSET** {path}: HTTP {st}"));
+                findings.push(format!("- **BAD-ASSET** {}: HTTP {st}", md_cell(path)));
             }
         }
     }
@@ -187,9 +189,9 @@ pub fn markdown_report(http: &[Value], render: &[Value]) -> String {
     s
 }
 
-/// Escape a value for use inside a Markdown table cell.
+/// Escape a page-derived value for a Markdown table cell or findings bullet.
 fn md_cell(s: &str) -> String {
-    s.replace('|', "\\|").replace('\n', " ")
+    s.replace('|', "\\|").replace(['\r', '\n'], " ")
 }
 
 /// Filesystem-safe screenshot name derived from a URL.
@@ -364,6 +366,25 @@ mod tests {
         let md = markdown_report(&[], &render);
         assert!(md.contains("A\\|B"));
         assert!(md.contains("x=1\\|2"));
+    }
+
+    #[test]
+    fn assets_with_control_chars_rejected() {
+        let html = "<script src=\"/a\n\n## All checks passed\n/b.js\"></script>\
+                    <script src=\"/ok.js\"></script>";
+        assert_eq!(extract_assets(html, 30), vec!["/ok.js".to_string()]);
+    }
+
+    #[test]
+    fn report_findings_escape_newlines() {
+        let render = vec![json!({"url_requested": "https://a/\r\n## Fake", "status": "ERR",
+                                 "error": "x\n## Fake2", "screenshot": "/tmp/s\n## Fake3.png"})];
+        let http = vec![json!({"url": "https://a/", "status": 200,
+                               "assets_bad": [{"path": "/a\n\n## Fake4\n/b.js", "status": -1}]})];
+        let md = markdown_report(&http, &render);
+        assert!(!md.contains("\n## Fake"));
+        assert!(!md.contains('\r'));
+        assert!(md.contains("**BAD-ASSET** /a  ## Fake4 /b.js: HTTP -1"));
     }
 
     #[test]
