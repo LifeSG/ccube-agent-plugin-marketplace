@@ -39,6 +39,14 @@
       "added": "2026-08-13T00:25:37Z",
       "ref": "3027f20f3181758385a1bb8c022d4041dfb4de84",
       "tree": "7f11a1fc99d76896cb5a9a6468e04e3a1ea7aab4"
+    },
+    "fds-build": {
+      "source": "lifesg/react-design-system",
+      "path": "skills/fds-build",
+      "ref": "1dbb3345c52b97d4d727a2fccc85acc780d93a28",
+      "tree": "4031fc44ef585c1d4990dafe70c1cf5cc58566b7",
+      "updated": "2026-10-20T02:09:46Z",
+      "added": "2026-10-20T02:09:46Z"
     }
   }
 }
