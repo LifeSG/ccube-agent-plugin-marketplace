@@ -18,7 +18,7 @@ jobs:
     steps:
       # Do not persist the token in .git/config, so the update step (which
       # fetches untrusted upstream content) cannot use it.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
