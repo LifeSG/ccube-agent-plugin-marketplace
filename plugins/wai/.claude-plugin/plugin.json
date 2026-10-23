@@ -1,7 +1,7 @@
 {
   "name": "wai",
   "description": "Full-stack web application delivery platform. Lightweight Maestro router dispatches to specialist agents for product thinking, frontend (FDS), backend (Koa + PostgreSQL), and code review.",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": {
     "name": "LifeSG CCube"
   },
