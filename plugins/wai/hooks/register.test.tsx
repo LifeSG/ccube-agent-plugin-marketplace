@@ -143,3 +143,47 @@ test('Create branch on main asks Claude for the ticket first', async ($, on) => 
   expect(sent[0]).toContain('1 uncommitted file')
   expect(sent[0]).toContain('git pull --ff-only')
 })
+
+test('Commit and Push buttons ask Claude to do the work', async ($, on) => {
+  const repo: Repo = { dirty: ' M a.ts\n', branchCommits: '0', ahead: null }
+  const sent: string[] = []
+
+  on('command.register', () => ({ value: { command: 'cc-swe-coach-ui' } }))
+  on('tool.register', () => ({ value: { tool: 'mcp__wai__swe_guide' } }))
+  on('ui.open', () => ({ value: { isPlaced: true } }))
+  on('ui.panes', () => ({ value: [] }))
+  on('process.run', (_, e) => answerGit(repo, e.argv))
+  on('prompt.submit', (_, e) => {
+    sent.push(e.text)
+
+    return { text: e.text }
+  })
+  on('session.start', (_, e) => ({ cwd: e.cwd }))
+  on('tool.call', () => ({ result: {} }))
+  on('command.run', () => ({ text: '' }))
+  mock.store(on)
+  mock.clock(on)
+
+  await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true })
+  await $.command.run({
+    command: 'cc-swe-coach-ui',
+    args: '',
+    origin: { kind: 'composer' },
+    presentation: { isFullscreen: true, columns: 160 },
+  })
+
+  const dirty = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  await dirty.press({ key: 'commit' })
+  await dirty.unmount()
+  expect(sent[0]).toContain('cc-git-commit')
+  expect(sent[0]).toContain('1 uncommitted file')
+
+  repo.dirty = ''
+  repo.branchCommits = '1'
+  await $.tool.call({ tool: 'Bash', command: 'git commit -m x' })
+
+  const committed = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  await committed.press({ key: 'push' })
+  await committed.unmount()
+  expect(sent[1]).toContain('git push -u origin feat/x')
+})
