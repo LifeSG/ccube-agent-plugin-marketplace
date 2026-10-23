@@ -403,6 +403,52 @@ test('review findings offer a Fix per level and Fix all except low', async ($, o
   await fixed.unmount()
 })
 
+test('Remove hides the findings card until a new review', async ($, on) => {
+  const repo: Repo = { dirty: '', branchCommits: '1', ahead: '0' }
+
+  on('command.register', () => ({ value: { command: 'cc-swe-coach-ui' } }))
+  on('tool.register', () => ({ value: { tool: 'mcp__wai__swe_guide' } }))
+  on('ui.open', () => ({ value: { isPlaced: true } }))
+  on('ui.panes', () => ({ value: [] }))
+  on('process.run', (_, e) => answerGit(repo, e.argv))
+  on('session.start', (_, e) => ({ cwd: e.cwd }))
+  on('command.run', () => ({ text: '' }))
+  mock.store(on)
+  mock.clock(on)
+
+  await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true })
+  await $.command.run({
+    command: 'cc-swe-coach-ui',
+    args: '',
+    origin: { kind: 'composer' },
+    presentation: { isFullscreen: true, columns: 160 },
+  })
+  const record = (report: string) =>
+    $.tool.call({
+      tool: 'mcp__wai__swe_guide',
+      action: 'findings',
+      report,
+      counts: { critical: 0, high: 2, medium: 0, low: 0 },
+    })
+
+  await record('reviews/a/CODE-REVIEW.md')
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  await ui.press({ key: 'dismiss-findings' })
+  await ui.unmount()
+
+  // Hidden across refreshes.
+  await $.tool.call({ tool: 'mcp__wai__swe_guide', action: 'status' })
+  const hidden = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect(await hidden.find({ key: 'fix-high' })).toBeUndefined()
+  expect(await hidden.find({ key: 'dismiss-findings' })).toBeUndefined()
+  await hidden.unmount()
+
+  await record('reviews/b/CODE-REVIEW.md')
+  const shown = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect((await shown.find({ key: 'fix-high' }))?.text).toBe('Fix 2 high')
+  await shown.unmount()
+})
+
 test('a review report for the branch fills the findings card', async ($, on) => {
   const repo: Repo = { dirty: '', branchCommits: '1', ahead: '0' }
   const report =
