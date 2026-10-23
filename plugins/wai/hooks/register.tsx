@@ -17,7 +17,15 @@ const guide = atom({ plugin: 'wai', key: 'guide' } as const, null, {
   shape: 'guide-2',
 })
 
-type Step = { id: StepId; label: string; next: string; isManual: boolean }
+// isManual steps are ticked by "Mark done" or the tool; isRemote steps are
+// listed under GITLAB, the rest under LOCAL.
+type Step = {
+  id: StepId
+  label: string
+  next: string
+  isManual: boolean
+  isRemote: boolean
+}
 
 const STEPS: readonly Step[] = [
   {
@@ -25,40 +33,54 @@ const STEPS: readonly Step[] = [
     label: 'Create branch',
     next: 'create a branch for your change',
     isManual: false,
+    isRemote: false,
   },
   {
     id: 'implement',
     label: 'Implement',
     next: 'make your change on the branch',
     isManual: false,
+    isRemote: false,
   },
   {
     id: 'commit',
     label: 'Commit',
     next: 'commit your changes',
     isManual: false,
+    isRemote: false,
   },
   {
     id: 'push',
     label: 'Push',
     next: 'push your branch so the team can see it',
     isManual: false,
+    isRemote: false,
+  },
+  {
+    id: 'review',
+    label: 'Code review',
+    next: 'review your code before opening an MR',
+    isManual: true,
+    isRemote: false,
   },
   {
     id: 'mr',
     label: 'Open MR',
     next: 'open a merge request',
     isManual: true,
+    isRemote: true,
   },
   {
     id: 'merge',
     label: 'Review & merge',
     next: 'get the MR approved and merged',
     isManual: true,
+    isRemote: true,
   },
 ]
 
 const MANUAL = STEPS.filter(step => step.isManual).map(step => step.id)
+const MANUAL_LIST = MANUAL.map(id => `"${id}"`).join(', ')
 
 // The ring drawn around the steps a person repeats for each change: down the
 // right side past the buttons, back up the left to Implement.
@@ -228,7 +250,11 @@ function doneSteps(g: Guide): Set<StepId> {
   if (done.has('commit') && state.hasUpstream && state.ahead === 0) {
     done.add('push')
   }
-  if (g.request !== null) done.add('mr')
+  // An open request means the person has moved past the pre-MR review.
+  if (g.request !== null) {
+    done.add('review')
+    done.add('mr')
+  }
   for (const id of g.marked) done.add(id)
 
   return done
@@ -367,7 +393,26 @@ function pushPlaybook(state: GitState): string {
     `1. Run ${how}.`,
     '2. If it fails, explain why in plain words and stop.',
     '3. Tell me in one line what just happened and that the next step is ' +
-      'opening a merge request.',
+      'a code review.',
+  ].join('\n')
+}
+
+// A plugin's prompt cannot pick the model, so the prompt asks Claude to run
+// the review's subagents on Sonnet.
+function reviewPlaybook(state: GitState): string {
+  return [
+    `Review the changes on "${state.branch}" before I open a merge request ` +
+      `into "${state.base}". I am new to git, so explain in one line what a ` +
+      'code review is.',
+    '',
+    `1. Run the cc-code-review skill on the branch diff ` +
+      `(\`${state.base}..HEAD\`).`,
+    '2. Launch every review subagent with the Claude Sonnet model ' +
+      '(`model: "sonnet"` on the Agent tool).',
+    '3. When the review is written, tell me where the report is and list the ' +
+      'critical and high findings in one line each.',
+    '4. Call the swe_guide tool with action "mark" and step "review", then ' +
+      'tell me in one line that the next step is opening a merge request.',
   ].join('\n')
 }
 
@@ -435,6 +480,13 @@ function actions(g: Guide, now: Step | undefined): Map<StepId, Action[]> {
       text: pushPlaybook(state),
     })
   }
+  if (isOnBranch && now?.id === 'review') {
+    add('review', {
+      key: 'code-review',
+      label: 'Run code review',
+      text: reviewPlaybook(state),
+    })
+  }
   if (isOnBranch && now?.id === 'mr' && g.request === null) {
     add('mr', { key: 'open-mr', label: 'Open MR', text: mrPlaybook(state) })
   }
@@ -455,14 +507,15 @@ export const register: Register = on => {
       name: 'swe_guide',
       description:
         'The SWE Guide pane shows a newcomer their progress through the ' +
-        'feature-change workflow (branch, implement, commit, push, open MR, ' +
-        'review and merge). Branch, implement, commit and push are detected from ' +
+        'feature-change workflow (branch, implement, commit, push, code ' +
+        'review, open MR, review and merge). Branch, implement, commit and push are detected from ' +
         'git; Open MR is ticked when the remote has an open request for the ' +
         'pushed branch. action "start" opens the pane; "branch" returns the steps to ' +
         'follow when the person wants to create a branch (call it before ' +
         'creating one); "status" returns the steps, ' +
         'uncommitted file count and unpushed commits; "mark" or "unmark" ' +
-        'with step "mr" or "merge" (review and merge) ticks or unticks that step.',
+        `with step ${MANUAL_LIST} ticks or unticks that step ("review" is ` +
+        'the code review before the MR, "merge" is review and merge).',
       inputSchema: {
         type: 'object',
         properties: {
@@ -503,7 +556,7 @@ export const register: Register = on => {
     if (action === 'start') await activate($)
     else if (action === 'mark' || action === 'unmark') {
       if (step === undefined) {
-        return { result: 'step must be "mr" or "merge".' }
+        return { result: `step must be one of ${MANUAL_LIST}.` }
       }
       await refresh($)
       await setMarked($, step, action === 'mark')
@@ -609,8 +662,8 @@ export const register: Register = on => {
       )
     }
 
-    const local = STEPS.filter(step => !step.isManual)
-    const remote = STEPS.filter(step => step.isManual)
+    const local = STEPS.filter(step => !step.isRemote)
+    const remote = STEPS.filter(step => step.isRemote)
 
     return (
       <Box flexDirection="column" gap={1}>

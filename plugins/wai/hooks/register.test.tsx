@@ -92,6 +92,10 @@ test('commit and push tick from git and untick on new changes', async ($, on) =>
 
   const pushed = await $.ui.mount({ ...PANE, surface: 'terminal' })
   expect((await pushed.find({ type: 'Text', text: /^Next/ }))?.text).toBe(
+    'Next: review your code before opening an MR',
+  )
+  await pushed.press({ key: 'mark-done' })
+  expect((await pushed.find({ type: 'Text', text: /^Next/ }))?.text).toBe(
     'Next: open a merge request',
   )
   await pushed.press({ key: 'mark-done' })
@@ -197,6 +201,18 @@ test('Commit and Push buttons ask Claude to do the work', async ($, on) => {
   await committed.press({ key: 'push' })
   await committed.unmount()
   expect(sent[1]).toContain('git push -u origin feat/x')
+  expect(sent[1]).toContain('the next step is a code review')
+
+  repo.ahead = '0'
+  await $.tool.call({ tool: 'Bash', command: 'git push -u origin feat/x' })
+
+  const pushed = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  await pushed.press({ key: 'code-review' })
+  await pushed.unmount()
+  expect(sent[2]).toContain('cc-code-review')
+  expect(sent[2]).toContain('model: "sonnet"')
+  expect(sent[2]).toContain('main..HEAD')
+  expect(sent[2]).toContain('step "review"')
 })
 
 test('an open PR at the pushed commit ticks Open MR and links to it', async ($, on) => {

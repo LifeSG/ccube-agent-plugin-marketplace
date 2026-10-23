@@ -3,6 +3,7 @@ export type StepId =
   | 'implement'
   | 'commit'
   | 'push'
+  | 'review'
   | 'mr'
   | 'merge'
 
