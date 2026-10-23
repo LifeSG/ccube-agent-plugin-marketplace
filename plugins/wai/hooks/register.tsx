@@ -14,7 +14,7 @@ const REQUEST_MS = 60_000
 // Change the tag when Guide's fields change: it declines what an earlier
 // version stored, which outlives a reload.
 const guide = atom({ plugin: 'wai', key: 'guide' } as const, null, {
-  shape: 'guide-2',
+  shape: 'guide-3',
 })
 
 // isManual steps are ticked by "Mark done" or the tool; isRemote steps are
@@ -81,6 +81,9 @@ const STEPS: readonly Step[] = [
 
 const MANUAL = STEPS.filter(step => step.isManual).map(step => step.id)
 const MANUAL_LIST = MANUAL.map(id => `"${id}"`).join(', ')
+// Each push brings new code to review, so these marks are dropped when the
+// pushed commit changes.
+const PER_PUSH: readonly StepId[] = ['review', 'merge']
 
 // The ring drawn around the steps a person repeats for each change: down the
 // right side past the buttons, back up the left to Implement.
@@ -105,6 +108,7 @@ const NO_REPO: GitState = {
   branchCommits: 0,
   hasUpstream: false,
   ahead: 0,
+  pushed: '',
 }
 
 async function git($: EngineInterface, ...args: string[]) {
@@ -148,6 +152,7 @@ async function readGit($: EngineInterface): Promise<GitState> {
   const ahead = upstream.isOk
     ? Number((await git($, 'rev-list', '--count', '@{u}..HEAD')).out) || 0
     : 0
+  const pushed = upstream.isOk ? (await git($, 'rev-parse', '@{u}')).out : ''
 
   return {
     isRepo: true,
@@ -158,6 +163,7 @@ async function readGit($: EngineInterface): Promise<GitState> {
     branchCommits,
     hasUpstream: upstream.isOk,
     ahead,
+    pushed,
   }
 }
 
@@ -250,11 +256,9 @@ function doneSteps(g: Guide): Set<StepId> {
   if (done.has('commit') && state.hasUpstream && state.ahead === 0) {
     done.add('push')
   }
-  // An open request means the person has moved past the pre-MR review.
-  if (g.request !== null) {
-    done.add('review')
-    done.add('mr')
-  }
+  // A push to a branch with an open request still needs its own review, so
+  // the request ticks Open MR alone.
+  if (g.request !== null) done.add('mr')
   for (const id of g.marked) done.add(id)
 
   return done
@@ -264,6 +268,24 @@ function currentStep(g: Guide): Step | undefined {
   const done = doneSteps(g)
 
   return STEPS.find(step => !done.has(step.id))
+}
+
+// Progress is stored as { marked, pushed }; an earlier version stored the
+// marked ids alone, which is taken as marked at the current push.
+async function readMarked($: EngineInterface, state: GitState): Promise<StepId[]> {
+  const stored = await $.store.get(progressKey(state))
+  const record =
+    typeof stored === 'object' && stored !== null && !Array.isArray(stored)
+      ? (stored as { marked?: unknown; pushed?: unknown })
+      : { marked: stored, pushed: state.pushed }
+  const ids = Array.isArray(record.marked) ? record.marked : []
+  const marked = ids.filter((id): id is StepId => MANUAL.includes(id))
+  if (record.pushed === state.pushed) return marked
+
+  const kept = marked.filter(id => !PER_PUSH.includes(id))
+  await $.store.set(progressKey(state), { marked: kept, pushed: state.pushed })
+
+  return kept
 }
 
 async function refresh($: EngineInterface) {
@@ -279,10 +301,7 @@ async function refresh($: EngineInterface) {
   } else if (held === null || !held.isActive) return
 
   const state = await readGit($)
-  const stored = state.isRepo ? await $.store.get(progressKey(state)) : []
-  const marked = Array.isArray(stored)
-    ? stored.filter((id): id is StepId => MANUAL.includes(id))
-    : []
+  const marked = state.isRepo ? await readMarked($, state) : []
 
   // Show git's state at once; the remote's answer can take seconds.
   await update($, guide, g => (g === null ? g : { ...g, git: state, marked }))
@@ -297,7 +316,7 @@ async function setMarked($: EngineInterface, id: StepId, isMarked: boolean) {
   const marked = isMarked
     ? [...new Set([...g.marked, id])]
     : g.marked.filter(one => one !== id)
-  await $.store.set(progressKey(g.git), marked)
+  await $.store.set(progressKey(g.git), { marked, pushed: g.git.pushed })
   await update($, guide, held => (held === null ? held : { ...held, marked }))
 }
 

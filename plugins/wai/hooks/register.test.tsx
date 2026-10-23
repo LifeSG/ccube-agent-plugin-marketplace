@@ -19,6 +19,7 @@ type Repo = {
   branchCommits: string
   ahead: string | null
   remoteRefs?: string
+  pushed?: string
 }
 
 function answerGit(repo: Repo, argv: readonly string[]) {
@@ -43,6 +44,9 @@ function answerGit(repo: Repo, argv: readonly string[]) {
     return repo.ahead === null ? fail : ok('origin/feat/x\n')
   }
   if (args === 'rev-list --count @{u}..HEAD') return ok(repo.ahead ?? '0')
+  if (args === 'rev-parse @{u}') {
+    return repo.ahead === null ? fail : ok(`${repo.pushed ?? 'p1'}\n`)
+  }
   if (args.startsWith('ls-remote origin')) return ok(repo.remoteRefs ?? '')
   if (args === 'remote get-url origin') return ok('git@github.com:acme/app.git\n')
 
@@ -246,11 +250,64 @@ test('an open PR at the pushed commit ticks Open MR and links to it', async ($, 
 
   const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
   expect((await ui.find({ type: 'Text', text: /^Next/ }))?.text).toBe(
-    'Next: get the MR approved and merged',
+    'Next: review your code before opening an MR',
   )
   const link = await ui.find({ type: 'Link' })
   expect(link?.props.href).toBe('https://github.com/acme/app/pull/54')
   expect(link?.props.label).toBe('View PR #54')
   expect(await ui.find({ key: 'open-mr' })).toBeUndefined()
   await ui.unmount()
+})
+
+test('a new push unticks Code review and Review & merge', async ($, on) => {
+  const repo: Repo = {
+    dirty: '',
+    branchCommits: '1',
+    ahead: '0',
+    pushed: 'p1',
+    remoteRefs: 'p1\trefs/heads/feat/x\np1\trefs/pull/54/head\n',
+  }
+
+  on('command.register', () => ({ value: { command: 'cc-swe-coach-ui' } }))
+  on('tool.register', () => ({ value: { tool: 'mcp__wai__swe_guide' } }))
+  on('ui.open', () => ({ value: { isPlaced: true } }))
+  on('ui.panes', () => ({ value: [] }))
+  on('process.run', (_, e) => answerGit(repo, e.argv))
+  on('session.start', (_, e) => ({ cwd: e.cwd }))
+  on('tool.call', () => ({ result: {} }))
+  on('command.run', () => ({ text: '' }))
+  mock.store(on)
+  const clock = mock.clock(on)
+
+  await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true })
+  await $.command.run({
+    command: 'cc-swe-coach-ui',
+    args: '',
+    origin: { kind: 'composer' },
+    presentation: { isFullscreen: true, columns: 160 },
+  })
+
+  const first = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  await first.press({ key: 'mark-done' })
+  expect((await first.find({ type: 'Text', text: /^Next/ }))?.text).toBe(
+    'Next: get the MR approved and merged',
+  )
+  await first.press({ key: 'mark-done' })
+  expect((await first.find({ type: 'Text', text: /All done/ }))?.text).toBe(
+    '🎉 All done. Nice work!',
+  )
+  await first.unmount()
+
+  repo.branchCommits = '2'
+  repo.pushed = 'p2'
+  repo.remoteRefs = 'p2\trefs/heads/feat/x\np2\trefs/pull/54/head\n'
+  await clock.advance(61_000)
+  await $.tool.call({ tool: 'Bash', command: 'git push' })
+
+  const again = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect((await again.find({ type: 'Text', text: /^Next/ }))?.text).toBe(
+    'Next: review your code before opening an MR',
+  )
+  expect((await again.find({ type: 'Link' }))?.props.label).toBe('View PR #54')
+  await again.unmount()
 })

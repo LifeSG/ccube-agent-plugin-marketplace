@@ -16,6 +16,8 @@ export type GitState = {
   branchCommits: number
   hasUpstream: boolean
   ahead: number
+  // The upstream's commit, or '' with no upstream.
+  pushed: string
 }
 
 // An open merge request (GitLab) or pull request (GitHub) for the branch.
