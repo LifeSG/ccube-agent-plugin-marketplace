@@ -26,10 +26,12 @@ export type Request = { kind: 'MR' | 'PR'; number: number; url: string }
 export type Severity = 'critical' | 'high' | 'medium' | 'low'
 
 // The last code review's finding counts, and the levels Claude has fixed.
+// isDismissed hides the card until a newer review replaces it.
 export type Findings = {
   report: string
   counts: Record<Severity, number>
   fixed: Severity[]
+  isDismissed: boolean
 }
 
 // One finding as the report lists it, for the pane's summary table.

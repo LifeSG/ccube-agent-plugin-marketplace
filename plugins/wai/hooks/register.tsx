@@ -22,7 +22,7 @@ const REQUEST_MS = 60_000
 // Change the tag when Guide's fields change: it declines what an earlier
 // version stored, which outlives a reload.
 const guide = atom({ plugin: 'wai', key: 'guide' } as const, null, {
-  shape: 'guide-4',
+  shape: 'guide-5',
 })
 // The level whose findings table the pane shows, if any.
 const viewing = atom({ plugin: 'wai', key: 'viewing' } as const, null, {
@@ -314,14 +314,19 @@ function parseCounts(value: unknown): Findings['counts'] | undefined {
 async function readFindings($: EngineInterface, state: GitState): Promise<Findings | null> {
   const stored = await $.store.get(findingsKey(state))
   if (typeof stored !== 'object' || stored === null) return null
-  const raw = stored as { report?: unknown; counts?: unknown; fixed?: unknown }
+  const raw = stored as {
+    report?: unknown
+    counts?: unknown
+    fixed?: unknown
+    isDismissed?: unknown
+  }
   const counts = parseCounts(raw.counts)
   if (typeof raw.report !== 'string' || counts === undefined) return null
   const fixed = Array.isArray(raw.fixed)
     ? raw.fixed.filter((id): id is Severity => LEVELS.includes(id))
     : []
 
-  return { report: raw.report, counts, fixed }
+  return { report: raw.report, counts, fixed, isDismissed: raw.isDismissed === true }
 }
 
 // cc-code-review writes a branch review to
@@ -419,7 +424,7 @@ async function detectFindings(
 
   const text = await $.fs.read(`${state.root}/${report}`).catch(() => undefined)
   if (text === undefined) return held
-  const findings = { report, counts: countFindings(text), fixed: [] }
+  const findings = { report, counts: countFindings(text), fixed: [], isDismissed: false }
   await $.store.set(findingsKey(state), findings)
 
   return findings
@@ -449,6 +454,12 @@ async function setFindings($: EngineInterface, findings: Findings) {
   if (g === null || !g.git.isRepo) return
   await $.store.set(findingsKey(g.git), findings)
   await update($, guide, held => (held === null ? held : { ...held, findings }))
+}
+
+// Remove hides the card and its table; a newer review shows it again.
+async function dismissFindings($: EngineInterface, findings: Findings) {
+  await update($, viewing, () => null)
+  await setFindings($, { ...findings, isDismissed: true })
 }
 
 // Commit and Push follow the live repo, so new changes untick them; the
@@ -930,7 +941,7 @@ export const register: Register = on => {
         }
       }
       await refresh($)
-      await setFindings($, { report: e.report, counts, fixed: [] })
+      await setFindings($, { report: e.report, counts, fixed: [], isDismissed: false })
     } else if (action === 'fixed') {
       const level = LEVELS.find(id => id === e.level)
       if (level === undefined) {
@@ -1083,7 +1094,14 @@ export const register: Register = on => {
         <Box flexDirection="column" borderStyle="round" borderColor="subtle" paddingX={1}>
           <Box justifyContent="space-between">
             <Text color="claude" bold>{'Code review findings'}</Text>
-            <Text bold>{String(total)}</Text>
+            <Box columnGap={1} alignItems="center" flexShrink={0}>
+              <Text bold>{String(total)}</Text>
+              <Button
+                key="dismiss-findings"
+                label="Remove"
+                onPress={() => dismissFindings($, findings)}
+              />
+            </Box>
           </Box>
           <Text dimColor wrap="truncate-middle">{findings.report}</Text>
           <Box flexDirection="column" marginTop={1}>
@@ -1212,7 +1230,7 @@ export const register: Register = on => {
           {remote.map(step => row(step, STEPS.indexOf(step)))}
         </Box>
 
-        {g.findings !== null && findingsCard(g.findings)}
+        {g.findings !== null && !g.findings.isDismissed && findingsCard(g.findings)}
 
       </Box>
     )
