@@ -14,7 +14,12 @@ const PANE = {
   },
 } as const
 
-type Repo = { dirty: string; branchCommits: string; ahead: string | null }
+type Repo = {
+  dirty: string
+  branchCommits: string
+  ahead: string | null
+  remoteRefs?: string
+}
 
 function answerGit(repo: Repo, argv: readonly string[]) {
   const args = argv.slice(1).join(' ')
@@ -38,6 +43,8 @@ function answerGit(repo: Repo, argv: readonly string[]) {
     return repo.ahead === null ? fail : ok('origin/feat/x\n')
   }
   if (args === 'rev-list --count @{u}..HEAD') return ok(repo.ahead ?? '0')
+  if (args.startsWith('ls-remote origin')) return ok(repo.remoteRefs ?? '')
+  if (args === 'remote get-url origin') return ok('git@github.com:acme/app.git\n')
 
   return fail
 }
@@ -187,4 +194,44 @@ test('Commit and Push buttons ask Claude to do the work', async ($, on) => {
   await committed.press({ key: 'push' })
   await committed.unmount()
   expect(sent[1]).toContain('git push -u origin feat/x')
+})
+
+test('an open PR at the pushed commit ticks Open MR and links to it', async ($, on) => {
+  const repo: Repo = {
+    dirty: '',
+    branchCommits: '2',
+    ahead: '0',
+    remoteRefs:
+      'abc\trefs/heads/feat/x\n' +
+      'old\trefs/pull/7/head\n' +
+      'abc\trefs/pull/54/head\n',
+  }
+
+  on('command.register', () => ({ value: { command: 'cc-swe-coach-ui' } }))
+  on('tool.register', () => ({ value: { tool: 'mcp__wai__swe_guide' } }))
+  on('ui.open', () => ({ value: { isPlaced: true } }))
+  on('ui.panes', () => ({ value: [] }))
+  on('process.run', (_, e) => answerGit(repo, e.argv))
+  on('session.start', (_, e) => ({ cwd: e.cwd }))
+  on('command.run', () => ({ text: '' }))
+  mock.store(on)
+  mock.clock(on)
+
+  await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true })
+  await $.command.run({
+    command: 'cc-swe-coach-ui',
+    args: '',
+    origin: { kind: 'composer' },
+    presentation: { isFullscreen: true, columns: 160 },
+  })
+
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect((await ui.find({ type: 'Text', text: /^Next/ }))?.text).toBe(
+    'Next: get the MR reviewed and approved',
+  )
+  const link = await ui.find({ type: 'Link' })
+  expect(link?.props.href).toBe('https://github.com/acme/app/pull/54')
+  expect(link?.props.label).toBe('View PR #54')
+  expect(await ui.find({ key: 'open-mr' })).toBeUndefined()
+  await ui.unmount()
 })
