@@ -86,6 +86,12 @@ test('commit and push tick from git and untick on new changes', async ($, on) =>
     const badge = await ui.find({ type: 'Text', text: 'YOU ARE HERE' })
     expect(badge?.props.backgroundColor).toBe('claude')
     expect(badge?.props.color).toBe('inverseText')
+    // Code review is offered and lit before anything is committed.
+    expect((await ui.find({ key: 'code-review' }))?.text).toBe('Run code review')
+    const review = await ui.find({ type: 'Text', text: /Code review/ })
+    expect(review?.props.dimColor).toBe(false)
+    const merge = await ui.find({ type: 'Text', text: /Review & merge/ })
+    expect(merge?.props.dimColor).toBe(true)
     await ui.unmount()
   }
 
@@ -256,6 +262,8 @@ test('an open PR at the pushed commit ticks Open MR and links to it', async ($, 
   expect(link?.props.href).toBe('https://github.com/acme/app/pull/54')
   expect(link?.props.label).toBe('View PR #54')
   expect(await ui.find({ key: 'open-mr' })).toBeUndefined()
+  const merge = await ui.find({ type: 'Text', text: /Review & merge/ })
+  expect(merge?.props.dimColor).toBe(false)
   await ui.unmount()
 })
 

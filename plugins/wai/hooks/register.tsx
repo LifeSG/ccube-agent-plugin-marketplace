@@ -499,7 +499,8 @@ function actions(g: Guide, now: Step | undefined): Map<StepId, Action[]> {
       text: pushPlaybook(state),
     })
   }
-  if (isOnBranch && now?.id === 'review') {
+  // A person may review at any point on the branch, not only after a push.
+  if (isOnBranch) {
     add('review', {
       key: 'code-review',
       label: 'Run code review',
@@ -628,9 +629,15 @@ export const register: Register = on => {
       const isHere = step.id === hereId
       const buttons = acts.get(step.id) ?? []
       const ring = LOOP[step.id]
-      // Only the step under the marker is lit. While looping the marker stands
-      // for the whole ring, so every loop step is lit; all else is dimmed.
-      const isLit = isHere || (isLooping && ring !== undefined)
+      // The step under the marker is lit. While looping the marker stands for
+      // the whole ring, so every loop step is lit. Code review can run at any
+      // time, and Review & merge is under way once a request is open; all
+      // else is dimmed.
+      const isLit =
+        isHere ||
+        (isLooping && ring !== undefined) ||
+        step.id === 'review' ||
+        (step.id === 'merge' && g.request !== null)
 
       return (
         <Box justifyContent="space-between" alignItems="center">
