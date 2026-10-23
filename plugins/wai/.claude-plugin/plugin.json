@@ -16,5 +16,6 @@
     "postgresql",
     "fds",
     "lifesg"
-  ]
+  ],
+  "types": "./types/index.d.ts"
 }

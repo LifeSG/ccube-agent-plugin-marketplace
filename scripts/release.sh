@@ -45,6 +45,19 @@ if git tag --list | grep -qx "$TAG"; then
   exit 1
 fi
 
+# Run the plugin's hook tests before anything is bumped, when it has any and
+# Claude Code is installed; a failing test stops the release.
+if compgen -G "plugins/${PLUGIN_NAME}/hooks/*.test.ts*" > /dev/null; then
+  if command -v claude > /dev/null; then
+    echo "Testing plugins/${PLUGIN_NAME}..."
+    claude plugin validate "plugins/${PLUGIN_NAME}"
+    claude plugin test "plugins/${PLUGIN_NAME}"
+  else
+    echo "Error: plugins/${PLUGIN_NAME} has hook tests but claude is not installed" >&2
+    exit 1
+  fi
+fi
+
 echo "Releasing ${PLUGIN_NAME} ${TAG}..."
 
 # ── 1. Bump versions ─────────────────────────────────────────────────────────

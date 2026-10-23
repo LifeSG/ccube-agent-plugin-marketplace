@@ -41,6 +41,8 @@ required.
 | ----------- | ---------------- | ----------------------------------------------------------------------------------------- |
 | `.agent.md` | `agents/`        | Specialist AI agents covering product, architecture, frontend, backend, and review        |
 | `SKILL.md`  | `skills/<name>/` | Domain-knowledge packages — FDS components, project scaffolding, deployment, git workflow |
+| `register.tsx` | `hooks/`      | Claude Code only: the SWE Guide pane, the `/cc-swe-coach-ui` command and the `swe_guide` tool |
+| `index.d.ts`   | `types/`      | Claude Code only: the stored state of the SWE Guide pane                                  |
 
 ---
 
@@ -180,6 +182,30 @@ technical levels, including product managers and designers.
 
 ---
 
+## SWE Guide (Claude Code only)
+
+A pane that coaches a newcomer through a feature change: create branch,
+implement, commit, push, code review, open MR, review and merge. Branch,
+implement, commit and push are ticked from live git state. Open MR is
+ticked when GitHub or GitLab has an open request for the pushed branch.
+Code review and Review & merge are ticked with "Mark done" and reset on
+each new push. Each step's button asks Claude to do that step. After a
+code review, a findings card shows the counts per severity, a View
+button that lists that level's findings, and Fix buttons.
+
+- `/cc-swe-coach-ui` shows or hides the pane. Hiding it stops its git
+  checks.
+- The `swe_guide` tool lets Claude open the pane, read the steps, and
+  record marks, review findings and fixed levels. Maestro uses it when
+  it is present.
+
+GitHub Copilot does not load the hooks module, so the pane and the tool
+are absent there.
+
+Run its tests with `claude plugin test plugins/wai`.
+
+---
+
 ## Privacy
 
 This plugin collects no telemetry. See
@@ -194,3 +220,5 @@ if you used an older version.
 - Colima + Docker CLI (for local PostgreSQL)
 - gitleaks (`brew install gitleaks`)
 - pre-commit (`brew install pre-commit`)
+- For the SWE Guide: Claude Code 2.1.309 or later, the version it is
+  tested on
