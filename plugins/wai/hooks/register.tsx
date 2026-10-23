@@ -257,8 +257,12 @@ function commitPlaybook(state: GitState): string {
       'I am new to git, so explain in one line what a commit is.',
     '',
     '1. Use the cc-git-commit skill to group the changes and write the messages.',
-    '2. Show me the planned commit(s) and wait for my yes before committing.',
-    '3. After committing, tell me in one line that the next step is pushing.',
+    '2. I approve your recommended grouping in advance: do not show me the ' +
+      'plan or wait for my yes, commit it straight away.',
+    '3. Leave out files that look private or local (for example ' +
+      'CLAUDE.local.md, .env files, keys) and tell me which ones you skipped.',
+    '4. After committing, list each commit in one line and tell me in one ' +
+      'line that the next step is pushing.',
   ].join('\n')
 }
 
@@ -289,6 +293,10 @@ function mrPlaybook(state: GitState): string {
   ].join('\n')
 }
 
+function plural(n: number, noun: string): string {
+  return `${n} ${noun}${n === 1 ? '' : 's'}`
+}
+
 // A button on a step's row: a prompt sent to Claude, or a manual step ticked.
 type Action =
   | { key: string; label: string; text: string }
@@ -307,11 +315,19 @@ function actions(g: Guide, now: Step | undefined): Map<StepId, Action[]> {
   }
   const isOnBranch = state.branch !== '' && state.branch !== state.base
   if (isOnBranch && state.dirty > 0) {
-    add('commit', { key: 'commit', label: 'Commit', text: commitPlaybook(state) })
+    add('commit', {
+      key: 'commit',
+      label: `Commit ${plural(state.dirty, 'changed file')}`,
+      text: commitPlaybook(state),
+    })
   }
-  const hasUnpushed = state.hasUpstream ? state.ahead > 0 : state.branchCommits > 0
-  if (isOnBranch && state.dirty === 0 && hasUnpushed) {
-    add('push', { key: 'push', label: 'Push', text: pushPlaybook(state) })
+  const unpushed = state.hasUpstream ? state.ahead : state.branchCommits
+  if (isOnBranch && unpushed > 0) {
+    add('push', {
+      key: 'push',
+      label: `Push ${plural(unpushed, 'commit')}`,
+      text: pushPlaybook(state),
+    })
   }
   if (isOnBranch && now?.id === 'mr') {
     add('mr', { key: 'open-mr', label: 'Open MR', text: mrPlaybook(state) })
@@ -410,49 +426,41 @@ export const register: Register = on => {
 
     const done = doneSteps(g)
     const now = currentStep(g)
-    const { dirty, ahead, hasUpstream, branch, base } = g.git
+    const { branch, base } = g.git
     const count = STEPS.filter(step => done.has(step.id)).length
     const percent = Math.round((count / STEPS.length) * 100)
     const cols = e.props.bodyColumns
     const barWidth = Math.max(10, Math.min(28, cols - 14))
     const filled = Math.round((count / STEPS.length) * barWidth)
 
-    const chip = (color: string, icon: string, label: string) => (
-      <Box>
-        <Text color={color} inverse>{` ${icon} `}</Text>
-        <Text color={color} inverse bold>{label}</Text>
-        <Text color={color} inverse> </Text>
-      </Box>
-    )
-
     const acts = actions(g, now)
     const isLooping = now !== undefined && LOOP[now.id] !== undefined
     const ringColor = isLooping ? 'claude' : 'subtle'
+    // Inside the loop a person can be at any of its steps, so the marker sits
+    // on the loop's middle row rather than following one step.
+    const hereId: StepId | undefined = isLooping ? 'commit' : now?.id
 
     const row = (step: Step, i: number) => {
       const isDone = done.has(step.id)
-      const isNow = step.id === now?.id
-      const icon = isDone ? '✔' : isNow ? '▶' : '○'
-      const color = isDone ? 'success' : isNow ? 'claude' : 'subtle'
+      const isHere = step.id === hereId
       const buttons = acts.get(step.id) ?? []
       const ring = LOOP[step.id]
+      // Loop steps stay bright while looping, since any of them can come next;
+      // a finished Create branch fades, as it is not revisited.
+      const isBright = isLooping && ring !== undefined
+      const isFaded = step.id === 'branch' && isDone
+      const labelColor = isFaded ? 'subtle' : isBright || isDone ? 'text' : 'subtle'
 
       return (
         <Box justifyContent="space-between" alignItems="center">
           <Box flexShrink={1}>
             <Text color={ringColor}>{ring?.left ?? GUTTER}</Text>
-            <Text color={color} bold={isNow}>{` ${icon} `}</Text>
-            <Text
-              color={isNow ? 'claude' : isDone ? 'text' : 'subtle'}
-              inverse={isNow}
-              bold={isNow}
-              wrap="truncate-end"
-            >
+            <Text color={labelColor} dimColor={isFaded} wrap="truncate-end">
               {` ${i + 1}  ${step.label.padEnd(LABEL_WIDTH)} `}
             </Text>
             <Text color={ringColor}>{ring?.right ?? GUTTER}</Text>
-            {isNow && buttons.length === 0 && (
-              <Text color="claude">{' ◀ you are here'}</Text>
+            {isHere && (
+              <Text color="claude" bold>{' you are here!'}</Text>
             )}
           </Box>
           {buttons.length > 0 && (
@@ -523,16 +531,6 @@ export const register: Register = on => {
         <Box flexDirection="column">
           <Text color="subtle" bold>{'GITLAB · mark when done'}</Text>
           {remote.map(step => row(step, STEPS.indexOf(step)))}
-        </Box>
-
-        <Box flexWrap="wrap" columnGap={1} rowGap={0}>
-          {dirty > 0 &&
-            chip('warning', '●', `${dirty} uncommitted file${dirty === 1 ? '' : 's'}`)}
-          {dirty === 0 && chip('success', '✓', 'working tree clean')}
-          {hasUpstream && ahead > 0 &&
-            chip('warning', '↑', `${ahead} commit${ahead === 1 ? '' : 's'} not pushed`)}
-          {!hasUpstream && g.git.branchCommits > 0 &&
-            chip('warning', '☁', 'not on remote yet')}
         </Box>
 
       </Box>
