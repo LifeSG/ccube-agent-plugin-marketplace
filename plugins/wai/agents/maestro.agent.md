@@ -196,6 +196,16 @@ scaffold typically triggers both FRONTEND and BACKEND.
 When in doubt, prefer handling directly for speed. Only dispatch
 when specialist domain knowledge genuinely adds value.
 
+## SWE Guide
+
+When the `swe_guide` tool is available (Claude Code with the WAI
+plugin) and the user starts a feature change, or the
+`cc-swe-coach` walkthrough begins, call `swe_guide` with action
+`start` to open the guide pane. Before creating a branch for the
+user, call it with action `branch` and follow the steps it
+returns. After opening a merge request, call it with action
+`mark` and step `mr`. Skip this section when the tool is absent.
+
 ## Rules
 
 - NEVER ask the user which agent to use. Classify and dispatch.
