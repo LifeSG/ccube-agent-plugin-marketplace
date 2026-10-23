@@ -238,6 +238,80 @@ function branchPlaybook(state: GitState): string {
   ].join('\n')
 }
 
+// What the pane's action buttons ask Claude to do. Pressing one is the
+// person's explicit request, so the push and MR prompts say so.
+function commitPlaybook(state: GitState): string {
+  return [
+    `Commit my ${state.dirty} uncommitted file(s) on "${state.branch}". ` +
+      'I am new to git, so explain in one line what a commit is.',
+    '',
+    '1. Use the cc-git-commit skill to group the changes and write the messages.',
+    '2. Show me the planned commit(s) and wait for my yes before committing.',
+    '3. After committing, tell me in one line that the next step is pushing.',
+  ].join('\n')
+}
+
+function pushPlaybook(state: GitState): string {
+  const how = state.hasUpstream
+    ? `\`git push\` (${state.ahead} commit(s) to send)`
+    : `\`git push -u origin ${state.branch}\` (the branch is not on the remote yet)`
+
+  return [
+    `I am asking you to push my branch "${state.branch}" so the team can see it.`,
+    '',
+    `1. Run ${how}.`,
+    '2. If it fails, explain why in plain words and stop.',
+    '3. Tell me in one line what just happened and that the next step is ' +
+      'opening a merge request.',
+  ].join('\n')
+}
+
+function mrPlaybook(state: GitState): string {
+  return [
+    `I am asking you to open a merge request from "${state.branch}" into ` +
+      `"${state.base}".`,
+    '',
+    '1. Propose a title and a short description from the commits on the ' +
+      'branch, and wait for my yes.',
+    '2. Open the merge request and show me its link.',
+    '3. Call the swe_guide tool with action "mark" and step "mr".',
+  ].join('\n')
+}
+
+// A button on a step's row: a prompt sent to Claude, or a manual step ticked.
+type Action =
+  | { key: string; label: string; text: string }
+  | { key: string; label: string; mark: StepId }
+
+// The buttons each step's row carries. Commit and push stay offered whenever
+// git says they apply, so a person can loop implement, commit, push.
+function actions(g: Guide, now: Step | undefined): Map<StepId, Action[]> {
+  const { git: state } = g
+  const byStep = new Map<StepId, Action[]>()
+  const add = (id: StepId, action: Action) =>
+    byStep.set(id, [...(byStep.get(id) ?? []), action])
+
+  if (now?.id === 'branch') {
+    add('branch', { key: 'create-branch', label: 'Create branch', text: branchPlaybook(state) })
+  }
+  const isOnBranch = state.branch !== '' && state.branch !== state.base
+  if (isOnBranch && state.dirty > 0) {
+    add('commit', { key: 'commit', label: 'Commit', text: commitPlaybook(state) })
+  }
+  const hasUnpushed = state.hasUpstream ? state.ahead > 0 : state.branchCommits > 0
+  if (isOnBranch && state.dirty === 0 && hasUnpushed) {
+    add('push', { key: 'push', label: 'Push', text: pushPlaybook(state) })
+  }
+  if (isOnBranch && now?.id === 'mr') {
+    add('mr', { key: 'open-mr', label: 'Open MR', text: mrPlaybook(state) })
+  }
+  if (now?.isManual) {
+    add(now.id, { key: 'mark-done', label: 'Mark done', mark: now.id })
+  }
+
+  return byStep
+}
+
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
@@ -325,59 +399,124 @@ export const register: Register = on => {
 
     const done = doneSteps(g)
     const now = currentStep(g)
-    const { dirty, ahead, hasUpstream } = g.git
+    const { dirty, ahead, hasUpstream, branch, base } = g.git
+    const count = STEPS.filter(step => done.has(step.id)).length
+    const percent = Math.round((count / STEPS.length) * 100)
+    const cols = e.props.bodyColumns
+    const barWidth = Math.max(10, Math.min(28, cols - 14))
+    const filled = Math.round((count / STEPS.length) * barWidth)
+
+    const chip = (color: string, icon: string, label: string) => (
+      <Box>
+        <Text color={color} inverse>{` ${icon} `}</Text>
+        <Text color={color} inverse bold>{label}</Text>
+        <Text color={color} inverse> </Text>
+      </Box>
+    )
+
+    const acts = actions(g, now)
+
+    const row = (step: Step, i: number) => {
+      const isDone = done.has(step.id)
+      const isNow = step.id === now?.id
+      const icon = isDone ? '✔' : isNow ? '▶' : '○'
+      const color = isDone ? 'success' : isNow ? 'claude' : 'subtle'
+      const buttons = acts.get(step.id) ?? []
+
+      return (
+        <Box justifyContent="space-between" alignItems="center">
+          <Box flexShrink={1}>
+            <Text color={color} bold={isNow}>{` ${icon} `}</Text>
+            {isNow ? (
+              <Text color="claude" inverse bold wrap="truncate-end">
+                {` ${i + 1}  ${step.label} `}
+              </Text>
+            ) : (
+              <Text color={isDone ? 'text' : 'subtle'} wrap="truncate-end">
+                {`${i + 1}  ${step.label}`}
+              </Text>
+            )}
+            {isNow && buttons.length === 0 && (
+              <Text color="claude">{'  ◀ you are here'}</Text>
+            )}
+          </Box>
+          {buttons.length > 0 && (
+            <Box columnGap={1} flexShrink={0}>
+              {buttons.map((act, n) => (
+                <Button
+                  key={act.key}
+                  label={act.label}
+                  variant={n === 0 && 'text' in act ? 'primary' : undefined}
+                  onPress={() =>
+                    'text' in act
+                      ? $.prompt.submit({ text: act.text, asUser: true })
+                      : setMarked($, act.mark, true)
+                  }
+                />
+              ))}
+            </Box>
+          )}
+        </Box>
+      )
+    }
+
+    const local = STEPS.filter(step => !step.isManual)
+    const remote = STEPS.filter(step => step.isManual)
 
     return (
-      <Box flexDirection="column">
-        {STEPS.map((step, i) => {
-          const isDone = done.has(step.id)
-          const isNow = step.id === now?.id
+      <Box flexDirection="column" gap={1}>
+        <Box
+          flexDirection="column"
+          borderStyle="round"
+          borderColor={now === undefined ? 'success' : 'claude'}
+          paddingX={1}
+        >
+          <Box justifyContent="space-between">
+            <Text color="claude" bold>◆ Feature change</Text>
+            <Text color={now === undefined ? 'success' : 'text'} bold>
+              {`${count}/${STEPS.length}`}
+            </Text>
+          </Box>
+          <Box>
+            <Text color="success">{'█'.repeat(filled)}</Text>
+            <Text color="subtle">{'░'.repeat(barWidth - filled)}</Text>
+            <Text dimColor>{` ${percent}%`}</Text>
+          </Box>
+          <Text color="subtle" wrap="truncate-middle">
+            {`⎇ ${branch || '(detached)'} → ${base}`}
+          </Text>
+        </Box>
 
-          return (
-            <Box>
-              <Text dimColor={isDone}>{isDone ? '[x] ' : '[ ] '}</Text>
-              <Text dimColor={isDone} strikethrough={isDone} bold={isNow}>
-                {`${i + 1} ${step.label}`}
-              </Text>
-              {isNow && <Text color="suggestion">{'  ◀ now'}</Text>}
-            </Box>
-          )
-        })}
-        <Text> </Text>
-        {dirty > 0 && (
-          <Text color="warning">
-            {`${dirty} uncommitted file${dirty === 1 ? '' : 's'}`}
+        <Box
+          borderStyle="round"
+          borderColor={now === undefined ? 'success' : 'suggestion'}
+          paddingX={1}
+        >
+          <Text color={now === undefined ? 'success' : 'suggestion'} bold>
+            {now === undefined ? '🎉 All done. Nice work!' : `Next: ${now.next}`}
           </Text>
-        )}
-        {dirty === 0 && hasUpstream && ahead > 0 && (
-          <Text color="warning">
-            {`${ahead} commit${ahead === 1 ? '' : 's'} not pushed`}
-          </Text>
-        )}
-        <Text>
-          {now === undefined ? 'All done. Nice work!' : `Next: ${now.next}`}
-        </Text>
-        {now?.id === 'branch' && (
-          <Box justifyContent="flex-end">
-            <Button
-              key="create-branch"
-              label="Create branch"
-              variant="primary"
-              onPress={() =>
-                $.prompt.submit({ text: branchPlaybook(g.git), asUser: true })
-              }
-            />
-          </Box>
-        )}
-        {now?.isManual && (
-          <Box justifyContent="flex-end">
-            <Button
-              key="mark-done"
-              label="Mark done"
-              onPress={() => setMarked($, now.id, true)}
-            />
-          </Box>
-        )}
+        </Box>
+
+        <Box flexDirection="column">
+          <Text color="subtle" bold>{'LOCAL · tracked from git'}</Text>
+          {local.map(step => row(step, STEPS.indexOf(step)))}
+        </Box>
+
+        <Box flexDirection="column">
+          <Text color="subtle" bold>{'GITLAB · mark when done'}</Text>
+          {remote.map(step => row(step, STEPS.indexOf(step)))}
+        </Box>
+
+        <Box flexWrap="wrap" columnGap={1} rowGap={0}>
+          {dirty > 0 &&
+            chip('warning', '●', `${dirty} uncommitted file${dirty === 1 ? '' : 's'}`)}
+          {dirty === 0 && chip('success', '✓', 'working tree clean')}
+          {hasUpstream && ahead > 0 &&
+            chip('warning', '↑', `${ahead} commit${ahead === 1 ? '' : 's'} not pushed`)}
+          {!hasUpstream && g.git.branchCommits > 0 &&
+            chip('warning', '☁', 'not on remote yet')}
+        </Box>
+
       </Box>
     )
   })
