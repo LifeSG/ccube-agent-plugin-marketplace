@@ -624,9 +624,16 @@ export const register: Register = on => {
             <Text color="subtle">{'░'.repeat(barWidth - filled)}</Text>
             <Text dimColor>{` ${percent}%`}</Text>
           </Box>
-          <Text color="subtle" wrap="truncate-middle">
-            {`⎇ ${branch || '(detached)'} → ${base}`}
-          </Text>
+          <Box marginTop={1}>
+            <Text color="subtle">{'Branch  '}</Text>
+            <Text color="claude" bold wrap="truncate-middle">
+              {`⎇ ${branch || '(detached)'}`}
+            </Text>
+          </Box>
+          <Box>
+            <Text color="subtle">{'Into    '}</Text>
+            <Text color="text" bold wrap="truncate-middle">{base}</Text>
+          </Box>
         </Box>
 
         <Box
@@ -640,7 +647,7 @@ export const register: Register = on => {
         </Box>
 
         <Box flexDirection="column">
-          <Text color="subtle" bold>{'LOCAL · tracked from git'}</Text>
+          <Text color="subtle" bold>{'LOCAL'}</Text>
           {local.map(step => row(step, STEPS.indexOf(step)))}
           <Text color={ringColor} dimColor={!isLooping}>
             {`${GUTTER}↻ repeat for each change`}
@@ -648,7 +655,7 @@ export const register: Register = on => {
         </Box>
 
         <Box flexDirection="column">
-          <Text color="subtle" bold>{'GITLAB · mark when done'}</Text>
+          <Text color="subtle" bold>{'GITLAB'}</Text>
           {remote.map(step => row(step, STEPS.indexOf(step)))}
         </Box>
 
