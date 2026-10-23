@@ -1,17 +1,20 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
-import type { GitState, Guide, StepId } from '../types'
+import type { GitState, Guide, Request, StepId } from '../types'
 
 const PANE = 'swe-guide'
 const TITLE = 'SWE Guide · Feature change'
 const COMMAND = 'cc-swe-coach-ui'
 const POLL_MS = 10_000
+// Asking the remote for requests is a network call, so it runs at most
+// this often for the same pushed commit.
+const REQUEST_MS = 60_000
 
 // Change the tag when Guide's fields change: it declines what an earlier
 // version stored, which outlives a reload.
 const guide = atom({ plugin: 'wai', key: 'guide' } as const, null, {
-  shape: 'guide-1',
+  shape: 'guide-2',
 })
 
 type Step = { id: StepId; label: string; next: string; isManual: boolean }
@@ -87,7 +90,11 @@ const NO_REPO: GitState = {
 
 async function git($: EngineInterface, ...args: string[]) {
   try {
-    const ran = await $.process.run(['git', ...args], { timeoutMs: 5_000 })
+    const ran = await $.process.run(['git', ...args], {
+      timeoutMs: args[0] === 'ls-remote' ? 15_000 : 5_000,
+      // Never stop to ask for a password: a failed check finds no request.
+      env: { GIT_TERMINAL_PROMPT: '0' },
+    })
 
     return { isOk: ran.exitCode === 0, out: ran.stdout.trim() }
   } catch {
@@ -135,6 +142,73 @@ async function readGit($: EngineInterface): Promise<GitState> {
   }
 }
 
+// The web address of the remote's project, from an SSH or HTTPS remote URL.
+function webBase(remote: string): string | undefined {
+  const ssh = remote.match(/^(?:ssh:\/\/)?[^@/\s]+@([^:/\s]+)(?::\d+)?[:/](.+?)(?:\.git)?\/?$/)
+  const web = remote.match(/^https?:\/\/(?:[^@/\s]+@)?([^/\s]+)\/(.+?)(?:\.git)?\/?$/)
+  const found = ssh ?? web
+
+  return found === null ? undefined : `https://${found[1]}/${found[2]}`
+}
+
+// GitHub keeps refs/pull/<n>/head and GitLab refs/merge-requests/<n>/head for
+// each request, updated on every push while it is open. A request whose head
+// is the branch's pushed commit is the branch's open request.
+async function readRequest($: EngineInterface, state: GitState): Promise<Request | null> {
+  const listed = await git(
+    $,
+    'ls-remote',
+    'origin',
+    `refs/heads/${state.branch}`,
+    'refs/pull/*/head',
+    'refs/merge-requests/*/head',
+  )
+  if (!listed.isOk) return null
+
+  const refs = listed.out
+    .split('\n')
+    .map(line => line.split('\t'))
+    .filter((pair): pair is [string, string] => pair.length === 2)
+  const head = refs.find(([, ref]) => ref === `refs/heads/${state.branch}`)?.[0]
+  if (head === undefined) return null
+
+  const matches = refs.flatMap(([sha, ref]) => {
+    const found = ref.match(/^refs\/(pull|merge-requests)\/(\d+)\/head$/)
+
+    return sha === head && found !== null
+      ? [{ kind: found[1] === 'pull' ? ('PR' as const) : ('MR' as const), number: Number(found[2]) }]
+      : []
+  })
+  if (matches.length === 0) return null
+
+  // The newest request wins when an older one was closed at the same commit.
+  const newest = matches.reduce((a, b) => (b.number > a.number ? b : a))
+  const base = webBase((await git($, 'remote', 'get-url', 'origin')).out)
+  if (base === undefined) return null
+  const path = newest.kind === 'PR' ? 'pull' : '-/merge_requests'
+
+  return { ...newest, url: `${base}/${path}/${newest.number}` }
+}
+
+let lastCheck: { key: string; at: number; request: Request | null } | undefined
+
+// Only a pushed branch can have a request; the remote is asked again when the
+// pushed commit changes, or once REQUEST_MS has passed.
+async function findRequest($: EngineInterface, state: GitState): Promise<Request | null> {
+  const isOnBranch = state.branch !== '' && state.branch !== state.base
+  if (!state.isRepo || !isOnBranch || !state.hasUpstream) return null
+
+  const key = `${state.root}#${state.branch}#${state.branchCommits}#${state.ahead}`
+  const now = await $.clock.now()
+  if (lastCheck?.key === key && now - lastCheck.at < REQUEST_MS) {
+    return lastCheck.request
+  }
+  const request = await readRequest($, state)
+  lastCheck = { key, at: now, request }
+
+  return request
+}
+
 function progressKey(state: GitState) {
   return `progress:${state.root}#${state.branch}`
 }
@@ -157,6 +231,7 @@ function doneSteps(g: Guide): Set<StepId> {
   if (done.has('commit') && state.hasUpstream && state.ahead === 0) {
     done.add('push')
   }
+  if (g.request !== null) done.add('mr')
   for (const id of g.marked) done.add(id)
 
   return done
@@ -170,7 +245,15 @@ function currentStep(g: Guide): Step | undefined {
 
 async function refresh($: EngineInterface) {
   const held = await read($, guide)
-  if (held === null || !held.isActive) return
+  // A pane left open when the stored guide was declined (a new shape after a
+  // reload) starts the guide again instead of asking for a repository.
+  const isPaneOpen =
+    held === null && (await $.ui.panes()).some(pane => pane.id === PANE)
+  if (held === null && isPaneOpen) {
+    await update($, guide, g =>
+      g ?? { isActive: true, git: NO_REPO, marked: [], request: null },
+    )
+  } else if (held === null || !held.isActive) return
 
   const state = await readGit($)
   const stored = state.isRepo ? await $.store.get(progressKey(state)) : []
@@ -178,7 +261,10 @@ async function refresh($: EngineInterface) {
     ? stored.filter((id): id is StepId => MANUAL.includes(id))
     : []
 
+  // Show git's state at once; the remote's answer can take seconds.
   await update($, guide, g => (g === null ? g : { ...g, git: state, marked }))
+  const request = await findRequest($, state)
+  await update($, guide, g => (g === null ? g : { ...g, request }))
 }
 
 async function setMarked($: EngineInterface, id: StepId, isMarked: boolean) {
@@ -194,7 +280,9 @@ async function setMarked($: EngineInterface, id: StepId, isMarked: boolean) {
 
 async function activate($: EngineInterface) {
   await update($, guide, g =>
-    g === null ? { isActive: true, git: NO_REPO, marked: [] } : { ...g, isActive: true },
+    g === null
+      ? { isActive: true, git: NO_REPO, marked: [], request: null }
+      : { ...g, isActive: true },
   )
   await refresh($)
 
@@ -212,6 +300,11 @@ function describe(g: Guide): string {
   lines.push(`Branch: ${g.git.branch || '(detached)'} (base ${g.git.base})`)
   lines.push(`Uncommitted files: ${g.git.dirty}`)
   lines.push(`Commits not pushed: ${g.git.hasUpstream ? g.git.ahead : 'no upstream yet'}`)
+  lines.push(
+    g.request === null
+      ? 'Open merge request: none found'
+      : `Open merge request: ${g.request.kind} #${g.request.number} ${g.request.url}`,
+  )
   lines.push(now === undefined ? 'All steps done.' : `Current step: ${now.label}`)
 
   return lines.join('\n')
@@ -345,7 +438,7 @@ function actions(g: Guide, now: Step | undefined): Map<StepId, Action[]> {
       text: pushPlaybook(state),
     })
   }
-  if (isOnBranch && now?.id === 'mr') {
+  if (isOnBranch && now?.id === 'mr' && g.request === null) {
     add('mr', { key: 'open-mr', label: 'Open MR', text: mrPlaybook(state) })
   }
   if (now?.isManual) {
@@ -367,7 +460,8 @@ export const register: Register = on => {
         'The SWE Guide pane shows a newcomer their progress through the ' +
         'feature-change workflow (branch, implement, commit, push, open MR, ' +
         'review, merge). Branch, implement, commit and push are detected from ' +
-        'git. action "start" opens the pane; "branch" returns the steps to ' +
+        'git; Open MR is ticked when the remote has an open request for the ' +
+        'pushed branch. action "start" opens the pane; "branch" returns the steps to ' +
         'follow when the person wants to create a branch (call it before ' +
         'creating one); "status" returns the steps, ' +
         'uncommitted file count and unpushed commits; "mark" or "unmark" ' +
@@ -433,10 +527,15 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Text, Button } = $.ui.resolve(e)
+    const { Box, Text, Button, Link } = $.ui.resolve(e)
     const g = await read($, guide)
 
-    if (g === null || !g.git.isRepo) {
+    if (g === null) {
+      void refresh($).catch(() => undefined)
+
+      return <Text dimColor>Starting the guide…</Text>
+    }
+    if (!g.git.isRepo) {
       return <Text dimColor>Open a git repository to start the guide.</Text>
     }
 
@@ -481,6 +580,14 @@ export const register: Register = on => {
               <Text color="claude" bold>{' you are here!'}</Text>
             )}
           </Box>
+          {step.id === 'mr' && g.request !== null && (
+            <Box flexShrink={0}>
+              <Link
+                href={g.request.url}
+                label={`View ${g.request.kind} #${g.request.number}`}
+              />
+            </Box>
+          )}
           {buttons.length > 0 && (
             <Box columnGap={1} flexShrink={0}>
               {buttons.map((act, n) => (
