@@ -51,15 +51,9 @@ const STEPS: readonly Step[] = [
     isManual: true,
   },
   {
-    id: 'review',
-    label: 'Review',
-    next: 'get the MR reviewed and approved',
-    isManual: true,
-  },
-  {
     id: 'merge',
-    label: 'Merge',
-    next: 'merge the MR',
+    label: 'Review & merge',
+    next: 'get the MR approved and merged',
     isManual: true,
   },
 ]
@@ -459,13 +453,13 @@ export const register: Register = on => {
       description:
         'The SWE Guide pane shows a newcomer their progress through the ' +
         'feature-change workflow (branch, implement, commit, push, open MR, ' +
-        'review, merge). Branch, implement, commit and push are detected from ' +
+        'review and merge). Branch, implement, commit and push are detected from ' +
         'git; Open MR is ticked when the remote has an open request for the ' +
         'pushed branch. action "start" opens the pane; "branch" returns the steps to ' +
         'follow when the person wants to create a branch (call it before ' +
         'creating one); "status" returns the steps, ' +
         'uncommitted file count and unpushed commits; "mark" or "unmark" ' +
-        'with step "mr", "review" or "merge" ticks or unticks that step.',
+        'with step "mr" or "merge" (review and merge) ticks or unticks that step.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -506,7 +500,7 @@ export const register: Register = on => {
     if (action === 'start') await activate($)
     else if (action === 'mark' || action === 'unmark') {
       if (step === undefined) {
-        return { result: 'step must be "mr", "review" or "merge".' }
+        return { result: 'step must be "mr" or "merge".' }
       }
       await refresh($)
       await setMarked($, step, action === 'mark')

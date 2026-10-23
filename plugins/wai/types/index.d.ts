@@ -4,7 +4,6 @@ export type StepId =
   | 'commit'
   | 'push'
   | 'mr'
-  | 'review'
   | 'merge'
 
 export type GitState = {

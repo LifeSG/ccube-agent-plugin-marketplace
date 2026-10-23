@@ -93,7 +93,7 @@ test('commit and push tick from git and untick on new changes', async ($, on) =>
   )
   await pushed.press({ key: 'mark-done' })
   expect((await pushed.find({ type: 'Text', text: /^Next/ }))?.text).toBe(
-    'Next: get the MR reviewed and approved',
+    'Next: get the MR approved and merged',
   )
   await pushed.unmount()
 
@@ -227,7 +227,7 @@ test('an open PR at the pushed commit ticks Open MR and links to it', async ($, 
 
   const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
   expect((await ui.find({ type: 'Text', text: /^Next/ }))?.text).toBe(
-    'Next: get the MR reviewed and approved',
+    'Next: get the MR approved and merged',
   )
   const link = await ui.find({ type: 'Link' })
   expect(link?.props.href).toBe('https://github.com/acme/app/pull/54')
