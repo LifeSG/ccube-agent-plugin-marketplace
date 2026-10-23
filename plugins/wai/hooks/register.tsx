@@ -570,8 +570,12 @@ export const register: Register = on => {
               {` ${i + 1}  ${step.label.padEnd(LABEL_WIDTH)} `}
             </Text>
             <Text color={ringColor}>{ring?.right ?? GUTTER}</Text>
+            {/* A filled badge, so it stands out from the coral outlines. */}
+            {isHere && <Text>{' '}</Text>}
             {isHere && (
-              <Text color="claude" bold>{' you are here!'}</Text>
+              <Text backgroundColor="claude" color="inverseText" bold>
+                {' ◀ YOU ARE HERE '}
+              </Text>
             )}
           </Box>
           {step.id === 'mr' && g.request !== null && (

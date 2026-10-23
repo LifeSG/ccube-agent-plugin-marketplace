@@ -79,6 +79,9 @@ test('commit and push tick from git and untick on new changes', async ($, on) =>
     expect((await ui.find({ type: 'Text', text: /^Next/ }))?.text).toBe(
       'Next: commit your changes',
     )
+    const badge = await ui.find({ type: 'Text', text: 'YOU ARE HERE' })
+    expect(badge?.props.backgroundColor).toBe('claude')
+    expect(badge?.props.color).toBe('inverseText')
     await ui.unmount()
   }
 
