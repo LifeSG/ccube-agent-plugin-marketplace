@@ -281,15 +281,31 @@ function pushPlaybook(state: GitState): string {
   ].join('\n')
 }
 
+// The person opens the MR themselves from a prefilled link, so they review
+// the title and description on GitLab or GitHub before anything is created.
 function mrPlaybook(state: GitState): string {
   return [
-    `I am asking you to open a merge request from "${state.branch}" into ` +
-      `"${state.base}".`,
+    `Give me a link that opens the create merge request page for ` +
+      `"${state.branch}" into "${state.base}", with the title and ` +
+      'description filled in. I am new to git, so explain in one line what ' +
+      'a merge request is.',
     '',
-    '1. Propose a title and a short description from the commits on the ' +
-      'branch, and wait for my yes.',
-    '2. Open the merge request and show me its link.',
-    '3. Call the swe_guide tool with action "mark" and step "mr".',
+    `1. Write a title and a short description from \`git log --oneline ` +
+      `${state.base}..HEAD\`. Do not wait for my yes, I can edit them on the page.`,
+    '2. Read the host and project path from `git remote get-url origin` ' +
+      '(SSH or HTTPS form).',
+    '3. Build the link, URL-encoding every value:',
+    '   - GitHub: `https://github.com/<owner>/<repo>/compare/' +
+      `${state.base}...${state.branch}?expand=1&title=<title>&body=<description>\``,
+    '   - GitLab: `https://<host>/<project path>/-/merge_requests/new?' +
+      `merge_request[source_branch]=${state.branch}&merge_request[target_branch]=` +
+      `${state.base}&merge_request[title]=<title>&merge_request[description]=` +
+      '<description>`',
+    '   - Any other host: say it is not supported and stop.',
+    '4. Show me the title, the description and the link. Do not open the ' +
+      'merge request yourself.',
+    '5. Tell me in one line to click the link, press Create on the page, then ' +
+      'press "Mark done" on the Open MR step.',
   ].join('\n')
 }
 
