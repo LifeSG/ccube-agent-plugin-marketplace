@@ -63,6 +63,17 @@ const STEPS: readonly Step[] = [
 
 const MANUAL = STEPS.filter(step => step.isManual).map(step => step.id)
 
+// The ring drawn around the steps a person repeats for each change: down the
+// right side past the buttons, back up the left to Implement.
+const LOOP: Partial<Record<StepId, { left: string; right: string }>> = {
+  implement: { left: '╭─ ', right: ' ─╮' },
+  commit: { left: '▲  ', right: '  ▼' },
+  push: { left: '╰─ ', right: ' ─╯' },
+}
+const GUTTER = '   '
+// Every label padded to the longest, so the ring's right side lines up.
+const LABEL_WIDTH = Math.max(...STEPS.map(step => step.label.length))
+
 const NO_REPO: GitState = {
   isRepo: false,
   root: '',
@@ -415,6 +426,8 @@ export const register: Register = on => {
     )
 
     const acts = actions(g, now)
+    const isLooping = now !== undefined && LOOP[now.id] !== undefined
+    const ringColor = isLooping ? 'claude' : 'subtle'
 
     const row = (step: Step, i: number) => {
       const isDone = done.has(step.id)
@@ -422,22 +435,24 @@ export const register: Register = on => {
       const icon = isDone ? '✔' : isNow ? '▶' : '○'
       const color = isDone ? 'success' : isNow ? 'claude' : 'subtle'
       const buttons = acts.get(step.id) ?? []
+      const ring = LOOP[step.id]
 
       return (
         <Box justifyContent="space-between" alignItems="center">
           <Box flexShrink={1}>
+            <Text color={ringColor}>{ring?.left ?? GUTTER}</Text>
             <Text color={color} bold={isNow}>{` ${icon} `}</Text>
-            {isNow ? (
-              <Text color="claude" inverse bold wrap="truncate-end">
-                {` ${i + 1}  ${step.label} `}
-              </Text>
-            ) : (
-              <Text color={isDone ? 'text' : 'subtle'} wrap="truncate-end">
-                {`${i + 1}  ${step.label}`}
-              </Text>
-            )}
+            <Text
+              color={isNow ? 'claude' : isDone ? 'text' : 'subtle'}
+              inverse={isNow}
+              bold={isNow}
+              wrap="truncate-end"
+            >
+              {` ${i + 1}  ${step.label.padEnd(LABEL_WIDTH)} `}
+            </Text>
+            <Text color={ringColor}>{ring?.right ?? GUTTER}</Text>
             {isNow && buttons.length === 0 && (
-              <Text color="claude">{'  ◀ you are here'}</Text>
+              <Text color="claude">{' ◀ you are here'}</Text>
             )}
           </Box>
           {buttons.length > 0 && (
@@ -500,6 +515,9 @@ export const register: Register = on => {
         <Box flexDirection="column">
           <Text color="subtle" bold>{'LOCAL · tracked from git'}</Text>
           {local.map(step => row(step, STEPS.indexOf(step)))}
+          <Text color={ringColor} dimColor={!isLooping}>
+            {`${GUTTER}↻ repeat for each change`}
+          </Text>
         </Box>
 
         <Box flexDirection="column">
