@@ -441,21 +441,23 @@ export const register: Register = on => {
     const hereId: StepId | undefined = isLooping ? 'commit' : now?.id
 
     const row = (step: Step, i: number) => {
-      const isDone = done.has(step.id)
       const isHere = step.id === hereId
       const buttons = acts.get(step.id) ?? []
       const ring = LOOP[step.id]
-      // Loop steps stay bright while looping, since any of them can come next;
-      // a finished Create branch fades, as it is not revisited.
-      const isBright = isLooping && ring !== undefined
-      const isFaded = step.id === 'branch' && isDone
-      const labelColor = isFaded ? 'subtle' : isBright || isDone ? 'text' : 'subtle'
+      // Only the step under the marker is lit. While looping the marker stands
+      // for the whole ring, so every loop step is lit; all else is dimmed.
+      const isLit = isHere || (isLooping && ring !== undefined)
 
       return (
         <Box justifyContent="space-between" alignItems="center">
           <Box flexShrink={1}>
             <Text color={ringColor}>{ring?.left ?? GUTTER}</Text>
-            <Text color={labelColor} dimColor={isFaded} wrap="truncate-end">
+            <Text
+              color={isLit ? 'text' : 'subtle'}
+              dimColor={!isLit}
+              bold={isLit}
+              wrap="truncate-end"
+            >
               {` ${i + 1}  ${step.label.padEnd(LABEL_WIDTH)} `}
             </Text>
             <Text color={ringColor}>{ring?.right ?? GUTTER}</Text>
