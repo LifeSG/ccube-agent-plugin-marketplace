@@ -41,6 +41,12 @@ plugins/
       plugin.json               ← Claude Code plugin manifest (bump version on every capability change)
     README.md                   ← human-readable description of the plugin
     hooks.json                  ← optional hook declarations (Copilot format, plugin root; default {"hooks": {}})
+    hooks/                      ← optional: Claude Code hooks module (mod), Claude Code only
+      hooks.json                ← {"modules": ["./register.tsx"]}
+      register.tsx              ← the module: panes, slash commands, MCP tools (e.g. wai's SWE Guide)
+      register.test.tsx         ← its tests, run with `claude plugin test plugins/<name>`
+    types/
+      index.d.ts                ← optional: the hooks module's state contract, named by `types` in .claude-plugin/plugin.json
     docs/                       ← optional: supporting documentation for this plugin
     scripts/
       validate-*.sh             ← optional: agent validation scripts
@@ -73,6 +79,12 @@ The file types this repo authors and maintains:
 | `.prompt.md`                     | `prompts/`                              | Slash-command workflows (e.g. scaffold a page, set up a project, build a form)                                     |
 | `marketplace.json` (Claude Code) | `.claude-plugin/`                       | Claude Code marketplace catalog; lists plugins for `/plugin marketplace add`                                       |
 | `plugin.json` (Claude Code)      | `plugins/<plugin-name>/.claude-plugin/` | **Claude Code** plugin manifest; bump `version` on every capability change                                         |
+| `register.tsx` (hooks module)    | `plugins/<plugin-name>/hooks/`          | **Claude Code only** mod: panes, slash commands and MCP tools (wai's SWE Guide, `swe_guide` tool); Copilot ignores it |
+| `index.d.ts` (state contract)    | `plugins/<plugin-name>/types/`          | Types of the hooks module's stored state; named by `types` in `.claude-plugin/plugin.json`                         |
+
+A hooks module is Claude Code only. An agent or skill shared by both
+platforms that calls a tool it registers (for example Maestro and
+`swe_guide`) MUST say to skip that step when the tool is absent.
 
 <!-- </repo-context> -->
 
@@ -93,6 +105,7 @@ you add or change with both platforms in mind.
 | Skills                      | Registered via `"skills"` directory path in `.github/plugin/marketplace.json` | Auto-discovered from `plugins/<name>/skills/*/SKILL.md` |
 | Agents                      | Registered in `.github/plugin/marketplace.json` `"agents"` field              | Auto-discovered from `plugins/<name>/agents/*.agent.md` |
 | Hooks                       | `plugins/<name>/hooks.json`                                                   | `.claude/settings.json` hooks block                     |
+| Hooks module (mod)          | Not supported                                                                 | `plugins/<name>/hooks/hooks.json` `modules` list        |
 
 ### Rules for dual-platform compatibility
 
