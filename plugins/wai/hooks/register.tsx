@@ -28,7 +28,7 @@ const STEPS: readonly Step[] = [
   },
   {
     id: 'implement',
-    label: 'Implement change',
+    label: 'Implement',
     next: 'make your change on the branch',
     isManual: false,
   },
@@ -68,8 +68,11 @@ const LOOP: Partial<Record<StepId, { left: string; right: string }>> = {
   push: { left: '╰─ ', right: ' ─╯' },
 }
 const GUTTER = '   '
-// Every label padded to the longest, so the ring's right side lines up.
-const LABEL_WIDTH = Math.max(...STEPS.map(step => step.label.length))
+// Labels padded to the longest loop label, so the ring's right side lines up;
+// rows outside the ring have no right side to align.
+const LABEL_WIDTH = Math.max(
+  ...STEPS.filter(step => LOOP[step.id] !== undefined).map(step => step.label.length),
+)
 
 const NO_REPO: GitState = {
   isRepo: false,
