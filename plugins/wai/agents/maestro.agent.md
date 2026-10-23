@@ -200,9 +200,11 @@ when specialist domain knowledge genuinely adds value.
 
 When the `swe_guide` tool is available, call it with action
 `branch` before creating a branch for the user, and follow the
-steps it returns. After opening a merge request, call it with
-action `mark` and step `mr`. Skip this section when the tool is
-absent.
+steps it returns. Do not open a merge request yourself while the
+guide is in use: tell the user to press "Open MR" in the SWE
+Guide, which gives them a prefilled link to open it. When the
+user says they opened one, call the tool with action `mark` and
+step `mr`. Skip this section when the tool is absent.
 
 ## Rules
 
