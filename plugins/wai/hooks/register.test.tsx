@@ -66,8 +66,8 @@ test('commit and push tick from git and untick on new changes', async ($, on) =>
 
   for (const surface of ['terminal', 'desktop'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
-    expect((await ui.find({ type: 'Text', text: /uncommitted/ }))?.text).toBe(
-      '2 uncommitted files',
+    expect((await ui.find({ key: 'commit' }))?.text).toBe(
+      'Commit 2 changed files',
     )
     expect((await ui.find({ type: 'Text', text: /^Next/ }))?.text).toBe(
       'Next: commit your changes',
@@ -97,7 +97,7 @@ test('commit and push tick from git and untick on new changes', async ($, on) =>
   expect((await edited.find({ type: 'Text', text: /^Next/ }))?.text).toBe(
     'Next: commit your changes',
   )
-  expect(await edited.find({ type: 'Text', text: /1 uncommitted file$/ })).toBeDefined()
+  expect((await edited.find({ key: 'commit' }))?.text).toBe('Commit 1 changed file')
   await edited.unmount()
 })
 
@@ -176,6 +176,7 @@ test('Commit and Push buttons ask Claude to do the work', async ($, on) => {
   await dirty.press({ key: 'commit' })
   await dirty.unmount()
   expect(sent[0]).toContain('cc-git-commit')
+  expect(sent[0]).toContain('approve your recommended grouping in advance')
   expect(sent[0]).toContain('1 uncommitted file')
 
   repo.dirty = ''
