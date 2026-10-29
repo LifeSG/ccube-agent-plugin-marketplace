@@ -263,8 +263,19 @@ download_skill() {
 
   [[ -d "${src}" ]] || die "Path '${skill_path}' not found in ${repo} at ${ref}."
 
+  # Reject symlinks anywhere in the skill tree.  The containment checks above
+  # only resolve the top-level paths; a nested link could point at host files
+  # (BSD cp -r follows it) or be vendored as an outward-pointing link (GNU).
+  if git -C "${tmp_dir}" ls-tree -r "${ref}" -- "${skill_path}" | awk '$1 == "120000"' | grep -q .; then
+    die "Security: '${skill_path}' in ${repo} at ${ref} contains symlinks; refusing to vendor."
+  fi
+  if find "${src}" -type l | grep -q .; then
+    die "Security: symlinks found in checked-out '${skill_path}'. Aborting."
+  fi
+
   rm -rf "${dest}"
-  cp -r "${src}" "${dest}"
+  # -P: never dereference links, so behaviour matches on macOS and Linux.
+  cp -RP "${src}" "${dest}"
 
   DOWNLOADED_TREE="${tree}"
 
