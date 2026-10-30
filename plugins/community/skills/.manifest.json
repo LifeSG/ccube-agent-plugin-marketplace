@@ -19,10 +19,10 @@
     "grilling": {
       "source": "mattpocock/skills",
       "path": "skills/productivity/grilling",
-      "updated": "2026-10-13T07:32:12Z",
+      "updated": "2026-10-30T06:38:36Z",
       "added": "2026-07-24T05:19:13Z",
-      "ref": "49dd158d1076134a641b33efb035946536778336",
-      "tree": "28aceb4c9567b985cb47f7db88cf23c9f33af8b8"
+      "ref": "a496f5513d4a4cf889bc48e189e579f4b0bdf6aa",
+      "tree": "f551b6e0d219fdda0b6abf277f8f915b3127d1e9"
     },
     "domain-modeling": {
       "source": "mattpocock/skills",
