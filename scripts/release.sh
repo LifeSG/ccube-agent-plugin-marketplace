@@ -5,9 +5,12 @@
 # What this script does:
 #   1. Validates the plugin-name and version arguments
 #   2. Bumps version in the plugin manifests for the given plugin
-#   3. Bumps version in marketplace.json if present
-#   4. Prepends the unreleased changelog entries if cliff.toml is present
-#   5. Commits and tags locally
+#   3. Bumps the plugin's entry in marketplace.json if present
+#      (the catalog-level metadata.version is left untouched)
+#   4. Prepends the plugin's unreleased changelog entries if cliff.toml is
+#      present — only commits touching plugins/<plugin-name>/ since the
+#      previous <plugin-name>-v* tag
+#   5. Commits and tags locally as <plugin-name>-v<version>
 
 set -euo pipefail
 
@@ -31,7 +34,14 @@ if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   exit 1
 fi
 
-TAG="v${VERSION}"
+if ! [[ "$PLUGIN_NAME" =~ ^[a-z0-9-]+$ ]] || [[ ! -d "plugins/${PLUGIN_NAME}" ]]; then
+  echo "Error: unknown plugin '${PLUGIN_NAME}' (no plugins/${PLUGIN_NAME}/ directory)" >&2
+  exit 1
+fi
+
+# Tags are scoped per plugin so plugins can share version numbers and each
+# changelog only spans that plugin's own release history.
+TAG="${PLUGIN_NAME}-v${VERSION}"
 
 # Ensure working tree is clean
 if ! git diff --quiet || ! git diff --cached --quiet; then
@@ -40,12 +50,12 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
 fi
 
 # Ensure tag doesn't already exist
-if git tag --list | grep -qx "$TAG"; then
+if git rev-parse --quiet --verify "refs/tags/${TAG}" >/dev/null; then
   echo "Error: tag $TAG already exists" >&2
   exit 1
 fi
 
-echo "Releasing ${PLUGIN_NAME} ${TAG}..."
+echo "Releasing ${TAG}..."
 
 # ── 1. Bump versions ─────────────────────────────────────────────────────────
 
@@ -92,15 +102,13 @@ fi
 
 if [[ -f "$CLAUDE_MARKETPLACE" ]]; then
   # .claude-plugin/marketplace.json has two version fields:
-  #   metadata.version  — catalog-level version
+  #   metadata.version  — catalog-level version (not changed by plugin releases)
   #   plugins[].version — per-plugin version
   python3 - "$CLAUDE_MARKETPLACE" "$PLUGIN_NAME" "$VERSION" <<'EOF'
 import sys, json
 path, plugin_name, ver = sys.argv[1], sys.argv[2], sys.argv[3]
 with open(path) as f:
     data = json.load(f)
-if "metadata" in data:
-    data["metadata"]["version"] = ver
 for plugin in data.get("plugins", []):
     if plugin.get("name") == plugin_name:
         plugin["version"] = ver
@@ -115,7 +123,20 @@ fi
 # ── 2. Changelog ─────────────────────────────────────────────────────────────
 
 if [[ -f "cliff.toml" ]]; then
-  npm run changelog -- --tag "$TAG"
+  # Start from this plugin's previous release.  Before per-plugin tags
+  # existed, releases used a shared v<version> tag; fall back to the latest
+  # of those so already-published history is not repeated.
+  PREV_TAG="$(git describe --tags --abbrev=0 --match "${PLUGIN_NAME}-v[0-9]*" 2>/dev/null \
+    || git describe --tags --abbrev=0 --match "v[0-9]*" 2>/dev/null \
+    || true)"
+  RANGE_ARGS=()
+  [[ -n "$PREV_TAG" ]] && RANGE_ARGS=("${PREV_TAG}..HEAD")
+
+  # ${arr[@]+...} guards the empty array under set -u on macOS bash 3.2.
+  npm run changelog -- ${RANGE_ARGS[@]+"${RANGE_ARGS[@]}"} \
+    --tag "$TAG" \
+    --tag-pattern "^${PLUGIN_NAME}-v[0-9]" \
+    --include-path "plugins/${PLUGIN_NAME}/**"
   STAGED_FILES+=("CHANGELOG.md")
   echo "  Prepended CHANGELOG.md"
 else
@@ -125,10 +146,10 @@ fi
 # ── 3. Commit, tag, push ─────────────────────────────────────────────────────
 
 git add "${STAGED_FILES[@]}"
-git commit -m "chore(release): ${PLUGIN_NAME} ${TAG}"
-git tag -a "$TAG" -m "Release ${PLUGIN_NAME} ${TAG}"
+git commit -m "chore(release): ${TAG}"
+git tag -a "$TAG" -m "Release ${TAG}"
 
 echo ""
-echo "Release ${PLUGIN_NAME} ${TAG} committed and tagged locally."
+echo "Release ${TAG} committed and tagged locally."
 echo "Run the following to publish:"
 echo "  git push origin main --follow-tags"
