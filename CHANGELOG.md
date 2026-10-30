@@ -3,6 +3,82 @@
 All notable changes to this marketplace are documented here.
 Entries are grouped by plugin.
 
+## 2.0.1 — 2026-10-30
+### cc-fullstack-vite `v2.0.1`
+
+- **fix**: Validate args before sed to prevent command injection
+
+### ccube-celerity `v2.0.1`
+
+- **fix**: Remove session telemetry script and hooks
+
+### celerity `v2.0.1`
+
+- **fix**: Escape page-derived values in smoke-test report
+
+### ci `v2.0.1`
+
+- **fix**: Least-privilege token in skill update workflow
+- **fix**: Bump actions/checkout to v7 for Node.js 24
+
+### community `v2.0.1`
+
+- **fix**: Skip PR creation when no skill content changes
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **fix**: Prevent path traversal in manage-skills.sh (CWE-22, CWE-73)
+- **fix**: Reject '.' and '..' skill names and harden cmd_delete
+- **feat**: Add AI-driven test skill for manage-skills.sh
+- **refactor**: Move test plan into skill resources/
+- **fix**: Remove impeccable skill to resolve 10 medium findings
+- **chore**: Update vendored skills
+- **chore**: Update vendored skills
+- **fix**: Pin vendored skills to verified upstream commits
+- **fix**: Remove session telemetry script and hooks
+- **docs**: Update skills badge count
+- **feat**: Add fds-build skill
+- **fix**: Reject symlinks in vendored skill trees
+
+### maestro `v2.0.1`
+
+- **feat**: Support MAI agent discovery in subfolders
+
+### repo `v2.0.1`
+
+- **fix**: Remove telemetry hooks from project settings
+- **docs**: Replace telemetry guidance with privacy notes
+- **fix**: Remove auto permission mode from settings
+
+### scripts `v2.0.1`
+
+- **chore**: Remove telemetry debug-hook diagnostic
+
+### security `v2.0.1`
+
+- **fix**: Harden PreToolUse allowlist against shell metachar injection
+- **fix**: Sanitize LLM output injection and command injection
+
+### wai `v2.0.1`
+
+- **fix**: Remove cc-code-review PreToolUse allowlist hook
+- **fix**: Remove session telemetry script and hooks
+- **fix**: Validate branch refs in git-analysis.sh
+- **fix**: Replace vite allowedHosts true with allowlist
+- **fix**: Verify postgres tls certificate in production
+
 ## 2.0.0 — 2026-08-17
 ### AGENT.md `v2.0.0`
 
