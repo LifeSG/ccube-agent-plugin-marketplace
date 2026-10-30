@@ -456,6 +456,10 @@ Run the release script from the repository root:
 ./scripts/release.sh wai 1.6.0
 ```
 
+Releases are tagged per plugin as `<plugin-name>-v<version>` (e.g.
+`wai-v1.6.0`), so plugins version independently. The script bumps only that
+plugin's entries; the catalog-level `metadata.version` is not changed.
+
 You MUST NOT manually edit `plugin.json` or any `marketplace.json` file to
 bump a version — always use the release script. [CRITICAL]
 
@@ -731,7 +735,9 @@ the unreleased entries as part of the release commit.
    ./scripts/release.sh <plugin-name> <version>
    ```
 3. The script commits the version bumps, the updated `CHANGELOG.md`,
-   and applies the `v<version>` git tag in one atomic operation.
+   and applies the `<plugin-name>-v<version>` git tag in one atomic
+   operation. The changelog entry only includes commits that touched
+   `plugins/<plugin-name>/` since that plugin's previous release tag.
 
 You MUST NOT run `npm run changelog` manually or edit `CHANGELOG.md`
 directly — always use `./scripts/release.sh`. [CRITICAL]
