@@ -102,7 +102,7 @@ test('commit and push tick from git and untick on new changes', async ($, on) =>
       'Next: commit your changes',
     )
     const badge = await ui.find({ type: 'Text', text: 'YOU ARE HERE' })
-    expect(badge?.props.backgroundColor).toBe('claude')
+    expect(badge?.props.backgroundColor).toBe('ide')
     expect(badge?.props.color).toBe('inverseText')
     // Code review is offered and lit before anything is committed.
     expect((await ui.find({ key: 'code-review' }))?.text).toBe('Run code review')
@@ -984,4 +984,114 @@ test('a second session start keeps one poll', async ($, on) => {
   await clock.advance(10_000)
   const statuses = ran.filter(argv => gitArgs(argv).endsWith('status --porcelain'))
   expect(statuses.length).toBe(1)
+})
+
+test('the mode toggle switches to vibe: three steps, coral, no remote', async ($, on) => {
+  guideTest(on, { dirty: ' M a.ts\n', branchCommits: '0', ahead: null })
+  mock.store(on)
+  mock.clock(on)
+  await openGuide($)
+
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect((await ui.find({ type: 'Text', text: '◆ Feature change' }))?.props.color).toBe('ide')
+  expect((await ui.find({ key: 'mode-team' }))?.props.variant).toBe('primary')
+  expect((await ui.find({ key: 'mode-vibe' }))?.props.variant).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: '2/7' })).toBeDefined()
+
+  await ui.press({ key: 'mode-vibe' })
+  const title = await ui.find({ type: 'Text', text: '◆ Vibe coding' })
+  expect(title?.props.color).toBe('claude')
+  expect((await ui.find({ key: 'mode-vibe' }))?.props.variant).toBe('primary')
+  expect(await ui.find({ type: 'Text', text: '1/3' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: 'REMOTE · GITLAB / GITHUB' })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: /Create branch/ })).toBeUndefined()
+  expect(await ui.find({ key: 'code-review' })).toBeUndefined()
+  expect(
+    (await ui.find({ type: 'Text', text: /YOU ARE HERE/ }))?.props.backgroundColor,
+  ).toBe('claude')
+  await ui.unmount()
+
+  // Kept for the repository, so a later refresh stays in vibe.
+  expect(await callGuide($, { action: 'status' })).toContain('Mode: vibe')
+})
+
+test('vibe on main commits, pushes and shows shipped until new work', async ($, on) => {
+  const repo: Repo = { dirty: ' M a.ts\n', branchCommits: '0', ahead: '0', branch: 'main' }
+  const { sent } = guideTest(on, repo)
+  mock.store(on, { 'mode:/repo': 'vibe' })
+  mock.clock(on)
+  await openGuide($)
+
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect((await ui.find({ type: 'Text', text: /^Next/ }))?.text).toBe('Next: commit your changes')
+  expect(await ui.find({ type: 'Text', text: 'Pushing to  ' })).toBeDefined()
+  expect(await ui.find({ key: 'banner-switch' })).toBeUndefined()
+  await ui.press({ key: 'commit' })
+  await ui.unmount()
+
+  repo.dirty = ''
+  repo.ahead = '2'
+  await $.tool.call({ tool: 'Bash', command: 'git commit' })
+  const committed = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect((await committed.find({ key: 'push' }))?.text).toBe('Push 2 commits')
+  await committed.press({ key: 'push' })
+  await committed.unmount()
+  expect(sent[1]).toContain('straight to the remote')
+  expect(sent[1]).toContain('Do not force-push')
+
+  repo.ahead = '0'
+  repo.pushed = 'p2'
+  await $.tool.call({ tool: 'Bash', command: 'git push' })
+  expect(await callGuide($, { action: 'status' })).toContain('[x] 3 Push')
+  const shipped = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect(await shipped.find({ type: 'Text', text: /Shipped/ })).toBeDefined()
+  await shipped.unmount()
+
+  repo.dirty = ' M b.ts\n'
+  await $.tool.call({ tool: 'Edit', file_path: '/repo/b.ts', old_string: 'a', new_string: 'b' })
+  const status = await callGuide($, { action: 'status' })
+  expect(status).toContain('[ ] 3 Push')
+  expect(status).toContain('Current step: Commit')
+})
+
+test('a branch that does not fit the mode shows a banner to switch', async ($, on) => {
+  const repo: Repo = { dirty: '', branchCommits: '0', ahead: '0', branch: 'main' }
+  const { sent } = guideTest(on, repo)
+  mock.store(on)
+  mock.clock(on)
+  await openGuide($)
+
+  const onMain = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect(await onMain.find({ type: 'Text', text: /You're on main/ })).toBeDefined()
+  expect((await onMain.find({ key: 'banner-switch' }))?.text).toBe('Switch to Vibe')
+  expect((await onMain.find({ key: 'banner-branch' }))?.text).toBe('Create branch')
+  await onMain.press({ key: 'banner-switch' })
+  expect(await onMain.find({ key: 'banner-switch' })).toBeUndefined()
+  expect(await onMain.find({ type: 'Text', text: '◆ Vibe coding' })).toBeDefined()
+  await onMain.unmount()
+
+  repo.branch = 'feat/x'
+  await $.tool.call({ tool: 'Bash', command: 'git checkout feat/x' })
+  const onBranch = await $.ui.mount({ ...PANE, surface: 'terminal' })
+  expect(await onBranch.find({ type: 'Text', text: /You're on feat\/x/ })).toBeDefined()
+  expect((await onBranch.find({ key: 'banner-switch' }))?.text).toBe('Switch to Team')
+  await onBranch.press({ key: 'banner-base' })
+  await onBranch.unmount()
+  expect(sent[0]).toContain('git checkout main')
+})
+
+test('the swe_guide tool switches the mode and refuses an unknown one', async ($, on) => {
+  guideTest(on, { dirty: '', branchCommits: '1', ahead: '0' })
+  mock.store(on)
+  mock.clock(on)
+  await openGuide($)
+
+  expect(await callGuide($, { action: 'status' })).toContain('Mode: team')
+  expect(await callGuide($, { action: 'mode' })).toContain('mode must be one of')
+  expect(await callGuide($, { action: 'mode', mode: 'solo' })).toContain('mode must be one of')
+  const vibe = await callGuide($, { action: 'mode', mode: 'vibe' })
+  expect(vibe).toContain('Mode: vibe')
+  expect(vibe).not.toContain('Open merge request')
+  expect(vibe).toContain('Suggested mode: team')
+  expect(await callGuide($, { action: 'mode', mode: 'team' })).toContain('[ ] 5 Code review')
 })
