@@ -45,8 +45,16 @@ export type FindingsView = {
   rows: FindingRow[] | null
 }
 
+// team: branch, review and merge request; vibe: commit and push straight to
+// the base branch.
+export type Mode = 'team' | 'vibe'
+
+// isShipped is true in vibe mode once the work begun on the base branch has
+// been pushed and nothing new has started.
 export type Guide = {
   isActive: boolean
+  mode: Mode
+  isShipped: boolean
   git: GitState
   marked: StepId[]
   request: Request | null

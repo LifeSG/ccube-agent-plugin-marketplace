@@ -6,6 +6,7 @@ import type {
   Findings,
   GitState,
   Guide,
+  Mode,
   Request,
   Severity,
   StepId,
@@ -22,7 +23,7 @@ const REQUEST_MS = 60_000
 // Change the tag when Guide's fields change: it declines what an earlier
 // version stored, which outlives a reload.
 const guide = atom({ plugin: 'wai', key: 'guide' } as const, null, {
-  shape: 'guide-5',
+  shape: 'guide-6',
 })
 // The level whose findings table the pane shows, if any.
 const viewing = atom({ plugin: 'wai', key: 'viewing' } as const, null, {
@@ -103,6 +104,41 @@ const STEPS: readonly Step[] = [
   },
 ]
 
+// Vibe coding has no branch, review or merge request: the loop alone, on the
+// base branch.
+const VIBE_STEPS: readonly Step[] = [
+  {
+    id: 'implement',
+    label: 'Implement',
+    next: 'make your change',
+    isManual: false,
+    isRemote: false,
+  },
+  {
+    id: 'commit',
+    label: 'Commit',
+    next: 'commit your changes',
+    isManual: false,
+    isRemote: false,
+  },
+  {
+    id: 'push',
+    label: 'Push',
+    next: 'push your commits so they go live',
+    isManual: false,
+    isRemote: false,
+  },
+]
+
+const MODES: readonly Mode[] = ['team', 'vibe']
+// Each mode's color, so a glance tells them apart: blue for team, Claude's
+// coral for vibe.
+const ACCENT: Record<Mode, string> = { team: 'ide', vibe: 'claude' }
+
+function stepsFor(mode: Mode): readonly Step[] {
+  return mode === 'vibe' ? VIBE_STEPS : STEPS
+}
+
 const MANUAL = STEPS.filter(step => step.isManual).map(step => step.id)
 const MANUAL_LIST = MANUAL.map(id => `"${id}"`).join(', ')
 // Each push brings new code to review, so these marks are dropped when the
@@ -110,7 +146,16 @@ const MANUAL_LIST = MANUAL.map(id => `"${id}"`).join(', ')
 const PER_PUSH: readonly StepId[] = ['review', 'merge']
 // The swe_guide tool's actions; Maestro's SWE Guide section names "branch"
 // and "mark", so a rename there must follow here.
-const ACTIONS = ['start', 'branch', 'status', 'mark', 'unmark', 'findings', 'fixed'] as const
+const ACTIONS = [
+  'start',
+  'branch',
+  'status',
+  'mode',
+  'mark',
+  'unmark',
+  'findings',
+  'fixed',
+] as const
 
 // The ring drawn around the steps a person repeats for each change: down the
 // right side past the buttons, back up the left to Implement.
@@ -469,6 +514,16 @@ function doneSteps(g: Guide): Set<StepId> {
   const { git: state } = g
   if (!state.isRepo) return done
 
+  // Vibe coding works on whatever branch it is on; a push leaves nothing to
+  // see in git, so isShipped keeps the steps ticked until new work starts.
+  if (g.mode === 'vibe') {
+    if (g.isShipped || state.dirty > 0 || unpushed(state) > 0) done.add('implement')
+    if (done.has('implement') && state.dirty === 0) done.add('commit')
+    if (g.isShipped) done.add('push')
+
+    return done
+  }
+
   const isOnBranch = state.branch !== '' && state.branch !== state.base
   if (isOnBranch) done.add('branch')
   if (isOnBranch && (state.dirty > 0 || state.branchCommits > 0)) {
@@ -491,7 +546,65 @@ function doneSteps(g: Guide): Set<StepId> {
 function currentStep(g: Guide): Step | undefined {
   const done = doneSteps(g)
 
-  return STEPS.find(step => !done.has(step.id))
+  return stepsFor(g.mode).find(step => !done.has(step.id))
+}
+
+// Commits not on the remote yet: past the upstream, or past the base when the
+// branch has none.
+function unpushed(state: GitState): number {
+  return state.hasUpstream ? state.ahead : state.branchCommits
+}
+
+function modeKey(state: GitState) {
+  return `mode:${state.root}`
+}
+
+// The mode is kept per repository; team unless the person chose vibe.
+async function readMode($: EngineInterface, state: GitState): Promise<Mode> {
+  const stored = await $.store.get(modeKey(state))
+
+  return MODES.find(mode => mode === stored) ?? 'team'
+}
+
+function shippedKey(state: GitState) {
+  return `shipped:${state.root}#${state.branch}`
+}
+
+// While there is work in progress the upstream's commit is stored; a clean
+// tree with nothing to push and a different upstream since means it shipped.
+async function readShipped($: EngineInterface, state: GitState): Promise<boolean> {
+  const stored = await $.store.get(shippedKey(state))
+  const workedAt = typeof stored === 'string' ? stored : undefined
+  if (state.dirty > 0 || unpushed(state) > 0) {
+    if (workedAt !== state.pushed) await $.store.set(shippedKey(state), state.pushed)
+
+    return false
+  }
+
+  return state.hasUpstream && workedAt !== undefined && workedAt !== state.pushed
+}
+
+// Which mode the branch suggests, when it differs from the one chosen: the
+// base branch for vibe, any other branch for team.
+function mismatch(g: Guide): Mode | undefined {
+  const { branch, base, isRepo } = g.git
+  if (!isRepo || branch === '') return undefined
+  if (g.mode === 'team' && branch === base) return 'vibe'
+  if (g.mode === 'vibe' && branch !== base) return 'team'
+
+  return undefined
+}
+
+function freshGuide(): Guide {
+  return {
+    isActive: true,
+    mode: 'team',
+    isShipped: false,
+    git: NO_REPO,
+    marked: [],
+    request: null,
+    findings: null,
+  }
 }
 
 // Progress is stored as { marked, pushed }; an earlier version stored the
@@ -557,9 +670,7 @@ async function refreshOnce($: EngineInterface) {
   const isPaneOpen =
     held === null && (await $.ui.panes()).some(pane => pane.id === PANE)
   if (held === null && isPaneOpen) {
-    await update($, guide, g =>
-      g ?? { isActive: true, git: NO_REPO, marked: [], request: null, findings: null },
-    )
+    await update($, guide, g => g ?? freshGuide())
   } else if (held === null) return
 
   const seen = marks
@@ -568,15 +679,25 @@ async function refreshOnce($: EngineInterface) {
   const findings = state.isRepo
     ? await detectFindings($, state, await readFindings($, state))
     : null
+  const mode = state.isRepo ? await readMode($, state) : 'team'
+  const isShipped = state.isRepo ? await readShipped($, state) : false
 
   // Show git's state at once; the remote's answer can take seconds. A mark
   // made meanwhile is newer than the list read above, so it stands.
   await update($, guide, g =>
     g === null
       ? g
-      : { ...g, git: state, marked: marks === seen ? marked : g.marked, findings },
+      : {
+          ...g,
+          mode,
+          isShipped,
+          git: state,
+          marked: marks === seen ? marked : g.marked,
+          findings,
+        },
   )
-  const request = await findRequest($, state)
+  // Vibe coding opens no requests, so the remote is not asked.
+  const request = mode === 'vibe' ? null : await findRequest($, state)
   await update($, guide, g => (g === null ? g : { ...g, request }))
 }
 
@@ -599,12 +720,16 @@ async function setMarked($: EngineInterface, id: StepId, isMarked: boolean) {
   await update($, guide, held => (held === null ? held : { ...held, marked }))
 }
 
+async function setMode($: EngineInterface, mode: Mode) {
+  const g = await read($, guide)
+  if (g === null || !g.git.isRepo) return
+  await $.store.set(modeKey(g.git), mode)
+  await update($, guide, held => (held === null ? held : { ...held, mode }))
+  await refresh($)
+}
+
 async function activate($: EngineInterface) {
-  await update($, guide, g =>
-    g === null
-      ? { isActive: true, git: NO_REPO, marked: [], request: null, findings: null }
-      : { ...g, isActive: true },
-  )
+  await update($, guide, g => (g === null ? freshGuide() : { ...g, isActive: true }))
   await refresh($)
 
   return $.ui.open({ id: PANE, title: TITLE })
@@ -614,18 +739,31 @@ function describe(g: Guide): string {
   if (!g.git.isRepo) return 'Not in a git repository.'
 
   const done = doneSteps(g)
-  const lines = STEPS.map(
-    (step, i) => `${done.has(step.id) ? '[x]' : '[ ]'} ${i + 1} ${step.label}`,
-  )
+  const lines = [
+    g.mode === 'vibe'
+      ? 'Mode: vibe (commit and push straight to the branch; no review or merge request)'
+      : 'Mode: team (branch, code review and merge request)',
+    ...stepsFor(g.mode).map(
+      (step, i) => `${done.has(step.id) ? '[x]' : '[ ]'} ${i + 1} ${step.label}`,
+    ),
+  ]
   const now = currentStep(g)
   lines.push(`Branch: ${g.git.branch || '(detached)'} (base ${g.git.base})`)
   lines.push(`Uncommitted files: ${g.git.dirty}`)
   lines.push(`Commits not pushed: ${g.git.hasUpstream ? g.git.ahead : 'no upstream yet'}`)
-  lines.push(
-    g.request === null
-      ? 'Open merge request: none found'
-      : `Open merge request: ${g.request.kind} #${g.request.number} ${g.request.url}`,
-  )
+  if (g.mode === 'team') {
+    lines.push(
+      g.request === null
+        ? 'Open merge request: none found'
+        : `Open merge request: ${g.request.kind} #${g.request.number} ${g.request.url}`,
+    )
+  }
+  const suggested = mismatch(g)
+  if (suggested !== undefined) {
+    lines.push(
+      `Suggested mode: ${suggested} (the branch does not fit ${g.mode} mode)`,
+    )
+  }
   lines.push(now === undefined ? 'All steps done.' : `Current step: ${now.label}`)
 
   return lines.join('\n')
@@ -701,10 +839,24 @@ function commitPlaybook(state: GitState): string {
   ].join('\n')
 }
 
-function pushPlaybook(state: GitState): string {
+function pushPlaybook(state: GitState, mode: Mode): string {
   const how = state.hasUpstream
     ? `\`git push\` (${state.ahead} commit(s) to send)`
     : `\`git push -u origin ${state.branch}\` (the branch is not on the remote yet)`
+
+  if (mode === 'vibe') {
+    return [
+      `I am asking you to push my commits on "${state.branch}" straight to ` +
+        'the remote. I am vibe coding: there is no merge request or code review.',
+      '',
+      `1. Run ${how}. Do not force-push.`,
+      '2. If it is rejected because the remote has newer commits, run ' +
+        '`git pull --rebase` and push again once. If that fails too, explain ' +
+        'why in plain words and stop.',
+      '3. Tell me in one line what just happened and that I can carry on with ' +
+        'my next change.',
+    ].join('\n')
+  }
 
   return [
     `I am asking you to push my branch "${state.branch}" so the team can see it.`,
@@ -713,6 +865,34 @@ function pushPlaybook(state: GitState): string {
     '2. If it fails, explain why in plain words and stop.',
     '3. Tell me in one line what just happened and that the next step is ' +
       'a code review.',
+  ].join('\n')
+}
+
+// The banner's way back to the base branch for vibe coding.
+function basePlaybook(state: GitState): string {
+  if (!isSafeRef(state.base)) {
+    return (
+      'The base branch name has characters a branch name should not have. ' +
+      'Tell me in plain words that the repository needs checking, and stop.'
+    )
+  }
+  const dirty =
+    state.dirty > 0
+      ? `There are ${state.dirty} uncommitted file(s). Before anything else, ` +
+        'explain in plain words what uncommitted changes are and ask whether to ' +
+        'commit them here first, carry them over, or set them aside (git stash). ' +
+        'Do what they choose.'
+      : 'There are no uncommitted changes.'
+
+  return [
+    `Switch me to "${state.base}" so I can vibe code there. I am new to git, ` +
+      'so explain any git words you use.',
+    '',
+    `1. ${dirty}`,
+    `2. Run \`git checkout ${state.base}\` then \`git pull --ff-only\`. If the ` +
+      'pull fails, explain why and stop.',
+    `3. Tell me in one line that I am now on "${state.base}" and that the next ` +
+      'step is making my change.',
   ].join('\n')
 }
 
@@ -813,6 +993,27 @@ function actions(g: Guide, now: Step | undefined): Map<StepId, Action[]> {
   const add = (id: StepId, action: Action) =>
     byStep.set(id, [...(byStep.get(id) ?? []), action])
 
+  // Vibe coding commits and pushes on the branch it is on, the base included.
+  if (g.mode === 'vibe') {
+    const isNamed = state.branch !== '' && isSafeRef(state.branch)
+    if (isNamed && state.dirty > 0) {
+      add('commit', {
+        key: 'commit',
+        label: `Commit ${plural(state.dirty, 'changed file')}`,
+        text: commitPlaybook(state),
+      })
+    }
+    if (isNamed && unpushed(state) > 0) {
+      add('push', {
+        key: 'push',
+        label: `Push ${plural(unpushed(state), 'commit')}`,
+        text: pushPlaybook(state, 'vibe'),
+      })
+    }
+
+    return byStep
+  }
+
   if (now?.id === 'branch') {
     add('branch', { key: 'create-branch', label: 'Create branch', text: branchPlaybook(state) })
   }
@@ -829,12 +1030,11 @@ function actions(g: Guide, now: Step | undefined): Map<StepId, Action[]> {
       text: commitPlaybook(state),
     })
   }
-  const unpushed = state.hasUpstream ? state.ahead : state.branchCommits
-  if (isOnBranch && unpushed > 0) {
+  if (isOnBranch && unpushed(state) > 0) {
     add('push', {
       key: 'push',
-      label: `Push ${plural(unpushed, 'commit')}`,
-      text: pushPlaybook(state),
+      label: `Push ${plural(unpushed(state), 'commit')}`,
+      text: pushPlaybook(state, 'team'),
     })
   }
   // A person may review at any point on the branch, not only after a push.
@@ -870,10 +1070,13 @@ export const register: Register = on => {
         'feature-change workflow (branch, implement, commit, push, code ' +
         'review, open MR, review and merge). Branch, implement, commit and push are detected from ' +
         'git; Open MR is ticked when the remote has an open request for the ' +
-        'pushed branch. action "start" opens the pane; "branch" returns the steps to ' +
+        'pushed branch. In vibe mode the steps are only implement, commit ' +
+        'and push, straight to the current branch, with no branch, review or ' +
+        'MR. action "start" opens the pane; "branch" returns the steps to ' +
         'follow when the person wants to create a branch (call it before ' +
-        'creating one); "status" returns the steps, ' +
-        'uncommitted file count and unpushed commits; "mark" or "unmark" ' +
+        'creating one); "status" returns the mode, the steps, ' +
+        'uncommitted file count and unpushed commits; "mode" with `mode` ' +
+        '"team" or "vibe" switches the mode for this repository; "mark" or "unmark" ' +
         `with step ${MANUAL_LIST} ticks or unticks that step ("review" is ` +
         'the code review before the MR, "merge" is review and merge); ' +
         '"findings" with `report` and `counts` records a finished code ' +
@@ -897,6 +1100,11 @@ export const register: Register = on => {
             required: [...LEVELS],
           },
           level: { type: 'string', enum: LEVELS },
+          mode: {
+            type: 'string',
+            enum: [...MODES],
+            description: 'Required for "mode".',
+          },
         },
         required: ['action'],
       },
@@ -952,7 +1160,12 @@ export const register: Register = on => {
       if (found === null) return { result: 'No code review findings are recorded.' }
       await setFindings($, { ...found, fixed: [...new Set([...found.fixed, level])] })
     } else if (action === 'start') await activate($)
-    else if (action === 'mark' || action === 'unmark') {
+    else if (action === 'mode') {
+      const mode = MODES.find(id => id === e.mode)
+      if (mode === undefined) return { result: `mode must be one of ${MODES.join(', ')}.` }
+      await refresh($)
+      await setMode($, mode)
+    } else if (action === 'mark' || action === 'unmark') {
       if (step === undefined) {
         return { result: `step must be one of ${MANUAL_LIST}.` }
       }
@@ -1000,15 +1213,18 @@ export const register: Register = on => {
     const done = doneSteps(g)
     const now = currentStep(g)
     const { branch, base } = g.git
-    const count = STEPS.filter(step => done.has(step.id)).length
-    const percent = Math.round((count / STEPS.length) * 100)
+    const steps = stepsFor(g.mode)
+    const isVibe = g.mode === 'vibe'
+    const accent = ACCENT[g.mode]
+    const count = steps.filter(step => done.has(step.id)).length
+    const percent = Math.round((count / steps.length) * 100)
     const cols = e.props.bodyColumns
     const barWidth = Math.max(10, Math.min(28, cols - 14))
-    const filled = Math.round((count / STEPS.length) * barWidth)
+    const filled = Math.round((count / steps.length) * barWidth)
 
     const acts = actions(g, now)
     const isLooping = now !== undefined && LOOP[now.id] !== undefined
-    const ringColor = isLooping ? 'claude' : 'subtle'
+    const ringColor = isLooping ? accent : 'subtle'
     // Inside the loop a person can be at any of its steps, so the marker sits
     // on the loop's middle row rather than following one step.
     const hereId: StepId | undefined = isLooping ? 'commit' : now?.id
@@ -1040,10 +1256,10 @@ export const register: Register = on => {
               {` ${i + 1}  ${step.label.padEnd(LABEL_WIDTH)} `}
             </Text>
             <Text color={ringColor}>{ring?.right ?? GUTTER}</Text>
-            {/* A filled badge, so it stands out from the coral outlines. */}
+            {/* A filled badge, so it stands out from the ring's outlines. */}
             {isHere && <Text>{' '}</Text>}
             {isHere && (
-              <Text backgroundColor="claude" color="inverseText" bold>
+              <Text backgroundColor={accent} color="inverseText" bold>
                 {' ◀ YOU ARE HERE '}
               </Text>
             )}
@@ -1076,8 +1292,55 @@ export const register: Register = on => {
       )
     }
 
-    const local = STEPS.filter(step => !step.isRemote)
-    const remote = STEPS.filter(step => step.isRemote)
+    const local = steps.filter(step => !step.isRemote)
+    const remote = steps.filter(step => step.isRemote)
+
+    // Two buttons, the chosen mode drawn as primary.
+    const modeToggle = (
+      <Box columnGap={1} alignItems="center">
+        <Text color="subtle">{'Mode'}</Text>
+        {MODES.map(mode => (
+          <Button
+            key={`mode-${mode}`}
+            label={mode === 'team' ? 'Team' : 'Vibe'}
+            variant={mode === g.mode ? 'primary' : undefined}
+            onPress={() => (mode === g.mode ? undefined : setMode($, mode))}
+          />
+        ))}
+      </Box>
+    )
+
+    // When the branch does not fit the mode: switch the mode, or move the
+    // branch to fit it. Amber in either mode, so it reads as a nudge.
+    const suggested = mismatch(g)
+    const fixBranch =
+      suggested === 'vibe'
+        ? isSafeRef(base) && { key: 'banner-branch', label: 'Create branch', text: branchPlaybook(g.git) }
+        : isSafeRef(base) && { key: 'banner-base', label: `Go to ${base}`, text: basePlaybook(g.git) }
+    const banner = suggested !== undefined && (
+      <Box flexDirection="column" borderStyle="round" borderColor="warning" paddingX={1}>
+        <Text color="warning" wrap="wrap">
+          {suggested === 'vibe'
+            ? `You're on ${base}. Team mode works on a branch.`
+            : `You're on ${branch}. Vibe mode pushes to ${base}.`}
+        </Text>
+        <Box columnGap={1} marginTop={1}>
+          <Button
+            key="banner-switch"
+            label={`Switch to ${suggested === 'vibe' ? 'Vibe' : 'Team'}`}
+            variant="primary"
+            onPress={() => setMode($, suggested)}
+          />
+          {fixBranch !== false && (
+            <Button
+              key={fixBranch.key}
+              label={fixBranch.label}
+              onPress={() => $.prompt.submit({ text: fixBranch.text, asUser: true })}
+            />
+          )}
+        </Box>
+      </Box>
+    )
 
     // After a review: one row per severity, each with its own Fix button, and
     // a Fix all that leaves out LOW. A fixed level keeps its row, ticked.
@@ -1184,53 +1447,76 @@ export const register: Register = on => {
         <Box
           flexDirection="column"
           borderStyle="round"
-          borderColor={now === undefined ? 'success' : 'claude'}
+          borderColor={now === undefined ? 'success' : accent}
           paddingX={1}
         >
           <Box justifyContent="space-between">
-            <Text color="claude" bold>◆ Feature change</Text>
+            <Text color={accent} bold>{isVibe ? '◆ Vibe coding' : '◆ Feature change'}</Text>
             <Text color={now === undefined ? 'success' : 'text'} bold>
-              {`${count}/${STEPS.length}`}
+              {`${count}/${steps.length}`}
             </Text>
           </Box>
+          {modeToggle}
           <Box>
             <Text color="success">{'█'.repeat(filled)}</Text>
             <Text color="subtle">{'░'.repeat(barWidth - filled)}</Text>
             <Text dimColor>{` ${percent}%`}</Text>
           </Box>
-          <Box marginTop={1}>
-            <Text color="subtle">{'Branch  '}</Text>
-            <Text color="claude" bold wrap="truncate-middle">
-              {`⎇ ${branch || '(detached)'}`}
-            </Text>
-          </Box>
-          <Box>
-            <Text color="subtle">{'Into    '}</Text>
-            <Text color="text" bold wrap="truncate-middle">{base}</Text>
-          </Box>
+          {isVibe ? (
+            <Box marginTop={1}>
+              <Text color="subtle">{'Pushing to  '}</Text>
+              <Text color={accent} bold wrap="truncate-middle">
+                {`⎇ ${branch || '(detached)'}`}
+              </Text>
+            </Box>
+          ) : (
+            <Box flexDirection="column" marginTop={1}>
+              <Box>
+                <Text color="subtle">{'Branch  '}</Text>
+                <Text color={accent} bold wrap="truncate-middle">
+                  {`⎇ ${branch || '(detached)'}`}
+                </Text>
+              </Box>
+              <Box>
+                <Text color="subtle">{'Into    '}</Text>
+                <Text color="text" bold wrap="truncate-middle">{base}</Text>
+              </Box>
+            </Box>
+          )}
         </Box>
+
+        {banner}
 
         <Box
           borderStyle="round"
-          borderColor={now === undefined ? 'success' : 'suggestion'}
+          borderColor={now === undefined ? 'success' : accent}
           paddingX={1}
         >
-          <Text color={now === undefined ? 'success' : 'suggestion'} bold>
-            {now === undefined ? '🎉 All done. Nice work!' : `Next: ${now.next}`}
+          <Text color={now === undefined ? 'success' : accent} bold>
+            {now === undefined
+              ? isVibe
+                ? '🎉 Shipped. Make your next change.'
+                : '🎉 All done. Nice work!'
+              : `Next: ${now.next}`}
           </Text>
         </Box>
 
         <Box flexDirection="column">
-          <Text color="subtle" bold>{'LOCAL'}</Text>
-          {local.map(step => row(step, STEPS.indexOf(step)))}
+          <Text color="subtle" bold>{isVibe ? `LOCAL → ${branch || base}` : 'LOCAL'}</Text>
+          {local.map(step => row(step, steps.indexOf(step)))}
         </Box>
 
-        <Box flexDirection="column">
-          <Text color="subtle" bold>{'REMOTE · GITLAB / GITHUB'}</Text>
-          {remote.map(step => row(step, STEPS.indexOf(step)))}
-        </Box>
+        {!isVibe && (
+          <Box flexDirection="column">
+            <Text color="subtle" bold>{'REMOTE · GITLAB / GITHUB'}</Text>
+            {remote.map(step => row(step, steps.indexOf(step)))}
+          </Box>
+        )}
 
-        {g.findings !== null && !g.findings.isDismissed && findingsCard(g.findings)}
+        {!isVibe &&
+          g.findings !== null &&
+          !g.findings.isDismissed &&
+          findingsCard(g.findings)}
 
       </Box>
     )
