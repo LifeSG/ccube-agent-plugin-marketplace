@@ -204,7 +204,12 @@ steps it returns. Do not open a merge request yourself while the
 guide is in use: tell the user to press "Open MR" in the SWE
 Guide, which gives them a prefilled link to open it. When the
 user says they opened one, call the tool with action `mark` and
-step `mr`. Skip this section when the tool is absent.
+step `mr`. When the status says `Mode: vibe`, do not create a
+branch, run a code review or open a merge request: commit and
+push on the current branch. When the user says they are vibe
+coding or working as a team, call the tool with action `mode` and
+`mode` `vibe` or `team`. Skip this section when the tool is
+absent.
 
 ## Rules
 

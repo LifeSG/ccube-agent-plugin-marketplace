@@ -193,6 +193,16 @@ each new push. Each step's button asks Claude to do that step. After a
 code review, a findings card shows the counts per severity, a View
 button that lists that level's findings, and Fix buttons.
 
+The pane has two modes, switched with the Team and Vibe buttons in its
+header and kept per repository:
+
+- **Team** (blue): the full flow above, on a branch.
+- **Vibe** (Claude coral): implement, commit and push straight to the
+  current branch, with no branch, code review or MR.
+
+A banner suggests the other mode when the branch does not fit: Vibe on
+the base branch, Team on any other.
+
 - `/cc-swe-coach-ui` shows or hides the pane. Hiding it stops its git
   checks.
 - The `swe_guide` tool lets Claude open the pane, read the steps, and
