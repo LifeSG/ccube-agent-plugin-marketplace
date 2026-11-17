@@ -43,9 +43,9 @@
     "fds-build": {
       "source": "lifesg/react-design-system",
       "path": "skills/fds-build",
-      "ref": "1dbb3345c52b97d4d727a2fccc85acc780d93a28",
-      "tree": "4031fc44ef585c1d4990dafe70c1cf5cc58566b7",
-      "updated": "2026-10-20T02:09:46Z",
+      "ref": "6f067a22fadc7b4133bc33f460d6bb061e2e6693",
+      "tree": "a04e7134f5c39119eee9f8143ff57af532be72b5",
+      "updated": "2026-11-17T08:40:58Z",
       "added": "2026-10-20T02:09:46Z"
     }
   }
