@@ -27,10 +27,10 @@
     "domain-modeling": {
       "source": "mattpocock/skills",
       "path": "skills/engineering/domain-modeling",
-      "updated": "2026-10-13T07:32:21Z",
+      "updated": "2026-11-26T09:01:33Z",
       "added": "2026-07-24T05:21:16Z",
-      "ref": "49dd158d1076134a641b33efb035946536778336",
-      "tree": "ea30ee454ba264543dbe40737973b1a5afb9f0e6"
+      "ref": "6f7f7831a625f040a8e06a0e7954826b87ce775a",
+      "tree": "db8ef024fb9a7b2022d57289359ae96cff0d8483"
     },
     "draw-io": {
       "source": "softaworks/agent-toolkit",
